@@ -1,7 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-const today_inmates_url = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=today";
+const todayInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=today";
 
 class Inmate {
     constructor(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl) {
@@ -32,7 +32,7 @@ function splitName(fullName) {
     return { firstName, middleName, lastName };
 }
 
-axios.get(today_inmates_url).then(response => {
+axios.get(todayInmatesUrl).then(response => {
     const html = response.data;
 
     const $ = cheerio.load(html);
@@ -67,13 +67,19 @@ function parseInmateTd($, td) {
 
     const fullname = $(td[0]).text().trim();
     const { firstName, middleName, lastName } = splitName(fullname);
+
+    let imgUrl = $(td[0]).find("img").attr("src");
+    if (imgUrl && imgUrl.startsWith("//")) {
+        imgUrl = "https:" + imgUrl;
+    }
+
     const age = $(td[1]).text();
     const bookingDate = $(td[2]).text();
     const releaseDate = $(td[3]).text();
     const arrestingAgency = $(td[4]).text();
     const charges = $(td[5]).text();
 
-    let inmate = new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges);
+    let inmate = new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl);
     console.log("Created: ", inmate);
 
     return inmate;

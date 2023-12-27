@@ -73,11 +73,11 @@ function parseInmateTd($, td) {
         imgUrl = "https:" + imgUrl;
     }
 
-    const age = $(td[1]).text();
-    const bookingDate = $(td[2]).text();
-    const releaseDate = $(td[3]).text();
-    const arrestingAgency = $(td[4]).text();
-    const charges = $(td[5]).text();
+    const age = $(td[1]).text().trim();
+    const bookingDate = $(td[2]).text().trim();
+    const releaseDate = $(td[3]).text().trim();
+    const arrestingAgency = $(td[4]).text().trim();
+    const charges = $(td[5]).text().trim();
 
     let inmate = new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl);
     console.log("Created: ", inmate);

@@ -1,8 +1,8 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const sqlite3 = require("sqlite3").verbose();
 
 const todayInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=today";
-
 class Inmate {
     constructor(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl) {
         this.firstName = firstName;
@@ -31,28 +31,6 @@ function splitName(fullName) {
 
     return { firstName, middleName, lastName };
 }
-
-axios.get(todayInmatesUrl).then(response => {
-    const html = response.data;
-
-    const $ = cheerio.load(html);
-    const inmates = [];
-
-    console.log($);
-
-    console.log("Parsing inmates...");
-    const header_row = 0;
-    $(".inmates-table tr").each((idx, elem) => {
-        if (idx === header_row) return;
-
-        const td = $(elem).find("td");
-        let inmate = parseInmateTd($, td);
-
-        inmates.push(inmate);
-    });
-
-    console.log(inmates.length);
-});
 
 function parseInmateTd($, td) {
     // Example row:
@@ -84,3 +62,79 @@ function parseInmateTd($, td) {
 
     return inmate;
 }
+
+function buildDb(db) {
+    // need to build this async logic correctly for the db to be built correctly
+    axios.get(todayInmatesUrl).then(response => {
+        const html = response.data;
+
+        const $ = cheerio.load(html);
+        const inmates = [];
+
+        console.log($);
+
+        console.log("Parsing inmates...");
+        const header_row = 0;
+
+        const stmt = db.prepare(`
+                INSERT INTO Inmates 
+                VALUES
+                (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        );
+
+        $(".inmates-table tr").each((idx, elem) => {
+            if (idx === header_row) return;
+
+            const td = $(elem).find("td");
+            let inmate = parseInmateTd($, td);
+
+            stmt.run(
+                inmate.firstName,
+                inmate.middleName,
+                inmate.lastName,
+                inmate.age,
+                inmate.bookingDate,
+                inmate.releaseDate,
+                inmate.arrestingAgency,
+                inmate.charges,
+                inmate.imgUrl
+            );
+
+            // inmates.push(inmate);
+        });
+        stmt.finalize();
+
+        console.log(inmates.length);
+    });
+}
+
+async function main() {
+    const db = new sqlite3.Database("inmates.db");
+
+    try {
+        db.serialize(() => {
+            db.run(`
+            CREATE TABLE IF NOT EXISTS Inmates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                firstName TEXT,
+                middleName TEXT,
+                lastName TEXT,
+                age INTEGER,
+                bookingDate TEXT,
+                releaseDate TEXT,
+                arrestingAgency TEXT,
+                charges TEXT,
+                imgUrl TEXT
+            )
+        `);
+            buildDb(db);
+        });
+
+    } catch (err) {
+        console.log(err);
+    } finally {
+        db.close();
+    }
+}
+
+main();

@@ -63,57 +63,56 @@ function parseInmateTd($, td) {
     return inmate;
 }
 
-function buildDb(db) {
-    // need to build this async logic correctly for the db to be built correctly
-    axios.get(todayInmatesUrl).then(response => {
-        const html = response.data;
+async function buildDb(db) {
+    return new Promise((resolve, reject) => {
+        // need to build this async logic correctly for the db to be built correctly
+        axios.get(todayInmatesUrl).then(response => {
+            const html = response.data;
 
-        const $ = cheerio.load(html);
-        const inmates = [];
+            const $ = cheerio.load(html);
 
-        console.log($);
+            console.log($);
 
-        console.log("Parsing inmates...");
-        const header_row = 0;
+            console.log("Parsing inmates...");
+            const header_row = 0;
 
-        const stmt = db.prepare(`
+            const stmt = db.prepare(`
                 INSERT INTO Inmates 
                 VALUES
                 (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        );
-
-        $(".inmates-table tr").each((idx, elem) => {
-            if (idx === header_row) return;
-
-            const td = $(elem).find("td");
-            let inmate = parseInmateTd($, td);
-
-            stmt.run(
-                inmate.firstName,
-                inmate.middleName,
-                inmate.lastName,
-                inmate.age,
-                inmate.bookingDate,
-                inmate.releaseDate,
-                inmate.arrestingAgency,
-                inmate.charges,
-                inmate.imgUrl
             );
 
-            // inmates.push(inmate);
-        });
-        stmt.finalize();
+            $(".inmates-table tr").each((idx, elem) => {
+                if (idx === header_row) return;
 
-        console.log(inmates.length);
+                const td = $(elem).find("td");
+                let inmate = parseInmateTd($, td);
+
+                stmt.run(
+                    inmate.firstName,
+                    inmate.middleName,
+                    inmate.lastName,
+                    inmate.age,
+                    inmate.bookingDate,
+                    inmate.releaseDate,
+                    inmate.arrestingAgency,
+                    inmate.charges,
+                    inmate.imgUrl
+                );
+            });
+            stmt.finalize();
+        });
     });
 }
 
 async function main() {
-    const db = new sqlite3.Database("inmates.db");
+    const db = new sqlite3.Database(":memory:");
 
     try {
-        db.serialize(() => {
-            db.run(`
+        await new Promise((resolve, reject) => {
+
+            db.serialize(() => {
+                db.run(`
             CREATE TABLE IF NOT EXISTS Inmates (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 firstName TEXT,
@@ -127,8 +126,10 @@ async function main() {
                 imgUrl TEXT
             )
         `);
-            buildDb(db);
+                resolve();
+            });
         });
+        await buildDb(db);
 
     } catch (err) {
         console.log(err);

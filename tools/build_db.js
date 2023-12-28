@@ -57,62 +57,40 @@ function parseInmateTd($, td) {
     const arrestingAgency = $(td[4]).text().trim();
     const charges = $(td[5]).text().trim();
 
-    let inmate = new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl);
-    console.log("Created: ", inmate);
-
-    return inmate;
+    return new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl);
 }
 
-async function buildDb(db) {
-    return new Promise((resolve, reject) => {
-        // need to build this async logic correctly for the db to be built correctly
-        axios.get(todayInmatesUrl).then(response => {
+async function getInmates(inmateUrl) {
+    return new Promise((resolve) => {
+        const inmates = [];
+        axios.get(inmateUrl).then(response => {
             const html = response.data;
 
             const $ = cheerio.load(html);
 
-            console.log($);
-
             console.log("Parsing inmates...");
             const header_row = 0;
-
-            const stmt = db.prepare(`
-                INSERT INTO Inmates 
-                VALUES
-                (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-            );
 
             $(".inmates-table tr").each((idx, elem) => {
                 if (idx === header_row) return;
 
                 const td = $(elem).find("td");
                 let inmate = parseInmateTd($, td);
-
-                stmt.run(
-                    inmate.firstName,
-                    inmate.middleName,
-                    inmate.lastName,
-                    inmate.age,
-                    inmate.bookingDate,
-                    inmate.releaseDate,
-                    inmate.arrestingAgency,
-                    inmate.charges,
-                    inmate.imgUrl
-                );
+                inmates.push(inmate);
             });
-            stmt.finalize();
+            console.log("Inmates size: ", inmates.length);
+            resolve(inmates);
         });
     });
 }
 
 async function main() {
-    const db = new sqlite3.Database(":memory:");
+    const db = new sqlite3.Database("daily.db");
 
     try {
-        await new Promise((resolve, reject) => {
-
-            db.serialize(() => {
-                db.run(`
+        const inmates = await getInmates(todayInmatesUrl);
+        db.serialize(() => {
+            db.run(`
             CREATE TABLE IF NOT EXISTS Inmates (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 firstName TEXT,
@@ -125,16 +103,35 @@ async function main() {
                 charges TEXT,
                 imgUrl TEXT
             )
-        `);
-                resolve();
+        `
+            );
+            const stmt = db.prepare(`
+                INSERT INTO Inmates 
+                VALUES
+                (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            );
+            inmates.forEach(inmate => {
+                stmt.run(
+                    inmate.firstName,
+                    inmate.middleName,
+                    inmate.lastName,
+                    inmate.age,
+                    inmate.bookingDate,
+                    inmate.releaseDate,
+                    inmate.arrestingAgency,
+                    inmate.charges,
+                    inmate.imgUrl
+                );
+                console.log("Inserting inmate: ", inmate);
             });
+            stmt.finalize();
         });
-        await buildDb(db);
 
     } catch (err) {
         console.log(err);
     } finally {
         db.close();
+        console.log("Finished building db.");
     }
 }
 

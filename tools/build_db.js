@@ -6,9 +6,12 @@ const todayInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comd
 // Requires appending date in format MM/DD/YY
 const datelessInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=";
 
+// Requires appending inmate id (sysid=XX...)
+const baseInmateLink = "https://www.scottcountyiowa.us/sheriff/inmates.php?";
+
 const sleepBetweenRequests = 50; // ms
 class Inmate {
-    constructor(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl) {
+    constructor(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl, inmateUrl) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -18,6 +21,7 @@ class Inmate {
         this.arrestingAgency = arrestingAgency;
         this.charges = charges;
         this.imgUrl = imgUrl;
+        this.inmateUrl = inmateUrl;
     }
 }
 
@@ -74,13 +78,19 @@ function parseInmateTd($, td) {
         imgUrl = "https:" + imgUrl;
     }
 
+    let inmateUrl = $(td[0]).find("a").attr("href");
+    if (inmateUrl && inmateUrl.startsWith("?")) {
+        // Dont duplicate '?' from href
+        inmateUrl = baseInmateLink + inmateUrl.slice(1);
+    }
+
     const age = $(td[1]).text().trim();
     const bookingDate = $(td[2]).text().trim();
     const releaseDate = $(td[3]).text().trim();
     const arrestingAgency = $(td[4]).text().trim();
     const charges = $(td[5]).text().trim();
 
-    return new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl);
+    return new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl, inmateUrl);
 }
 
 function sleep(ms) {
@@ -153,7 +163,7 @@ async function main() {
     //         const stmt = db.prepare(`
     //             INSERT INTO Inmates 
     //             VALUES
-    //             (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    //             (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     //         );
     //         inmates.forEach(inmate => {
     //             stmt.run(
@@ -165,7 +175,8 @@ async function main() {
     //                 inmate.releaseDate,
     //                 inmate.arrestingAgency,
     //                 inmate.charges,
-    //                 inmate.imgUrl
+    //                 inmate.imgUrl,
+    //                 inmate.inmateUrl,
     //             );
     //             console.log("Inserting inmate: ", inmate);
     //         });

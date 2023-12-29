@@ -3,6 +3,10 @@ const cheerio = require("cheerio");
 const sqlite3 = require("sqlite3").verbose();
 
 const todayInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=today";
+// Requires appending date in format MM/DD/YY
+const datelessInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=";
+
+const sleepBetweenRequests = 50; // ms
 class Inmate {
     constructor(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl) {
         this.firstName = firstName;
@@ -31,8 +35,9 @@ function getLast7DaysLocal() {
         const formattedDate = `${month}/${day}/${year}`;
         dates.push(formattedDate);
     }
-    return dates;
+    console.log("Last 7 days: ", dates);
 
+    return dates;
 }
 
 function splitName(fullName) {
@@ -78,6 +83,24 @@ function parseInmateTd($, td) {
     return new Inmate(firstName, middleName, lastName, age, bookingDate, releaseDate, arrestingAgency, charges, imgUrl);
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getInmatesForDates(dateArr) {
+    let inmates = [];
+
+    for (const date of dateArr) {
+        const url = datelessInmatesUrl + date;
+        const inmatesForDate = await getInmates(url);
+        inmates = inmates.concat(inmatesForDate);
+
+        await sleep(sleepBetweenRequests);
+    }
+
+    return inmates;
+}
+
 async function getInmates(inmateUrl) {
     return new Promise((resolve) => {
         const inmates = [];
@@ -103,7 +126,10 @@ async function getInmates(inmateUrl) {
 }
 
 async function main() {
-    console.log(getLast7DaysLocal());
+    let last7Days = getLast7DaysLocal();
+    let last7DaysInmates = await getInmatesForDates(last7Days);
+    console.log(last7DaysInmates);
+    console.log(last7DaysInmates.length);
     // const db = new sqlite3.Database(":memory:");
 
     // try {

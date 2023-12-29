@@ -17,6 +17,24 @@ class Inmate {
     }
 }
 
+function getLast7DaysLocal() {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+
+        // Format the date as 'MM/DD/YY'
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0
+        const year = String(date.getFullYear()).slice(-2); // Get last two digits
+
+        const formattedDate = `${month}/${day}/${year}`;
+        dates.push(formattedDate);
+    }
+    return dates;
+
+}
+
 function splitName(fullName) {
     const parts = fullName.split(" ");
     let firstName, middleName, lastName;
@@ -85,54 +103,55 @@ async function getInmates(inmateUrl) {
 }
 
 async function main() {
-    const db = new sqlite3.Database("daily.db");
+    console.log(getLast7DaysLocal());
+    // const db = new sqlite3.Database(":memory:");
 
-    try {
-        const inmates = await getInmates(todayInmatesUrl);
-        db.serialize(() => {
-            db.run(`
-            CREATE TABLE IF NOT EXISTS Inmates (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                firstName TEXT,
-                middleName TEXT,
-                lastName TEXT,
-                age INTEGER,
-                bookingDate TEXT,
-                releaseDate TEXT,
-                arrestingAgency TEXT,
-                charges TEXT,
-                imgUrl TEXT
-            )
-        `
-            );
-            const stmt = db.prepare(`
-                INSERT INTO Inmates 
-                VALUES
-                (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-            );
-            inmates.forEach(inmate => {
-                stmt.run(
-                    inmate.firstName,
-                    inmate.middleName,
-                    inmate.lastName,
-                    inmate.age,
-                    inmate.bookingDate,
-                    inmate.releaseDate,
-                    inmate.arrestingAgency,
-                    inmate.charges,
-                    inmate.imgUrl
-                );
-                console.log("Inserting inmate: ", inmate);
-            });
-            stmt.finalize();
-        });
+    // try {
+    //     const inmates = await getInmates(todayInmatesUrl);
+    //     db.serialize(() => {
+    //         db.run(`
+    //         CREATE TABLE IF NOT EXISTS Inmates (
+    //             id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //             firstName TEXT,
+    //             middleName TEXT,
+    //             lastName TEXT,
+    //             age INTEGER,
+    //             bookingDate TEXT,
+    //             releaseDate TEXT,
+    //             arrestingAgency TEXT,
+    //             charges TEXT,
+    //             imgUrl TEXT
+    //         )
+    //     `
+    //         );
+    //         const stmt = db.prepare(`
+    //             INSERT INTO Inmates 
+    //             VALUES
+    //             (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    //         );
+    //         inmates.forEach(inmate => {
+    //             stmt.run(
+    //                 inmate.firstName,
+    //                 inmate.middleName,
+    //                 inmate.lastName,
+    //                 inmate.age,
+    //                 inmate.bookingDate,
+    //                 inmate.releaseDate,
+    //                 inmate.arrestingAgency,
+    //                 inmate.charges,
+    //                 inmate.imgUrl
+    //             );
+    //             console.log("Inserting inmate: ", inmate);
+    //         });
+    //         stmt.finalize();
+    //     });
 
-    } catch (err) {
-        console.log(err);
-    } finally {
-        db.close();
-        console.log("Finished building db.");
-    }
+    // } catch (err) {
+    //     console.log(err);
+    // } finally {
+    //     db.close();
+    //     console.log("Finished building db.");
+    // }
 }
 
 main();

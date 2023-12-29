@@ -2,14 +2,7 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const Inmate = require("../models/Inmate");
 
-const todayInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=today";
-// Requires appending date in format MM/DD/YY
-const datelessInmatesUrl = "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=";
-
-// Requires appending inmate id (sysid=XX...)
-const baseInmateLink = "https://www.scottcountyiowa.us/sheriff/inmates.php?";
-
-const sleepBetweenRequests = 50; // ms
+const config = require("../config");
 
 function splitName(fullName) {
     const parts = fullName.split(" ");
@@ -49,7 +42,7 @@ function parseInmateTd($, td) {
     let inmateUrl = $(td[0]).find("a").attr("href");
     if (inmateUrl && inmateUrl.startsWith("?")) {
         // Dont duplicate '?' from href
-        inmateUrl = baseInmateLink + inmateUrl.slice(1);
+        inmateUrl = config.baseInmateLink + inmateUrl.slice(1);
     }
 
     const age = $(td[1]).text().trim();
@@ -69,11 +62,11 @@ async function getInmatesForDates(dateArr) {
     let inmates = [];
 
     for (const date of dateArr) {
-        const url = datelessInmatesUrl + date;
+        const url = config.datelessInmatesUrl + date;
         const inmatesForDate = await getInmates(url);
         inmates = inmates.concat(inmatesForDate);
 
-        await sleep(sleepBetweenRequests);
+        await sleep(config.sleepBetweenRequests);
     }
 
     return inmates;

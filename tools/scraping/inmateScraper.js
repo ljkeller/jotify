@@ -5,7 +5,8 @@ const Inmate = require("../models/Inmate");
 const config = require("../config");
 
 function getAliases(aliasesStr) {
-  if (aliasesStr) {
+  const noAlias = "no alias information";
+  if (aliasesStr && aliasesStr.toLowerCase() !== noAlias) {
     try {
       return aliasesStr
         .split(",")
@@ -102,7 +103,8 @@ async function parseInmateTd($, td) {
     arrestingAgency,
     charges,
     imgUrl,
-    inmateUrl
+    inmateUrl,
+    nameData.aliases
   );
 }
 

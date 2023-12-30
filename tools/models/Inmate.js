@@ -9,7 +9,8 @@ class Inmate {
     arrestingAgency,
     charges,
     imgUrl,
-    inmateUrl
+    inmateUrl,
+    aliases
   ) {
     this.firstName = firstName;
     this.middleName = middleName;
@@ -21,6 +22,7 @@ class Inmate {
     this.charges = charges;
     this.imgUrl = imgUrl;
     this.url = inmateUrl;
+    this.aliases = aliases;
   }
 }
 

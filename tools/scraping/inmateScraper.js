@@ -86,6 +86,12 @@ async function parseInmateTd($, td) {
 
   let nameData = await getInmateNames(inmateUrl);
 
+  if (nameData.firstName === "") {
+    // Only expect this if we are being rate limited or something went wrong on
+    // their end
+    console.log("Error parsing inmate name from URL: ", inmateUrl);
+  }
+
   return new Inmate(
     nameData.firstName,
     nameData.middleName,

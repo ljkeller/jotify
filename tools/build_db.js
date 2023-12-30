@@ -6,7 +6,7 @@ const { getInmatesForDates } = require("./scraping/inmateScraper");
 
 async function main() {
   const dates = getLastNDaysLocal(config.lastNDays);
-  const db = new sqlite3.Database(":memory:");
+  const db = new sqlite3.Database(config.databaseFile);
   try {
     const inmates = await getInmatesForDates(dates);
     db.serialize(() => {

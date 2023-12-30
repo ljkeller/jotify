@@ -8,10 +8,8 @@ const config = {
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
   sleepBetweenRequests: 75, // ms
-
-  databaseFile: "last9days.db",
-
-  lastNDays: 9,
+  databaseFile: ":memory:",
+  lastNDays: 1,
 };
 
 module.exports = config;

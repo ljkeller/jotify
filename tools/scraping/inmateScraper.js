@@ -1,8 +1,8 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const Inmate = require("../models/Inmate");
 
-const config = require("../config");
+const Inmate = require("../models/Inmate");
+const { config } = require("../config");
 
 function getAliases(aliasesStr) {
   const noAlias = "no alias information";

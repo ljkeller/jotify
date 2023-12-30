@@ -1,6 +1,6 @@
 const sqlite3 = require("sqlite3").verbose();
 
-const config = require("./config");
+const { config, tableCreate, tables } = require("./config");
 const { getLastNDaysLocal } = require("./dateUtils");
 const { getInmatesForDates } = require("./scraping/inmateScraper");
 
@@ -10,23 +10,11 @@ async function main() {
   try {
     const inmates = await getInmatesForDates(dates);
     db.serialize(() => {
-      db.run(`
-              CREATE TABLE IF NOT EXISTS Inmates (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  firstName TEXT,
-                  middleName TEXT,
-                  lastName TEXT,
-                  age INTEGER,
-                  bookingDate TEXT,
-                  releaseDate TEXT,
-                  arrestingAgency TEXT,
-                  charges TEXT,
-                  imgUrl TEXT,
-                  url TEXT
-              )
-          `);
+      db.run(tableCreate.inmates);
+      db.run(tableCreate.aliases);
+      db.run(tableCreate.inmateAliasJunction);
       const stmt = db.prepare(`
-                  INSERT INTO Inmates
+                  INSERT INTO ${tables.inmates}
                   VALUES
                   (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
       inmates.forEach((inmate) => {

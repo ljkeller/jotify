@@ -7,9 +7,11 @@ const config = {
   // Requires appending inmate id (sysid=XX...)
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
-  sleepBetweenRequests: 50, // ms
+  sleepBetweenRequests: 25, // ms
 
   databaseFile: ":memory:",
+
+  limitedCrawl: true,
 };
 
 module.exports = config;

@@ -20,7 +20,7 @@ class Inmate {
     this.arrestingAgency = arrestingAgency;
     this.charges = charges;
     this.imgUrl = imgUrl;
-    this.inmateUrl = inmateUrl;
+    this.url = inmateUrl;
   }
 }
 

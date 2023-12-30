@@ -22,7 +22,7 @@ async function main() {
                   arrestingAgency TEXT,
                   charges TEXT,
                   imgUrl TEXT,
-                  inmateUrl TEXT
+                  url TEXT
               )
           `);
       const stmt = db.prepare(`
@@ -40,7 +40,7 @@ async function main() {
           inmate.arrestingAgency,
           inmate.charges,
           inmate.imgUrl,
-          inmate.inmateUrl
+          inmate.url
         );
         console.log("Inserting inmate: ", inmate);
       });

@@ -1,6 +1,7 @@
-function getLast7DaysLocal() {
+// Scott County only officially supports last 7 days of data
+function getLastNDaysLocal(n) {
   const dates = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < n; i++) {
     const date = new Date();
     date.setDate(date.getDate() - i);
 
@@ -12,9 +13,9 @@ function getLast7DaysLocal() {
     const formattedDate = `${month}/${day}/${year}`;
     dates.push(formattedDate);
   }
-  console.log("Last 7 days: ", dates);
+  console.log("Last n days: ", dates);
 
   return dates;
 }
 
-module.exports = { getLast7DaysLocal };
+module.exports = { getLastNDaysLocal };

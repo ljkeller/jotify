@@ -1,19 +1,11 @@
 const sqlite3 = require("sqlite3").verbose();
 
 const config = require("./config");
-const { getLast7DaysLocal } = require("./dateUtils");
-const {
-  getInmatesForDates,
-  getInmateNames,
-} = require("./scraping/inmateScraper");
-
-const url =
-  "https://www.scottcountyiowa.us/sheriff/inmates.php?sysid=21799142502689";
+const { getLastNDaysLocal } = require("./dateUtils");
+const { getInmatesForDates } = require("./scraping/inmateScraper");
 
 async function main() {
-  console.log(await getInmateNames(url));
-
-  const dates = config.limitedCrawl ? ["today"] : getLast7DaysLocal();
+  const dates = getLastNDaysLocal(config.lastNDays);
   const db = new sqlite3.Database(":memory:");
   try {
     const inmates = await getInmatesForDates(dates);

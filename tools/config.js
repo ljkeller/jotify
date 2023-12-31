@@ -37,7 +37,7 @@ const tableCreate = {
   aliases: `
     CREATE TABLE IF NOT EXISTS ${tables.aliases} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      alias TEXT UNIQUE NOT NULL CHECK (alias <> '')
+      alias TEXT
     )
   `,
   inmateAliasJunction: `

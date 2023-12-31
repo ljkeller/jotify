@@ -4,90 +4,66 @@ const { config, tableCreate, tables } = require("./config");
 const { getLastNDaysLocal } = require("./dateUtils");
 const { getInmatesForDates } = require("./scraping/inmateScraper");
 
+function setupDbCloseConditions(db) {
+  process.on("exit", () => db.close());
+  process.on("SIGHUP", () => process.exit(128 + 1));
+  process.on("SIGINT", () => process.exit(128 + 2));
+  process.on("SIGTERM", () => process.exit(128 + 15));
+}
+
 async function main() {
   const dates = getLastNDaysLocal(config.lastNDays);
+
   const db = new Database(config.databaseFile, { verbose: console.log });
-  // db.serialize();
+  setupDbCloseConditions(db);
+
   try {
     const inmates = await getInmatesForDates(dates);
-    // db.serialize(function () {
-    // db.run(tableCreate.inmates);
-    // db.run(tableCreate.aliases);
-    // db.run(tableCreate.inmateAliasJunction);
+    db.prepare(tableCreate.inmates).run();
+    db.prepare(tableCreate.aliases).run();
+    db.prepare(tableCreate.inmateAliasJunction).run();
 
     for (const inmate of inmates) {
-      //   let inmateId, aliasId;
+      let inmateId, aliasId, lastStatementInfo;
 
-      //   const inmateHandle = await run(db, `
-      //   INSERT INTO ${tables.inmates}
-      //   VALUES
-      //   (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      // `, [inmate.firstName,
-      //   inmate.middleName,
-      //   inmate.lastName,
-      //   inmate.age,
-      //   inmate.bookingDate,
-      //   inmate.releaseDate,
-      //   inmate.arrestingAgency,
-      //   inmate.charges,
-      //   inmate.imgUrl,
-      //   inmate.url]);
+      lastStatementInfo = db.prepare(`
+        INSERT INTO ${tables.inmates}
+        VALUES
+        (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run([inmate.firstName,
+      inmate.middleName,
+      inmate.lastName,
+      inmate.age,
+      inmate.bookingDate,
+      inmate.releaseDate,
+      inmate.arrestingAgency,
+      inmate.charges,
+      inmate.imgUrl,
+      inmate.url]);
 
-      //   console.log(inmateHandle);
-      //   console.log(inmateHandle.lastID);
+      if (lastStatementInfo.changes < 1) {
+        console.error("ERROR: Inmate insert didn't append new row?");
+        continue;
+      }
 
-      // await db.run(`
-      //     INSERT INTO ${tables.inmates}
-      //     VALUES
-      //     (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      //   `, [inmate.firstName,
-      // inmate.middleName,
-      // inmate.lastName,
-      // inmate.age,
-      // inmate.bookingDate,
-      // inmate.releaseDate,
-      // inmate.arrestingAgency,
-      // inmate.charges,
-      // inmate.imgUrl,
-      // inmate.url],
-      //   async function (err) {
-      //     inmateId = this.lastID;
-      //     // db.serialize(function () {
-      //     if (err) {
-      //       console.log(err);
-      //       return;
-      //     }
+      inmateId = lastStatementInfo.lastInsertRowid;
+      console.log(`Inserted inmate at rowId: ${inmateId}`);
 
-      //     console.log("Inserted inmate: ", inmate);
-      //     console.log("inmateId: ", inmateId);
-      //     console.log("rows affected: ", this.changes);
+      let aliasStatement = db.prepare(`
+        INSERT INTO ${tables.aliases}
+        VALUES
+        (NULL, ?)
+      `)
+      for (const alias of inmate.aliases) {
+        lastStatementInfo = aliasStatement.run(alias);
 
-      //     for (const alias of inmate.aliases) {
-      //       console.log(alias)
-      //       await db.run(`
-      //             INSERT INTO ${tables.aliases}
-      //             VALUES
-      //             (NULL, ?)
-      //           `,
-      //         alias,
-      //         function (err) {
-      //           if (err) {
-      //             console.log(err);
-      //             console.log("Failure for alias: ", alias);
-      //             console.log("Failure for aliasId: ", aliasId);
-      //             return;
-      //           }
-
-      //           aliasId = this.lastID;
-      //           console.log("Inserted alias: ", alias);
-      //           console.log("Inserted aliasId: ", aliasId);
-      //         }
-      //       )
-      //     }
-      //     // });
-      //   });
+        if (lastStatementInfo.changes < 1) {
+          console.error("ERROR: Alias insert didn't append new row?");
+        }
+        aliasId = lastStatementInfo.lastInsertRowid;
+        console.log(`Inserted alias at rowId: ${aliasId}`);
+      }
     }
-    // });
   } catch (err) {
     console.log(err);
   } finally {

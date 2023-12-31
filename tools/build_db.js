@@ -35,31 +35,50 @@ function insertInmate(db, inmate) {
 }
 
 function insertAliases(db, aliases, inmateId) {
-  let aliasId, lastStatementInfo;
+  let lastStatementInfo;
 
-  let aliasStatement = db.prepare(`
+  let aliasInsert = db.prepare(`
         INSERT INTO ${tables.aliases}
         VALUES
         (NULL, ?)
   `)
-  let aliasInmateJunctionStatement = db.prepare(`
+  let aliasInmateJunctionInsert = db.prepare(`
         INSERT INTO ${tables.inmateAliasJunction}
         VALUES
         (?, ?)
   `)
+  let aliasGet = db.prepare(`
+    SELECT id FROM ${tables.aliases}
+    WHERE alias = ?
+  `)
 
   for (const alias of aliases) {
+    let aliasId = null;
     try {
-      lastStatementInfo = aliasStatement.run(alias);
+      let row = aliasGet.get(alias);
+      if (row !== undefined) {
+        console.log("Found duplicate alias. ID: ", row.id);
+        aliasId = row.id;
+      }
     } catch (err) {
       console.error(err);
       continue;
     }
-    aliasId = lastStatementInfo.lastInsertRowid;
-    console.log(`Inserted alias at rowId: ${aliasId}`);
+
+    // alias already in alias table
+    if (aliasId === null) {
+      try {
+        lastStatementInfo = aliasInsert.run(alias);
+      } catch (err) {
+        console.error(err);
+        continue;
+      }
+      aliasId = lastStatementInfo.lastInsertRowid;
+      console.log(`Inserted alias at rowId: ${aliasId}`);
+    }
 
     try {
-      lastStatementInfo = aliasInmateJunctionStatement.run(inmateId, aliasId);
+      lastStatementInfo = aliasInmateJunctionInsert.run(inmateId, aliasId);
     } catch (err) {
       console.error(err);
       continue;

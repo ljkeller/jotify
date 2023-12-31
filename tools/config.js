@@ -44,8 +44,8 @@ const tableCreate = {
     CREATE TABLE IF NOT EXISTS ${tables.inmateAliasJunction} (
       inmate_id INTEGER NOT NULL,
       alias_id INTEGER NOT NULL,
-      FOREIGN KEY (inmate_id) REFERENCES inmates(inmate_id),
-      FOREIGN KEY (alias_id) REFERENCES aliases(alias_id),
+      FOREIGN KEY (inmate_id) REFERENCES inmates(id),
+      FOREIGN KEY (alias_id) REFERENCES aliases(id),
       PRIMARY KEY (inmate_id, alias_id)
     )
   `,

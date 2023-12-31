@@ -11,6 +11,65 @@ function setupDbCloseConditions(db) {
   process.on("SIGTERM", () => process.exit(128 + 15));
 }
 
+function createTables(db) {
+  db.prepare(tableCreate.inmates).run();
+  db.prepare(tableCreate.aliases).run();
+  db.prepare(tableCreate.inmateAliasJunction).run();
+}
+
+function insertInmate(db, inmate) {
+  return db.prepare(`
+        INSERT INTO ${tables.inmates}
+        VALUES
+        (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run([inmate.firstName,
+  inmate.middleName,
+  inmate.lastName,
+  inmate.age,
+  inmate.bookingDate,
+  inmate.releaseDate,
+  inmate.arrestingAgency,
+  inmate.charges,
+  inmate.imgUrl,
+  inmate.url]);
+}
+
+function insertAliases(db, aliases, inmateId) {
+  let aliasId, lastStatementInfo;
+
+  let aliasStatement = db.prepare(`
+        INSERT INTO ${tables.aliases}
+        VALUES
+        (NULL, ?)
+  `)
+  let aliasInmateJunctionStatement = db.prepare(`
+        INSERT INTO ${tables.inmateAliasJunction}
+        VALUES
+        (?, ?)
+  `)
+
+  for (const alias of aliases) {
+    try {
+      lastStatementInfo = aliasStatement.run(alias);
+    } catch (err) {
+      console.error(err);
+      continue;
+    }
+    aliasId = lastStatementInfo.lastInsertRowid;
+    console.log(`Inserted alias at rowId: ${aliasId}`);
+
+    try {
+      lastStatementInfo = aliasInmateJunctionStatement.run(inmateId, aliasId);
+    } catch (err) {
+      console.error(err);
+      continue;
+    }
+    if (lastStatementInfo.changes < 1) {
+      console.error(`ERROR: inmate-alias relationship didn't insert to junction table correctly? ${inmateId}-${aliasId}`);
+    }
+  }
+}
+
 async function main() {
   const dates = getLastNDaysLocal(config.lastNDays);
 
@@ -19,50 +78,16 @@ async function main() {
 
   try {
     const inmates = await getInmatesForDates(dates);
-    db.prepare(tableCreate.inmates).run();
-    db.prepare(tableCreate.aliases).run();
-    db.prepare(tableCreate.inmateAliasJunction).run();
+    createTables(db);
 
     for (const inmate of inmates) {
-      let inmateId, aliasId, lastStatementInfo;
+      let inmateId, lastStatementInfo;
 
-      lastStatementInfo = db.prepare(`
-        INSERT INTO ${tables.inmates}
-        VALUES
-        (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run([inmate.firstName,
-      inmate.middleName,
-      inmate.lastName,
-      inmate.age,
-      inmate.bookingDate,
-      inmate.releaseDate,
-      inmate.arrestingAgency,
-      inmate.charges,
-      inmate.imgUrl,
-      inmate.url]);
-
-      if (lastStatementInfo.changes < 1) {
-        console.error("ERROR: Inmate insert didn't append new row?");
-        continue;
-      }
-
+      lastStatementInfo = insertInmate(db, inmate);
       inmateId = lastStatementInfo.lastInsertRowid;
       console.log(`Inserted inmate at rowId: ${inmateId}`);
 
-      let aliasStatement = db.prepare(`
-        INSERT INTO ${tables.aliases}
-        VALUES
-        (NULL, ?)
-      `)
-      for (const alias of inmate.aliases) {
-        lastStatementInfo = aliasStatement.run(alias);
-
-        if (lastStatementInfo.changes < 1) {
-          console.error("ERROR: Alias insert didn't append new row?");
-        }
-        aliasId = lastStatementInfo.lastInsertRowid;
-        console.log(`Inserted alias at rowId: ${aliasId}`);
-      }
+      insertAliases(db, inmate.aliases, inmateId);
     }
   } catch (err) {
     console.log(err);

@@ -13,26 +13,33 @@ async function main() {
       db.run(tableCreate.inmates);
       db.run(tableCreate.aliases);
       db.run(tableCreate.inmateAliasJunction);
-      const stmt = db.prepare(`
-                  INSERT INTO ${tables.inmates}
-                  VALUES
-                  (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-      inmates.forEach((inmate) => {
-        stmt.run(
-          inmate.firstName,
-          inmate.middleName,
-          inmate.lastName,
-          inmate.age,
-          inmate.bookingDate,
-          inmate.releaseDate,
-          inmate.arrestingAgency,
-          inmate.charges,
-          inmate.imgUrl,
-          inmate.url
-        );
-        console.log("Inserting inmate: ", inmate);
-      });
-      stmt.finalize();
+
+      for (const inmate of inmates) {
+        db.run(`
+          INSERT INTO ${tables.inmates}
+          VALUES
+          (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [inmate.firstName,
+        inmate.middleName,
+        inmate.lastName,
+        inmate.age,
+        inmate.bookingDate,
+        inmate.releaseDate,
+        inmate.arrestingAgency,
+        inmate.charges,
+        inmate.imgUrl,
+        inmate.url],
+          function (err) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+
+            console.log("Inserted inmate: ", inmate);
+            console.log("inmateId: ", this.lastID);
+            console.log("rows affected: ", this.changes);
+          });
+      }
     });
   } catch (err) {
     console.log(err);

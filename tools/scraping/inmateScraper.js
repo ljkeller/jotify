@@ -127,9 +127,14 @@ async function getInmatesForDates(dateArr) {
 
   for (const date of dateArr) {
     const url = config.datelessInmatesUrl + date;
-    const inmatesForDate = await getInmates(url);
-    inmates = inmates.concat(inmatesForDate);
+    let inmatesForDate;
+    try {
+      inmatesForDate = await getInmates(url);
+    } catch (err) {
+      console.error(err);
+    }
 
+    inmates = inmates.concat(inmatesForDate);
     await sleep(config.sleepBetweenRequests);
   }
 
@@ -148,7 +153,7 @@ async function getInmates(inmateUrl) {
         console.log(`We are being redireted. Retrying in ${delay}ms.`);
         console.log(response.data);
         await sleep(delay);
-        return attemptRequest(url, attempt + 1);
+        return await attemptRequest(url, attempt + 1);
       } else if (attempt > maxAttempts) {
         throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
       }
@@ -158,7 +163,7 @@ async function getInmates(inmateUrl) {
       if (attempt <= maxAttempts) {
         console.log(`Request failed on attempt ${attempt}. Retrying in ${delay}ms.`);
         await sleep(delay);
-        return attemptRequest(url, attempt + 1);
+        return await attemptRequest(url, attempt + 1);
       } else {
         throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
       }

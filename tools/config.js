@@ -8,8 +8,8 @@ const config = {
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
   sleepBetweenRequests: 125, // ms
-  databaseFile: "last7days_with_aliases.db",
-  lastNDays: 7,
+  databaseFile: ":memory:",
+  lastNDays: 1,
 };
 
 const tables = {
@@ -26,8 +26,7 @@ const tableCreate = {
       middle_name TEXT,
       last_name TEXT NOT NULL CHECK (last_name <> ''),
       age INTEGER,
-      booking_date TEXT,
-      release_date TEXT,
+      booking_date TEXT NOT NULL,
       arresting_agency TEXT,
       charges TEXT,
       imgUrl TEXT,

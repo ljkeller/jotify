@@ -3,6 +3,7 @@ const cheerio = require("cheerio");
 
 const Inmate = require("../models/Inmate");
 const { config } = require("../config");
+const { scilDateTimeToIso8601 } = require("../dateUtils");
 
 function getAliases(aliasesStr) {
   const noAlias = "no alias information";
@@ -55,7 +56,7 @@ async function getInmateNames(inmateUrl) {
   return inmateData;
 }
 
-async function parseInmateTd($, td) {
+async function buildInmateFromTd($, td) {
   // Example row:
   // <tr>
   //     <th>Inmate Name (last, first, middle)</th>
@@ -66,6 +67,7 @@ async function parseInmateTd($, td) {
   //     <th>Charges</th>
   // </tr>
 
+  // TODO: Download and blob
   let imgUrl = $(td[0]).find("img").attr("src");
   if (imgUrl && imgUrl.startsWith("//")) {
     imgUrl = "https:" + imgUrl;
@@ -78,11 +80,9 @@ async function parseInmateTd($, td) {
   }
 
   const age = $(td[1]).text().trim();
-  // TODO: We should use datetimes
-  const bookingDate = $(td[2]).text().trim();
-  const releaseDate = $(td[3]).text().trim();
+  const bookingDateIso8601 = scilDateTimeToIso8601($(td[2]).text().trim());
   const arrestingAgency = $(td[4]).text().trim();
-  // TODO: Normalize charges
+  // TODO: Do we want to normalize charges ?
   const charges = $(td[5]).text().trim();
 
   let nameData = await getInmateNames(inmateUrl);
@@ -108,8 +108,7 @@ async function parseInmateTd($, td) {
     nameData.middleName,
     nameData.lastName,
     age,
-    bookingDate,
-    releaseDate,
+    bookingDateIso8601,
     arrestingAgency,
     charges,
     imgUrl,
@@ -184,7 +183,7 @@ async function getInmates(inmateUrl) {
 
     let inmate = null;
     try {
-      inmate = await parseInmateTd($, td);
+      inmate = await buildInmateFromTd($, td);
     } catch (err) {
       console.error(err);
     }

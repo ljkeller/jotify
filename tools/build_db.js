@@ -21,13 +21,12 @@ function insertInmate(db, inmate) {
   return db.prepare(`
         INSERT INTO ${tables.inmates}
         VALUES
-        (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run([inmate.firstName,
   inmate.middleName,
   inmate.lastName,
   inmate.age,
   inmate.bookingDate,
-  inmate.releaseDate,
   inmate.arrestingAgency,
   inmate.charges,
   inmate.imgUrl,

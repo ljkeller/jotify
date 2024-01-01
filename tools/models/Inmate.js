@@ -5,7 +5,6 @@ class Inmate {
     lastName,
     age,
     bookingDate,
-    releaseDate,
     arrestingAgency,
     charges,
     imgUrl,
@@ -17,7 +16,6 @@ class Inmate {
     this.lastName = lastName;
     this.age = age;
     this.bookingDate = bookingDate;
-    this.releaseDate = releaseDate;
     this.arrestingAgency = arrestingAgency;
     this.charges = charges;
     this.imgUrl = imgUrl;

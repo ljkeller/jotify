@@ -7,7 +7,7 @@ class Inmate {
     bookingDate,
     arrestingAgency,
     charges,
-    imgUrl,
+    imgBlob,
     inmateUrl,
     aliases
   ) {
@@ -18,7 +18,7 @@ class Inmate {
     this.bookingDate = bookingDate;
     this.arrestingAgency = arrestingAgency;
     this.charges = charges;
-    this.imgUrl = imgUrl;
+    this.imgBlob = imgBlob;
     this.url = inmateUrl;
     this.aliases = aliases;
   }

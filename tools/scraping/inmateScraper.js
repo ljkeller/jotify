@@ -56,6 +56,47 @@ async function getInmateNames(inmateUrl) {
   return inmateData;
 }
 
+async function getImgBlob(imgUrl) {
+  if (!imgUrl) {
+    return null;
+  }
+
+  async function attemptRequest(url, attempt = 1) {
+    const maxAttempts = 3;
+    const delay_mS = Math.pow(2, attempt) * 1000; // Exponential delay (2^attempt seconds)
+    console.log("Attempt: ", attempt);
+
+    try {
+
+      if (attempt > maxAttempts) {
+        throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
+      }
+      return await axios.get(imgUrl, {
+        responseType: "arraybuffer",
+      });
+
+    } catch (error) {
+      if (attempt <= maxAttempts) {
+        console.log(`Request failed on attempt ${attempt}. Retrying in ${delay_mS}ms.`);
+        console.log("Request url: ", imgUrl);
+        await sleep(delay_mS);
+        return await attemptRequest(url, attempt + 1);
+      } else {
+        console.error(error);
+        throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
+      }
+    }
+  }
+
+  // Maybe we should make a global rate limiter?
+  // Really wish we could just have a static function wrapping axios.get
+  await sleep(config.sleepBetweenRequests);
+  const reponse = await attemptRequest(imgUrl);
+  console.log("Successfully fetched image blob: ");
+
+  return reponse.data;
+}
+
 async function buildInmateFromTd($, td) {
   // Example row:
   // <tr>
@@ -72,6 +113,8 @@ async function buildInmateFromTd($, td) {
   if (imgUrl && imgUrl.startsWith("//")) {
     imgUrl = "https:" + imgUrl;
   }
+  console.log("imgUrl: ", imgUrl);
+  const imgBlob = await getImgBlob(imgUrl);
 
   let inmateUrl = $(td[0]).find("a").attr("href");
   if (inmateUrl && inmateUrl.startsWith("?")) {
@@ -111,7 +154,7 @@ async function buildInmateFromTd($, td) {
     bookingDateIso8601,
     arrestingAgency,
     charges,
-    imgUrl,
+    imgBlob,
     inmateUrl,
     nameData.aliases
   );
@@ -143,15 +186,15 @@ async function getInmatesForDates(dateArr) {
 async function getInmates(inmateUrl) {
   async function attemptRequest(url, attempt = 1) {
     const maxAttempts = 3;
-    const delay = Math.pow(2, attempt) * 1000; // Exponential delay (2^attempt seconds)
+    const delay_mS = Math.pow(2, attempt) * 1000; // Exponential delay (2^attempt seconds)
 
     try {
       const response = await axios.get(url);
 
       if (response.data.includes("You are being redirected...") && attempt <= maxAttempts) {
-        console.log(`We are being redireted. Retrying in ${delay}ms.`);
+        console.log(`We are being redireted. Retrying in ${delay_mS}ms.`);
         console.log(response.data);
-        await sleep(delay);
+        await sleep(delay_mS);
         return await attemptRequest(url, attempt + 1);
       } else if (attempt > maxAttempts) {
         throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
@@ -160,10 +203,12 @@ async function getInmates(inmateUrl) {
 
     } catch (error) {
       if (attempt <= maxAttempts) {
-        console.log(`Request failed on attempt ${attempt}. Retrying in ${delay}ms.`);
-        await sleep(delay);
+        console.log(`Request failed on attempt ${attempt}. Retrying in ${delay_mS}ms.`);
+        console.log("Request url: ", url);
+        await sleep(delay_mS);
         return await attemptRequest(url, attempt + 1);
       } else {
+        console.error(error);
         throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
       }
     }

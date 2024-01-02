@@ -29,7 +29,7 @@ function insertInmate(db, inmate) {
   inmate.bookingDate,
   inmate.arrestingAgency,
   inmate.charges,
-  inmate.imgUrl,
+  inmate.imgBlob,
   inmate.url]);
 }
 
@@ -101,6 +101,7 @@ async function main() {
     for (const inmate of inmates) {
       let inmateId, lastStatementInfo;
 
+      // TODO: if inmate img is null, should we make a request to our scrape endpoint to get imgs later?
       lastStatementInfo = insertInmate(db, inmate);
       inmateId = lastStatementInfo.lastInsertRowid;
       console.log(`Inserted inmate at rowId: ${inmateId}`);

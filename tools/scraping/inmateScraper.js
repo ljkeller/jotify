@@ -64,7 +64,6 @@ async function getImgBlob(imgUrl) {
   async function attemptRequest(url, attempt = 1) {
     const maxAttempts = 3;
     const delay_mS = Math.pow(2, attempt) * 1000; // Exponential delay (2^attempt seconds)
-    console.log("Attempt: ", attempt);
 
     try {
 
@@ -92,7 +91,6 @@ async function getImgBlob(imgUrl) {
   // Really wish we could just have a static function wrapping axios.get
   await sleep(config.sleepBetweenRequests);
   const reponse = await attemptRequest(imgUrl);
-  console.log("Successfully fetched image blob: ");
 
   return reponse.data;
 }
@@ -113,7 +111,6 @@ async function buildInmateFromTd($, td) {
   if (imgUrl && imgUrl.startsWith("//")) {
     imgUrl = "https:" + imgUrl;
   }
-  console.log("imgUrl: ", imgUrl);
   const imgBlob = await getImgBlob(imgUrl);
 
   let inmateUrl = $(td[0]).find("a").attr("href");

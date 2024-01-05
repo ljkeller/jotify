@@ -1,3 +1,5 @@
+import { ibm_plex } from '/app/ui/fonts';
+
 export const metadata = {
   title: 'Jotify.io',
   description: 'The Scott County inmate library',
@@ -6,7 +8,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${ibm_plex}`}>{children}</body>
     </html>
   )
 }

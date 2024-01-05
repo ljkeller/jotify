@@ -1,4 +1,4 @@
-import { ibm_plex } from '/app/ui/fonts';
+import { m_plus_2 } from '/app/ui/fonts';
 
 export const metadata = {
   title: 'Jotify.io',
@@ -8,7 +8,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${ibm_plex}`}>{children}</body>
+      <body className={`${m_plus_2.className}`}>{children}</body>
     </html>
   )
 }

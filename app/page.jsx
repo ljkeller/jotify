@@ -1,9 +1,10 @@
+import styles from '../styles/Home.module.css'
+import Image from 'next/image';
 import Database from 'better-sqlite3';
 
 import Inmate from '../tools/models/Inmate';
 import { tables } from '../tools/config';
 
-import styles from '../styles/Home.module.css'
 
 export default function Home() {
   return (
@@ -20,6 +21,27 @@ export default function Home() {
         </div>
 
         <div className={styles.icons}>
+          <Image
+            src='/in1.jpg'
+            width={200}
+            height={250}
+            className={`${styles.iconImage} hidden md:block`}
+            alt="sample inmate"
+          />
+          <Image
+            src='/in2.jpg'
+            width={200}
+            height={250}
+            className={`${styles.iconImage} hidden md:block`}
+            alt="sample inmate"
+          />
+          <Image
+            src='/in3.jpg'
+            width={200}
+            height={250}
+            className={`${styles.iconImage} hidden md:block`}
+            alt="sample inmate"
+          />
         </div>
       </main>
 

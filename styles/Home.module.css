@@ -22,7 +22,7 @@
 .title {
     margin: 0;
     line-height: 1.15;
-    font-size: 4rem;
+    font-size: 5rem;
 
     font-style: bold;
     text-align: center;
@@ -59,6 +59,20 @@
 
 .icons {
     margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.iconImage {
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s;
+}
+
+.iconImage:hover {
+    transform: scale(1.1);
 }
 
 .footer {

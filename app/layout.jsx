@@ -1,5 +1,7 @@
 import { m_plus_2 } from '/app/ui/fonts';
 
+import '/app/ui/global.css';
+
 export const metadata = {
   title: 'Jotify.io',
   description: 'The Scott County inmate library',

@@ -1,0 +1,35 @@
+.table {
+    border-collapse: collapse;
+    background-color: #0d0d0d;
+}
+
+.dayCell {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #343434;
+    transition: background-color 0.5s;
+}
+
+.dayCell:hover {
+    border: 1px solid #ffffff;
+}
+
+.none {
+    background-color: #262626;
+}
+
+.low {
+    background-color: #3f3c6b;
+}
+
+.medium {
+    background-color: #5a3c6b;
+}
+
+.high {
+    background-color: #7b3c6b;
+}
+
+.veryHigh {
+    background-color: #9c3c6b;
+}

@@ -23,6 +23,8 @@
     margin: 0;
     line-height: 1.15;
     font-size: 4rem;
+
+    font-style: bold;
     text-align: center;
     color: #7d7bff;
 }

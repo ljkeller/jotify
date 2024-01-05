@@ -11,7 +11,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to Jotify.io
+          jotify.io
         </h1>
 
         <div className={styles.search}>

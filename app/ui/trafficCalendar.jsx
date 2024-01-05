@@ -1,6 +1,6 @@
 import styles from '/styles/Last7Days.module.css';
 
-export default function last7Days({ inmateTraffic7Days }) {
+export default function TrafficCalendar({ inmateTraffic7Days }) {
     const getColor = (amount) => {
         if (amount > 25) return styles.veryHigh;
         if (amount > 15) return styles.high;
@@ -12,12 +12,12 @@ export default function last7Days({ inmateTraffic7Days }) {
     return (
         <table className={styles.table}>
             <tbody>
-                <tr>
-                    {inmateTraffic7Days.map((amount, index) => (
+                <tr className={styles.row}>
+                    {inmateTraffic7Days.map((day, index) => (
                         <td
                             key={index}
-                            className={`${getColor(amount)} ${styles.dayCell}`}
-                            title={`Traffic: ${amount}%`}
+                            className={`${getColor(day.inmateCount)} ${styles.dayCell}`}
+                            title={`${day.inmateCount} inmates on ${day.date}`}
                         />))}
                 </tr>
             </tbody>

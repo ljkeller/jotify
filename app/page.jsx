@@ -4,11 +4,19 @@ import Database from 'better-sqlite3';
 
 import Inmate from '../tools/models/Inmate';
 import { tables } from '../tools/config';
-import Last7Days from './ui/last7days';
+import TrafficCalendar from './ui/trafficCalendar';
 
 
 export default function Home() {
-  const trafficLast7Days = [10, 14, 23, 21, 16, 18, 21];
+  const trafficLast7Days = [
+    { date: "1/1/24", inmateCount: 13 },
+    { date: "1/2/24", inmateCount: 16 },
+    { date: "1/3/24", inmateCount: 19 },
+    { date: "1/4/24", inmateCount: 26 },
+    { date: "1/5/24", inmateCount: 23 },
+    { date: "1/6/24", inmateCount: 19 },
+    { date: "1/7/24", inmateCount: 16 },
+  ];
 
   return (
     <div className={styles.container}>
@@ -23,8 +31,8 @@ export default function Home() {
           <button>Search</button>
         </div>
 
-        <div className={styles.grid7days}>
-          <Last7Days inmateTraffic7Days={trafficLast7Days} />
+        <div className={styles.grid7Days}>
+          <TrafficCalendar inmateTraffic7Days={trafficLast7Days} />
         </div>
 
         <div className={styles.icons}>

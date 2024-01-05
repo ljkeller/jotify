@@ -1,12 +1,16 @@
 .table {
-    border-collapse: collapse;
     background-color: #0d0d0d;
 }
 
+.row {
+    display: table-row;
+    border-spacing: 3px;
+}
+
 .dayCell {
-    width: 20px;
-    height: 20px;
+    padding: 1.5rem;
     border: 1px solid #343434;
+    border-radius: 3px;
     transition: background-color 0.5s;
 }
 

@@ -2,14 +2,15 @@ html,
 body {
     padding: 0;
     margin: 0;
-    background-color: var(--tertiary-color);
-    color: var(--quinary-color);
+    background-color: var(--background-color-one);
+    color: var(--primary-color);
 }
 
 :root {
-    --primary-color: #525CEB;
-    --secondary-color: #F8EDFF;
-    --tertiary-color: #3D3B40;
-    --quaternary-color: #BFCFE7;
-    --quinary-color: #fff;
+    --primary-color: #56ff80;
+    --complementary-color: #ff56d5;
+    --text-light: #e7e7e7;
+    --text-dark: #000000;
+    --background-color-one: #000000;
+    --background-color-two: #1b1b1b;
 }

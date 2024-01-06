@@ -23,7 +23,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          jotify.io
+          scjail.io
         </h1>
 
         <div className={styles.search}>

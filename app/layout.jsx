@@ -4,7 +4,7 @@ import Header from '/app/ui/header';
 import '/app/ui/global.css';
 
 export const metadata = {
-  title: 'Jotify.io',
+  title: 'scjail.io',
   description: 'The Scott County inmate library',
 }
 

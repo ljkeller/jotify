@@ -6,7 +6,7 @@ export default function Header() {
         <header className={styles.header}>
             <nav className={styles.navbar}>
                 <Link href="/" className={styles.logo}>
-                    jotify.io
+                    scjail.io
                 </Link>
                 <div className={styles.links}>
                     <Link href="/disclaimer" className={styles.link}>

@@ -9,7 +9,7 @@ export default function Feedback() {
                 <p>Note:</p>
                 <ul>
                     <li>Ignore the text in <span className={styles.filterColor}>this color</span></li>
-                    <li>Dont forget to update the text in <span className={styles.replaceMe}>this color</span></li>
+                    <li>Dont forget to update the text in <span className={styles.replaceMe}>this color</span> and remove spaces</li>
                 </ul>
                 <div className={styles.inbox}>
                     <p className={styles.reverseMe}>cs</p>

@@ -28,6 +28,10 @@
     color: var(--primary-color);
 }
 
+.complementary {
+    color: var(--complementary-color);
+}
+
 .search {
     margin-top: 2rem;
 }

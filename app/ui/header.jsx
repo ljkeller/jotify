@@ -5,8 +5,9 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <nav className={styles.navbar}>
-                <Link href="/" className={styles.logo}>
-                    scjail.io
+                <Link className={styles.logo} href="/">
+                    <span className={styles.complementary}>sc</span>
+                    jail.io
                 </Link>
                 <div className={styles.links}>
                     <Link href="/disclaimer" className={styles.link}>
@@ -17,6 +18,6 @@ export default function Header() {
                     </Link>
                 </div>
             </nav>
-        </header>
+        </header >
     );
 }

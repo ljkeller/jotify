@@ -18,7 +18,13 @@
     text-decoration: none;
 }
 
+.complementary {
+    color: var(--complementary-color);
+}
+
+/* Make sure to change color of <sc> and <jail.io> when either are hovered! */
 .logo:hover,
+.logo:hover .complementary,
 .link:hover {
     color: var(--text-light);
 }

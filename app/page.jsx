@@ -23,7 +23,8 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          scjail.io
+          <span className={styles.complementary}>sc</span>
+          <span>jail.io</span>
         </h1>
 
         <div className={styles.search}>

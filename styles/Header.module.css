@@ -18,17 +18,19 @@
     text-decoration: none;
 }
 
-.logo:hover {
-    color: var(--quaternary-color);
+.logo:hover,
+.link:hover {
+    color: var(--text-light);
 }
 
 .links {
-    text-decoration: none;
-    margin-left: 2rem;
-    padding: 0.5rem;
-    transition: color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.links p:hover {
-    color: var(--quaternary-color);
+.link {
+    text-decoration: none;
+    color: var(--text-shadow);
+    margin: 10px;
 }

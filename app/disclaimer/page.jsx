@@ -7,7 +7,7 @@ export default function Disclaimer() {
     return (
         <div className={`${m_plus_2.className} ${styles.container}`}>
             <div className={`${styles.disclaimer}`}>
-                <h2>Disclaimer:</h2>
+                <h2 className={styles.header}>Disclaimer:</h2>
                 <p>All data and information provided on this site is for informational purposes only.
                     jotify.io makes no representations as to accuracy, completeness, currentness, suitability, or validity of any information on this site and will not be liable for any errors, omissions, or delays in this information or any losses, injuries, or damages arising from its display or use.
 
@@ -20,8 +20,6 @@ export default function Disclaimer() {
 
                 <b>Remember: innocent until proven guilty.</b>
             </div >
-            <footer className={styles.footer}>
-            </footer>
         </div>
 
     );

@@ -5,15 +5,15 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <nav className={styles.navbar}>
-                <Link href="/">
-                    <p className={styles.logo}>jotify.io</p>
+                <Link href="/" className={styles.logo}>
+                    jotify.io
                 </Link>
                 <div className={styles.links}>
-                    <Link href="/disclaimer">
-                        <p>Disclaimer</p>
+                    <Link href="/disclaimer" className={styles.link}>
+                        Disclaimer
                     </Link>
-                    <Link href="/contact">
-                        <p>Contact</p>
+                    <Link href="/contact" className={styles.link}>
+                        Contact
                     </Link>
                 </div>
             </nav>

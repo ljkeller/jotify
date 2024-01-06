@@ -12,8 +12,8 @@ export default function Header() {
                     <Link href="/disclaimer" className={styles.link}>
                         Disclaimer
                     </Link>
-                    <Link href="/contact" className={styles.link}>
-                        Contact
+                    <Link href="/feedback" className={styles.link}>
+                        Feedback
                     </Link>
                 </div>
             </nav>

@@ -1,0 +1,42 @@
+.container {
+    min-height: 100vh;
+    padding: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-light);
+}
+
+.header {
+    color: var(--primary-color);
+}
+
+.feedback {
+    padding: 20px;
+}
+
+.inbox {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    color: var(--text-light);
+}
+
+.filterColor {
+    color: var(--text-shadow);
+}
+
+.replaceMe {
+    color: var(--primary-color);
+}
+
+.reverseMe {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+}
+
+.padMe {
+    padding: 0px 10px;
+}

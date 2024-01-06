@@ -1,11 +1,11 @@
 .container {
-    min-height: 100vh;
+    min-height: 95vh;
     padding: 0 0.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #1a1a1a;
+    background-color: var(--tertiary-color);
     color: #fff;
 }
 
@@ -25,7 +25,7 @@
 
     font-style: bold;
     text-align: center;
-    color: #7d7bff;
+    color: var(--primary-color);
 }
 
 .search {
@@ -37,21 +37,21 @@
     margin-right: 10px;
     font-size: 1rem;
     background-color: #262626;
-    border: 1px solid #a82ff2;
-    color: #fff;
+    border: 1px solid var(--secondary-color);
+    color: var(--tertiary-color);
 }
 
 .search button {
     padding: 10px;
     font-size: 1rem;
-    background-color: #0d0d0d;
-    color: #7d7bff;
-    border: 1px solid #7d7bff;
+    background-color: var(--primary-color);
+    color: var(--quaternary-color);
+    border: 1px solid var(--quaternary-color);
     cursor: pointer;
 }
 
 .search button:hover {
-    background-color: #7d7bff;
+    background-color: var(--quaternary-color);
     color: #0d0d0d;
 }
 
@@ -71,17 +71,6 @@
 
 .iconImage:hover {
     transform: scale(1.1);
-}
-
-.footer {
-    width: 100%;
-    height: 100px;
-    border-top: 1px solid #333333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #1a1a1a;
-    color: #fff;
 }
 
 .grid7Days {

@@ -1,0 +1,48 @@
+.record {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-color-two);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mugshot {
+    margin-right: 15px;
+}
+
+.details {
+    flex-grow: 1;
+}
+
+.name {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.date {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.severity {
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.felony {
+    color: red;
+}
+
+.misdemeanor {
+    color: yellow;
+}

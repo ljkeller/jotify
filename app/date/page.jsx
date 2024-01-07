@@ -1,8 +1,62 @@
-export default function Date({ date }) {
+'use client';
+
+import styles from '/styles/DateScroller.module.css';
+import Record from '/app/ui/compressedRecord';
+
+function getInmateData(date) {
+    const r1 = {
+        fullName: 'ASHTIN SHAKINA KELLENBERGER',
+        bookingDate: '1/4/2024 6:06 PM',
+        bond: "$2,500.00",
+        age: 30,
+        img: '/in1.jpg',
+        chargeGrade: 'misdemeanor'
+    };
+    const r2 = {
+        fullName: 'DERRICK LORENZO GULLEY',
+        bookingDate: '1/3/2024 7:58 PM',
+        bond: "$600.00",
+        age: 54,
+        img: '/in2.jpg',
+        chargeGrade: 'felony'
+    };
+    const r3 = {
+        fullName: 'GUADALUPE ECTOR PADAVICH',
+        bookingDate: '1/4/2024 10:53 AM',
+        bond: "$1,000.00",
+        age: 44,
+        img: '/in3.jpg',
+        chargeGrade: 'misdemeanor'
+    };
+
+    return [r1, r2, r3];
+}
+
+export default function DateScroller() {
+    const date = new Date().toLocaleDateString();
+    const inmateData = getInmateData(date);
+    const records = inmateData.map((inmate, idx) =>
+        <Record key={idx} data={inmate} />
+    );
+
+    const handleFilterClick = (filterType) => {
+        console.log(filterType);
+    }
+
     return (
-        <div>
-            <h1>Date</h1>
-            <pre>{JSON.stringify(date, null, 2)}</pre>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h1>{date}</h1>
+            </div>
+            <div className={styles.filters}>
+                <button onClick={() => handleFilterClick('name')}>Name</button>
+                <button onClick={() => handleFilterClick('bookingDate')}>Booking Date</button>
+                <button onClick={() => handleFilterClick('bond')}>Bond $</button>
+                <button onClick={() => handleFilterClick('age')}>Age</button>
+            </div>
+            <div className={styles.records}>
+                {records}
+            </div>
         </div>
     );
 }

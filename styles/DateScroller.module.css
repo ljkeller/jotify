@@ -1,0 +1,37 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.header {
+    margin: 20px 0;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filters button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--background-color-two);
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.filters button:hover {
+    background-color: var(--primary-color);
+}
+
+.records {
+    width: 100%;
+}

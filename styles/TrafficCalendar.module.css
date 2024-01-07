@@ -1,5 +1,6 @@
 .table {
-    background-color: #0d0d0d;
+    background-color: var(--background-color-two);
+    border-radius: 3px;
 }
 
 .row {
@@ -15,7 +16,7 @@
 }
 
 .dayCell:hover {
-    border: 1px solid #ffffff;
+    border: 1px solid var(--text-light);
 }
 
 .none {

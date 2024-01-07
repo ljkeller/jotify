@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import styles from '/styles/Last7Days.module.css';
+import styles from '/styles/TrafficCalendar.module.css';
 
 export default function TrafficCalendar({ inmateTraffic7Days }) {
     const getColor = (amount) => {

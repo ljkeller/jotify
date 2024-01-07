@@ -3,7 +3,7 @@ import { PiSealWarningFill } from 'react-icons/pi';
 
 import styles from '/styles/CompressedRecord.module.css';
 
-export default function CompressedRecord({ data }) {
+export default function CompressedRecord({ data, priority }) {
     // TODO? lowercase charge data
     const warningIcon = (chargeGrade) => {
         const severity = <PiSealWarningFill />;
@@ -20,7 +20,9 @@ export default function CompressedRecord({ data }) {
                 width={150}
                 height={187}
                 alt={`${data.fullName} mugshot`}
-                className={styles.mugshot} />
+                className={styles.mugshot}
+                priority={priority}
+            />
             <div className={styles.headerDetails}>
                 <h3 className={styles.name}>
                     {warningIcon(data.chargeGrade)}

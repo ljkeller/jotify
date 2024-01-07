@@ -51,8 +51,9 @@ function getInmateData(date) {
 export default function DateScroller() {
     const date = new Date().toLocaleDateString();
     const inmateData = getInmateData(date);
+    // TODO: remove this priority heuristic that makes first 5 records priority
     const records = inmateData.map((inmate, idx) =>
-        <Record key={idx} data={inmate} />
+        <Record key={idx} data={inmate} priority={idx < 5} />
     );
 
     const handleFilterClick = (filterType) => {

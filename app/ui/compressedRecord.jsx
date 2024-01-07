@@ -18,10 +18,12 @@ export default function CompressedRecord({ data }) {
                 height={250}
                 alt={`${data.fullName} mugshot`}
                 className={styles.mugshot} />
-            {renderChargeSeverity(data.chargeGrade)}
             <div className={styles.details}>
-                <h2 className={styles.name}>{data.fullName}</h2>
-                <p className={styles.date}>{data.bookingDate}</p>
+                <h3 className={styles.name}>
+                    {renderChargeSeverity(data.chargeGrade)}
+
+                    {" " + data.fullName}</h3>
+                <h4 className={styles.date}>{data.bookingDate}</h4>
             </div>
         </div>
     );

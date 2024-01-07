@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 import styles from '/styles/DateScroller.module.css';
 import Record from '/app/ui/compressedRecord';
@@ -46,7 +47,11 @@ export default function DateScroller() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1>{date}</h1>
+                <h1>
+                    <Link className={styles.headerLink} href="/date">&lt; </Link>
+                    {date}
+                    <Link className={styles.headerLink} href="/date"> &gt;</Link>
+                </h1>
             </div>
             <div className={styles.filters}>
                 <button onClick={() => handleFilterClick('name')}>Name</button>
@@ -57,6 +62,6 @@ export default function DateScroller() {
             <div className={styles.records}>
                 {records}
             </div>
-        </div>
+        </div >
     );
 }

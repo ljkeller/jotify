@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
 import styles from '/styles/DateScroller.module.css';
 import Record from '/app/ui/compressedRecord';
@@ -48,9 +49,9 @@ export default function DateScroller() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1>
-                    <Link className={styles.headerLink} href="/date">&lt; </Link>
+                    <Link className={styles.headerIcon} href="/date"><SlArrowLeft /></Link>
                     {date}
-                    <Link className={styles.headerLink} href="/date"> &gt;</Link>
+                    <Link className={styles.headerIcon} href="/date"><SlArrowRight /></Link>
                 </h1>
             </div>
             <div className={styles.filters}>

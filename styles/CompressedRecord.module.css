@@ -26,8 +26,16 @@
     flex-direction: column;
 }
 
+.nameBox {
+    /* contrain names to prevent names expanding record container */
+    width: 400px;
+}
+
 .name {
     margin: 0;
+    /* show ellipsis in space of extremely long names */
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: var(--primary-color);
 }
 

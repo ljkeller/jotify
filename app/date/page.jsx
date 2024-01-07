@@ -70,10 +70,10 @@ export default function DateScroller() {
                 </h1>
             </div>
             <div className={styles.filters}>
-                <button onClick={() => handleFilterClick('name')}>Name</button>
-                <button onClick={() => handleFilterClick('bookingDate')}>Booking Date</button>
-                <button onClick={() => handleFilterClick('bond')}>Bond $</button>
-                <button onClick={() => handleFilterClick('age')}>Age</button>
+                <button className={styles.inactiveFilter} onClick={() => handleFilterClick('name')}>Name</button>
+                <button className={styles.activeFilter} onClick={() => handleFilterClick('bookingDate')}>Booking Date</button>
+                <button className={styles.inactiveFilter} onClick={() => handleFilterClick('bond')}>Bond $</button>
+                <button className={styles.inactiveFilter} onClick={() => handleFilterClick('age')}>Age</button>
             </div>
             <div className={styles.records}>
                 {records}

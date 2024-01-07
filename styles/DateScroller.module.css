@@ -24,13 +24,27 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: var(--background-color-two);
-    color: var(--text-light);
     font-size: 1rem;
     transition: background-color 0.3s;
 }
 
-.filters button:hover {
+
+.activeFilter {
+    background-color: var(--primary-color);
+    color: var(--text-dark);
+}
+
+.activeFilter:hover {
+    background-color: var(--complementary-color);
+    color: var(--text-light);
+}
+
+.inactiveFilter {
+    background-color: var(--background-color-two);
+    color: var(--text-light);
+}
+
+.inactiveFilter:hover {
     background-color: var(--primary-color);
     color: var(--text-dark);
 }

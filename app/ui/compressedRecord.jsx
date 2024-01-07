@@ -9,21 +9,27 @@ export default function CompressedRecord({ data }) {
         const severity = <PiSealWarningFill />;
         return chargeGrade === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
     };
+    const charges = data.charges.map((charge, idx) =>
+        <li key={idx} className={styles.charge}>{charge}</li>
+    );
 
     return (
         <div className={styles.record}>
             <Image
                 src={data.img}
-                width={200}
-                height={250}
+                width={150}
+                height={187}
                 alt={`${data.fullName} mugshot`}
                 className={styles.mugshot} />
-            <div className={styles.details}>
+            <div className={styles.headerDetails}>
                 <h3 className={styles.name}>
                     {warningIcon(data.chargeGrade)}
 
                     {data.fullName}</h3>
                 <h4 className={styles.date}>{data.bookingDate}</h4>
+                <div className={styles.charges}>
+                    {charges}
+                </div>
             </div>
         </div>
     );

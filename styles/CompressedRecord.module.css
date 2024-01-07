@@ -20,7 +20,7 @@
     margin-right: 15px;
 }
 
-.details {
+.headerDetails {
     display: flex;
     flex-direction: column;
 }
@@ -50,4 +50,16 @@
 
 .misdemeanor {
     visibility: hidden;
+}
+
+.charges {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    color: var(--text-light);
+}
+
+.charge {
+    margin: 0;
+    font-size: 0.9rem;
 }

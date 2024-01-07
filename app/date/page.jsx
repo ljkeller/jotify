@@ -12,7 +12,14 @@ function getInmateData(date) {
         bond: "$2,500.00",
         age: 30,
         img: '/in1.jpg',
-        chargeGrade: 'misdemeanor'
+        chargeGrade: 'misdemeanor',
+        charges: [
+            "DRIVE WHILE REVOKED",
+            "DRIVING WHILE BARRED",
+            "DUS",
+            "LEAVE SCENE OF ACCIDENT",
+            "TURN SIGNAL"
+        ]
     };
     const r2 = {
         fullName: 'DERRICK LORENZO GULLEY',
@@ -20,7 +27,10 @@ function getInmateData(date) {
         bond: "$600.00",
         age: 54,
         img: '/in2.jpg',
-        chargeGrade: 'felony'
+        chargeGrade: 'felony',
+        charges: [
+            "HARASSMENT FIRST DEGREE"
+        ]
     };
     const r3 = {
         fullName: 'GUADALUPE ECTOR PADAVICH',
@@ -28,7 +38,11 @@ function getInmateData(date) {
         bond: "$1,000.00",
         age: 44,
         img: '/in3.jpg',
-        chargeGrade: 'misdemeanor'
+        chargeGrade: 'misdemeanor',
+        charges: [
+            "INTERFER W/OFFOCIAL ACTS",
+            "INTOXICATION"
+        ]
     };
 
     return [r1, r2, r3];

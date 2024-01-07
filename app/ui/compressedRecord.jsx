@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { PiSealWarningFill } from 'react-icons/pi';
 
 import styles from '/styles/CompressedRecord.module.css';
@@ -14,24 +15,27 @@ export default function CompressedRecord({ data, priority }) {
     );
 
     return (
-        <div className={styles.record}>
-            <Image
-                src={data.img}
-                width={150}
-                height={187}
-                alt={`${data.fullName} mugshot`}
-                className={styles.mugshot}
-                priority={priority}
-            />
-            <div className={styles.headerDetails}>
-                <h3 className={styles.name}>
-                    {warningIcon(data.chargeGrade)}
-                    {data.fullName}</h3>
-                <h4 className={styles.date}>{data.bookingDate}</h4>
-                <ul className={styles.charges}>
-                    {charges}
-                </ul>
+        <Link className={styles.hiddenLink} href="/record" prefetch={false}>
+            <div className={styles.record}>
+                <Image
+                    src={data.img}
+                    width={150}
+                    height={187}
+                    alt={`${data.fullName} mugshot`}
+                    className={styles.mugshot}
+                    priority={priority}
+                />
+                <div className={styles.headerDetails}>
+                    <h3 className={styles.name}>
+                        {warningIcon(data.chargeGrade)}
+                        {data.fullName}</h3>
+                    <h4 className={styles.date}>{data.bookingDate}</h4>
+                    <ul className={styles.charges}>
+                        {charges}
+                    </ul>
+                </div>
             </div>
-        </div>
+        </Link>
+
     );
 }

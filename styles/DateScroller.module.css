@@ -35,10 +35,6 @@
     color: var(--text-dark);
 }
 
-.records {
-    width: 100%;
-}
-
 .headerIcon {
     color: var(--complementary-color);
     padding: 0 1rem;

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import styles from '/styles/Last7Days.module.css';
 
 export default function TrafficCalendar({ inmateTraffic7Days }) {
@@ -14,11 +16,15 @@ export default function TrafficCalendar({ inmateTraffic7Days }) {
             <tbody>
                 <tr className={styles.row}>
                     {inmateTraffic7Days.map((day, index) => (
-                        <td
-                            key={index}
-                            className={`${getColor(day.inmateCount)} ${styles.dayCell}`}
-                            title={`${day.inmateCount} inmates on ${day.date}`}
-                        />))}
+                        // TODO: link to specific date
+                        <Link href={`/date`} key={index}>
+                            <td
+                                key={index}
+                                className={`${getColor(day.inmateCount)} ${styles.dayCell}`}
+                                title={`${day.inmateCount} inmates on ${day.date}`}
+                            />
+                        </Link>
+                    ))}
                 </tr>
             </tbody>
         </table >

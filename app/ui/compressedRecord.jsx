@@ -1,13 +1,13 @@
 import Image from 'next/image';
+import { PiSealWarningFill } from 'react-icons/pi';
 
 import styles from '/styles/CompressedRecord.module.css';
 
 export default function CompressedRecord({ data }) {
     // TODO? lowercase charge data
-    const renderChargeSeverity = (chargeGrade) => {
-        const severity = chargeGrade === 'felony' ? 'F' : 'M';
-        const iconStyle = chargeGrade === 'felony' ? styles.felony : styles.misdemeanor;
-        return <span className={`${iconStyle} ${styles.severity}`}>{severity}</span>
+    const warningIcon = (chargeGrade) => {
+        const severity = <PiSealWarningFill />;
+        return chargeGrade === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
     };
 
     return (
@@ -20,9 +20,9 @@ export default function CompressedRecord({ data }) {
                 className={styles.mugshot} />
             <div className={styles.details}>
                 <h3 className={styles.name}>
-                    {renderChargeSeverity(data.chargeGrade)}
+                    {warningIcon(data.chargeGrade)}
 
-                    {" " + data.fullName}</h3>
+                    {data.fullName}</h3>
                 <h4 className={styles.date}>{data.bookingDate}</h4>
             </div>
         </div>

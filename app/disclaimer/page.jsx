@@ -2,6 +2,10 @@ import '/app/ui/global.css';
 import { m_plus_2 } from '/app/ui/fonts';
 import styles from '/styles/Disclaimer.module.css';
 
+export const metadata = {
+    title: 'scjail.io disclaimer',
+    description: 'Innocent until proven guilty',
+}
 
 export default function Disclaimer() {
     return (

@@ -50,6 +50,11 @@ function getInmateData() {
   return [r1, r2, r3];
 }
 
+export const metadata = {
+  title: 'scjail.io Home',
+  description: 'Scott county inmate listing- but better',
+}
+
 export default function Home() {
   const trafficLast7Days = [
     { date: "1/1/24", inmateCount: 13 },

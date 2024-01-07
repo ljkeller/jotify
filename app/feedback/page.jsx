@@ -1,5 +1,10 @@
 import styles from '/styles/Feedback.module.css';
 
+export const metadata = {
+    title: 'scjail.io feedback',
+    description: 'Thank you for your feedback!',
+}
+
 export default function Feedback() {
     return (
         <div className={styles.container}>

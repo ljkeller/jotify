@@ -31,6 +31,7 @@
 
 .filters button:hover {
     background-color: var(--primary-color);
+    color: var(--text-dark);
 }
 
 .records {

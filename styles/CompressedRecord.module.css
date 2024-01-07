@@ -13,6 +13,7 @@
 
 .record:hover {
     transform: scale(1.01);
+    cursor: pointer;
 }
 
 .mugshot {
@@ -27,6 +28,10 @@
 .name {
     margin: 0;
     color: var(--primary-color);
+}
+
+.name:hover {
+    color: var(--complementary-color);
 }
 
 .date {

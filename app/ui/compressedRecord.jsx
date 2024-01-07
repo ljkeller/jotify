@@ -26,12 +26,11 @@ export default function CompressedRecord({ data, priority }) {
             <div className={styles.headerDetails}>
                 <h3 className={styles.name}>
                     {warningIcon(data.chargeGrade)}
-
                     {data.fullName}</h3>
                 <h4 className={styles.date}>{data.bookingDate}</h4>
-                <div className={styles.charges}>
+                <ul className={styles.charges}>
                     {charges}
-                </div>
+                </ul>
             </div>
         </div>
     );

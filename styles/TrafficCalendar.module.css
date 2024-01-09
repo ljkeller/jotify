@@ -10,7 +10,7 @@
 
 .dayCell {
     padding: 1.5rem;
-    border: 1px solid #343434;
+    border: 1px solid var(--background-color-two);
     border-radius: 3px;
     transition: background-color 0.5s;
 }
@@ -20,7 +20,7 @@
 }
 
 .none {
-    background-color: #262626;
+    background-color: var(--background-color-two);
 }
 
 .low {
@@ -37,4 +37,24 @@
 
 .veryHigh {
     background-color: #9c3c6b;
+}
+
+.trafficExplanation {
+    font-size: 1.1rem;
+}
+
+.outerDetails {
+    padding: 12px 10px 5px 10px;
+    border: 2px solid var(--background-color-two);
+    border-radius: 3px;
+    font-size: 1.2rem;
+}
+
+.innerDetails {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 0.9rem;
 }

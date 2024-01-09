@@ -63,7 +63,7 @@ export default function Home() {
     { date: "1/4/24", inmateCount: 26 },
     { date: "1/5/24", inmateCount: 23 },
     { date: "1/6/24", inmateCount: 19 },
-    { date: "1/7/24", inmateCount: 16 },
+    { date: "1/7/24", inmateCount: 3 },
   ];
 
   const inmateData = getInmateData();

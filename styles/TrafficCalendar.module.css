@@ -1,5 +1,4 @@
 .table {
-    background-color: var(--background-color-two);
     border-radius: 3px;
 }
 
@@ -12,7 +11,35 @@
     padding: 1.5rem;
     border: 1px solid var(--background-color-two);
     border-radius: 3px;
-    transition: background-color 0.5s;
+}
+
+.key {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: 5px;
+    border-spacing: 3px;
+}
+
+.keyCell {
+    width: 15px;
+    height: 15px;
+    border: 1px solid var(--background-color-two);
+    margin: 0 1px;
+    border-radius: 2px;
+}
+
+.keyLabel {
+    font-size: 0.9rem;
+}
+
+.lessLabel {
+    margin-right: 2px;
+}
+
+.moreLabel {
+    margin-left: 2px;
 }
 
 .dayCell:hover {
@@ -40,10 +67,11 @@
 }
 
 .trafficExplanation {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .outerDetails {
+    margin-top: 5px;
     padding: 12px 10px 5px 10px;
     border: 2px solid var(--background-color-two);
     border-radius: 3px;
@@ -57,4 +85,8 @@
     width: 100%;
     margin-top: 10px;
     font-size: 0.9rem;
+}
+
+.date {
+    margin: 0 8px;
 }

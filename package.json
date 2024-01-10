@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node tools/build_db.js",
+    "crawl": "node tools/recordCrawler.js",
     "dev": "next dev"
   },
   "keywords": [],

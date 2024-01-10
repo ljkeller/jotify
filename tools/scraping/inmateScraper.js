@@ -239,4 +239,8 @@ async function getInmates(inmateUrl) {
   return inmates;
 }
 
-module.exports = { getInmatesForDates, getInmates, getInmateNames };
+function getListings() {
+  return "";
+}
+
+module.exports = { getInmatesForDates, getInmates, getInmateNames, getListings };

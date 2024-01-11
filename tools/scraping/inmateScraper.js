@@ -1,4 +1,5 @@
-const axios = require("axios");
+// const axios = require("axios");
+const { NetworkUtils } = require('./networkUtils');
 const cheerio = require("cheerio");
 
 const Inmate = require("../models/Inmate");
@@ -239,8 +240,25 @@ async function getInmates(inmateUrl) {
   return inmates;
 }
 
-function getListings() {
-  return "";
+async function getListingsForDates(dateArr) {
+  let listingsForDates = [];
+  for (const date of dateArr) {
+    try {
+      const listing = getListing(date);
+      listingsForDates = listingsForDates.concat(listing);
+    } catch (err) {
+      console.error(`Found ${err} when visiting ${date}. Skipping...`);
+    }
+  }
+  return listingsForDates;
 }
 
-module.exports = { getInmatesForDates, getInmates, getInmateNames, getListings };
+async function getListing(date) {
+  const listing = [];
+  const response = await NetworkUtils.respectfully_get(config.datelessInmatesUrl + date);
+  // TODO: Handle parse, error correction 
+
+  return listing;
+}
+
+module.exports = { getInmatesForDates, getInmates, getInmateNames, getListingsForDates };

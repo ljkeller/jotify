@@ -4,20 +4,20 @@ const Database = require('better-sqlite3');
 
 const { config, scJailIoTableCreate } = require("./config");
 const { getLastNDaysLocal } = require("./dateUtils");
-const { getListings } = require("./scraping/inmateScraper");
+const { getListingsForDates } = require("./scraping/inmateScraper");
 
 main();
 
 async function main() {
   const dates = getLastNDaysLocal(config.lastNDays);
-  // eventually, we will want to crawl continuously
 
   const db = new Database(config.databaseFile, { verbose: console.log });
   setupDbCloseConditions(db);
 
+  // eventually, we will want to crawl continuously
   try {
     createTables(db);
-    const listings = await getListings(dates);
+    const listings = await getListingsForDates(dates);
 
     for (const listing of listings) {
     }

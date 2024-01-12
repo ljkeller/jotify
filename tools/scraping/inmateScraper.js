@@ -269,19 +269,15 @@ async function getBondInformation($, html) {
 
 async function getChargeInformation($, html) {
   let charges = [];
-  // slice(1) to Skip header column
   // Header column td example (followed by index):
   // case # | Description | Grade | Severity | Offense Date | ... 
   //   0    |      1      |   2   |     3    |       4      | ...
-
-  // TODO! Fix issues here
-  $(".inmates-charges-table tbody tr").first().find("tr").slice(1).each((_, tr) => {
+  $(".inmates-charges-table tbody tr").each((_, tr) => {
     const td = $(tr).find("td");
     const description = $(td[1]).text().trim();
     const grade = $(td[2]).text().trim();
     const offenseDate = $(td[3]).text().trim();
     charges.push(new ChargeInformation(description, grade, offenseDate));
-    console.log(`Found charge: ${charges[-1]}`);
   });
 
   return charges;
@@ -319,9 +315,8 @@ async function getListings(date, remainingAttempts = 2, backoffSeconds = 5) {
       let relativeInmateUrl = $(tr).find("td").first().find("a").attr("href");
       if (relativeInmateUrl && relativeInmateUrl.startsWith("?")) {
         // Dont duplicate '?' from href
-        const inmate = await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl)
+        const inmate = await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl.slice(1))
         inmates.push(inmate);
-        // inmates.push(await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl));
       }
       else {
         console.error(`Failed to parse tr for inmate url ${tr}`);

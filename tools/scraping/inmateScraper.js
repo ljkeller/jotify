@@ -3,6 +3,11 @@ const { NetworkUtils } = require('./networkUtils');
 const cheerio = require("cheerio");
 
 const Inmate = require("../models/Inmate");
+const InmateAggregate = require("../models/listing");
+const InmateProfile = require("../models/inmateProfile");
+const BondInformation = require("../models/bondInformation");
+const ChargeInformation = require("../models/chargeInformation");
+
 const { config } = require("../config");
 const { scilDateTimeToIso8601 } = require("../dateUtils");
 
@@ -158,6 +163,10 @@ async function buildInmateFromTd($, td) {
   );
 }
 
+async function buildListingFromTr($, tr) {
+  return [];
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -244,7 +253,7 @@ async function getListingsForDates(dateArr) {
   let listingsForDates = [];
   for (const date of dateArr) {
     try {
-      const listing = getListing(date);
+      const listing = getListings(date);
       listingsForDates = listingsForDates.concat(listing);
     } catch (err) {
       console.error(`Found ${err} when visiting ${date}. Skipping...`);
@@ -253,12 +262,65 @@ async function getListingsForDates(dateArr) {
   return listingsForDates;
 }
 
-async function getListing(date) {
-  const listing = [];
-  const response = await NetworkUtils.respectfully_get(config.datelessInmatesUrl + date);
-  // TODO: Handle parse, error correction 
+async function getBondInformation(inmateUrl) {
+  // TODO!
+  return [];
+}
+async function getChargeInformation(inmateUrl) {
+  // TODO!
+  return [];
+}
+async function getInmateProfile(inmateUrl) {
+  return new InmateProfile();
+}
 
-  return listing;
+async function buildInmateAggregate(inmateUrl) {
+  const chargeInformation = getChargeInformation(inmateUrl);
+  const bondInformation = getBondInformation(inmateUrl);
+  const inmateProfile = getInmateProfile(inmateUrl);
+  return new InmateAggregate(inmateProfile, bondInformation, chargeInformation);
+}
+
+async function getListings(date, attempt = 1, backoffSeconds = 5) {
+  const inmates = [];
+  let html = null;
+  try {
+    const response = await NetworkUtils.respectfully_get(config.datelessInmatesUrl + date);
+
+    html = response.data;
+    if (html.includes("You are being redirected") && attempt < 3) {
+      return await getListings(date, attempt + 1, backoffSeconds * 2);
+    } else if (html.includes("You are being redirected")) {
+      throw new Error(`Failed to fetch data (redirected) after ${attempt} attempts.`);
+    }
+  } catch (err) {
+    if (attempt >= 3) {
+      throw new Error(`Failed to fetch data after ${attempt} attempts. ${err}`);
+    }
+    return await getListings(date, attempt + 1, backoffSeconds * 2);
+  }
+  const $ = cheerio.load(html);
+
+  console.log("Parsing listing...");
+  const rows = $(".inmates-table tr").slice(1).toArray();
+  for (const tr of rows) {
+    try {
+      let relativeInmateUrl = $(tr).find("td").first().find("a").attr("href");
+      if (relativeInmateUrl && relativeInmateUrl.startsWith("?")) {
+        // Dont duplicate '?' from href
+        inmates.push(await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl));
+      }
+      else {
+        console.error(`Failed to parse tr for inmate url ${tr}`);
+        continue;
+      }
+    } catch (err) {
+      console.error(err);
+      continue;
+    }
+  }
+
+  return inmates;
 }
 
 module.exports = { getInmatesForDates, getInmates, getInmateNames, getListingsForDates };

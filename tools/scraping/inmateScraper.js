@@ -253,7 +253,7 @@ async function getListingsForDates(dateArr) {
   let listingsForDates = [];
   for (const date of dateArr) {
     try {
-      const listing = getListings(date);
+      const listing = await getListings(date);
       listingsForDates = listingsForDates.concat(listing);
     } catch (err) {
       console.error(`Found ${err} when visiting ${date}. Skipping...`);
@@ -262,42 +262,53 @@ async function getListingsForDates(dateArr) {
   return listingsForDates;
 }
 
-async function getBondInformation(inmateUrl) {
+async function getBondInformation($, html) {
   // TODO!
   return [];
 }
-async function getChargeInformation(inmateUrl) {
-  // TODO!
-  return [];
+
+async function getChargeInformation($, html) {
+  let charges = [];
+  // slice(1) to Skip header column
+  // Header column td example (followed by index):
+  // case # | Description | Grade | Severity | Offense Date | ... 
+  //   0    |      1      |   2   |     3    |       4      | ...
+
+  // TODO! Fix issues here
+  $(".inmates-charges-table tbody tr").first().find("tr").slice(1).each((_, tr) => {
+    const td = $(tr).find("td");
+    const description = $(td[1]).text().trim();
+    const grade = $(td[2]).text().trim();
+    const offenseDate = $(td[3]).text().trim();
+    charges.push(new ChargeInformation(description, grade, offenseDate));
+    console.log(`Found charge: ${charges[-1]}`);
+  });
+
+  return charges;
 }
-async function getInmateProfile(inmateUrl) {
+async function getInmateProfile($, html) {
   return new InmateProfile();
 }
 
 async function buildInmateAggregate(inmateUrl) {
-  const chargeInformation = getChargeInformation(inmateUrl);
-  const bondInformation = getBondInformation(inmateUrl);
-  const inmateProfile = getInmateProfile(inmateUrl);
+  const { data } = await NetworkUtils.respectfully_get_with_retry(inmateUrl);
+  const $ = cheerio.load(data);
+
+  const chargeInformation = await getChargeInformation($, data);
+  const bondInformation = await getBondInformation($, data);
+  const inmateProfile = await getInmateProfile($, data);
   return new InmateAggregate(inmateProfile, bondInformation, chargeInformation);
 }
 
-async function getListings(date, attempt = 1, backoffSeconds = 5) {
+async function getListings(date, remainingAttempts = 2, backoffSeconds = 5) {
   const inmates = [];
-  let html = null;
-  try {
-    const response = await NetworkUtils.respectfully_get(config.datelessInmatesUrl + date);
+  const response = await NetworkUtils.respectfully_get_with_retry(config.datelessInmatesUrl + date, remainingAttempts);
 
-    html = response.data;
-    if (html.includes("You are being redirected") && attempt < 3) {
-      return await getListings(date, attempt + 1, backoffSeconds * 2);
-    } else if (html.includes("You are being redirected")) {
-      throw new Error(`Failed to fetch data (redirected) after ${attempt} attempts.`);
-    }
-  } catch (err) {
-    if (attempt >= 3) {
-      throw new Error(`Failed to fetch data after ${attempt} attempts. ${err}`);
-    }
-    return await getListings(date, attempt + 1, backoffSeconds * 2);
+  const html = response.data;
+  if (html.includes("You are being redirected") && remainingAttempts > 0) {
+    return await getListings(date, remainingAttempts - 1, backoffSeconds * 2);
+  } else if (html.includes("You are being redirected")) {
+    throw new Error(`Failed to fetch data (redirected) after ${remainingAttempts} attempts.`);
   }
   const $ = cheerio.load(html);
 
@@ -308,7 +319,9 @@ async function getListings(date, attempt = 1, backoffSeconds = 5) {
       let relativeInmateUrl = $(tr).find("td").first().find("a").attr("href");
       if (relativeInmateUrl && relativeInmateUrl.startsWith("?")) {
         // Dont duplicate '?' from href
-        inmates.push(await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl));
+        const inmate = await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl)
+        inmates.push(inmate);
+        // inmates.push(await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl));
       }
       else {
         console.error(`Failed to parse tr for inmate url ${tr}`);

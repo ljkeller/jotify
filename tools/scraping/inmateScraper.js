@@ -10,6 +10,7 @@ const ChargeInformation = require("../models/chargeInformation");
 
 const { config } = require("../config");
 const { scilDateTimeToIso8601 } = require("../dateUtils");
+const { dollarsToCents } = require("./currency");
 
 function getAliases(aliasesStr) {
   const noAlias = "no alias information";
@@ -262,12 +263,18 @@ async function getListingsForDates(dateArr) {
   return listingsForDates;
 }
 
-async function getBondInformation($, html) {
-  // TODO!
-  return [];
+async function getBondInformation($) {
+  const bondInformation = [];
+  $('.inmates-bond-table tbody tr').each((_, tr) => {
+    const td = $(tr).find('td');
+    const bondType = $(td[1]).text().trim();
+    const bondAmount = $(td[2]).text().trim();
+    bondInformation.push(new BondInformation(bondType, dollarsToCents(bondAmount)));
+  });
+  return bondInformation;
 }
 
-async function getChargeInformation($, html) {
+async function getChargeInformation($) {
   let charges = [];
   // Header column td example (followed by index):
   // case # | Description | Grade | Severity | Offense Date | ... 
@@ -282,7 +289,7 @@ async function getChargeInformation($, html) {
 
   return charges;
 }
-async function getInmateProfile($, html) {
+async function getInmateProfile($) {
   return new InmateProfile();
 }
 
@@ -316,6 +323,7 @@ async function getListings(date, remainingAttempts = 2, backoffSeconds = 5) {
       if (relativeInmateUrl && relativeInmateUrl.startsWith("?")) {
         // Dont duplicate '?' from href
         const inmate = await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl.slice(1))
+        console.log(inmate);
         inmates.push(inmate);
       }
       else {

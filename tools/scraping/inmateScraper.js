@@ -3,7 +3,7 @@ const { NetworkUtils } = require('./networkUtils');
 const cheerio = require("cheerio");
 
 const Inmate = require("../models/Inmate");
-const InmateAggregate = require("../models/listing");
+const InmateAggregate = require("../models/inmateAggregate");
 const InmateProfile = require("../models/inmateProfile");
 const BondInformation = require("../models/bondInformation");
 const ChargeInformation = require("../models/chargeInformation");
@@ -13,6 +13,7 @@ const { scilDateTimeToIso8601 } = require("../dateUtils");
 const { dollarsToCents } = require("./currency");
 
 function getAliases(aliasesStr) {
+  // instead of no alias, SC jail website uses "No alias information"
   const noAlias = "no alias information";
   if (aliasesStr && aliasesStr.toLowerCase() !== noAlias) {
     try {
@@ -287,28 +288,41 @@ function getChargeInformation($) {
 }
 
 function getCoreProfileData($) {
-  // TODO!
+  const first = $('dt:contains("First:")').next('dd').text().trim();
+  const middle = $('dt:contains("Middle:")').next('dd').text().trim();
+  const last = $('dt:contains("Last:")').next('dd').text().trim();
+  const affix = $('dt:contains("Affix:")').next('dd').text().trim();
+  const permanentId = $('dt:contains("Permanent ID:")').next('dd').text().trim();
+  const sex = $('dt:contains("Sex:")').next('dd').text().trim();
+  const dob = $('dt:contains("Date of Birth:")').next('dd').text().trim();
+  const height = $('dt:contains("Height:")').next('dd').text().trim();
+  const weight = $('dt:contains("Weight:")').next('dd').text().trim();
+  const race = $('dt:contains("Race:")').next('dd').text().trim();
+  const eyeColor = $('dt:contains("Eye Color:")').next('dd').text().trim();
+  const aliasPlaceholder = $('dt:contains("Alias(es):")').next('dd').text().trim();
+  console.log("Alias placeholder: ", aliasPlaceholder);
+
   return {
-    first: "",
-    middle: "",
-    last: "",
-    affix: "",
-    permanentId: "",
-    sex: "",
-    dob: "",
-    height: "",
-    weight: "",
-    race: "",
-    eyeColor: "",
-    aliases: []
-  }
+    first: first,
+    middle: middle,
+    last: last,
+    affix: affix,
+    permanentId: permanentId,
+    sex: sex,
+    dob: dob,
+    height: height,
+    weight: weight,
+    race: race,
+    eyeColor: eyeColor,
+    aliases: getAliases(aliasPlaceholder)
+  };
 }
 
 function getIncarcerationInformation($) {
   return {
-    arrestingAgency: $('dt').filter((i, el) => $(el).text().includes('Arresting Agency')).next('dd').text(),
-    bookingDate: $('dt').filter((i, el) => $(el).text().includes('Booking Date Time')).next('dd').text(),
-    bookingNum: $('dt').filter((i, el) => $(el).text().includes('Booking Number')).next('dd').text()
+    arrestingAgency: $("dt:contains('Arresting Agency')").next('dd').text().trim(),
+    bookingDate: $("dt:contains('Booking Date Time')").next('dd').text().trim(),
+    bookingNum: $("dt:contains('Booking Number')").next('dd').text().trim()
   }
 }
 
@@ -317,10 +331,10 @@ async function getImgBlob($) {
   return [];
 }
 
-async function getInmateProfile($) {
+function getInmateProfile($) {
   const { first, middle, last, affix, permanentId, sex, dob, height, weight, race, eyeColor, aliases } = getCoreProfileData($);
   const { arrestingAgency, bookingDate, bookingNum } = getIncarcerationInformation($);
-  const imgBlob = await getImgBlob($);
+  const imgBlob = getImgBlob($);
 
   return new InmateProfile(
     first,

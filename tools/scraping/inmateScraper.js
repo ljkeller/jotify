@@ -259,7 +259,7 @@ async function getListingsForDates(dateArr) {
   return listingsForDates;
 }
 
-async function getBondInformation($) {
+function getBondInformation($) {
   const bondInformation = [];
   $('.inmates-bond-table tbody tr').each((_, tr) => {
     const td = $(tr).find('td');
@@ -270,7 +270,7 @@ async function getBondInformation($) {
   return bondInformation;
 }
 
-async function getChargeInformation($) {
+function getChargeInformation($) {
   let charges = [];
   // Header column td example (followed by index):
   // case # | Description | Grade | Severity | Offense Date | ... 
@@ -285,7 +285,8 @@ async function getChargeInformation($) {
 
   return charges;
 }
-async function getInmateProfile($) {
+
+function getCoreProfileData($) {
   // TODO!
   return {
     first: "",
@@ -303,12 +304,11 @@ async function getInmateProfile($) {
   }
 }
 
-async function getIncarcerationInformation($) {
-  // TODO!
+function getIncarcerationInformation($) {
   return {
-    arrestingAgency: "",
-    bookingDate: "",
-    bookingNum: ""
+    arrestingAgency: $('dt').filter((i, el) => $(el).text().includes('Arresting Agency')).next('dd').text(),
+    bookingDate: $('dt').filter((i, el) => $(el).text().includes('Booking Date Time')).next('dd').text(),
+    bookingNum: $('dt').filter((i, el) => $(el).text().includes('Booking Number')).next('dd').text()
   }
 }
 
@@ -318,7 +318,7 @@ async function getImgBlob($) {
 }
 
 async function getInmateProfile($) {
-  const { first, middle, last, affix, permanentId, sex, dob, height, weight, race, eyeColor, aliases } = getInmateProfile($);
+  const { first, middle, last, affix, permanentId, sex, dob, height, weight, race, eyeColor, aliases } = getCoreProfileData($);
   const { arrestingAgency, bookingDate, bookingNum } = getIncarcerationInformation($);
   const imgBlob = await getImgBlob($);
 
@@ -346,9 +346,9 @@ async function buildInmateAggregate(inmateUrl) {
   const { data } = await NetworkUtils.respectfully_get_with_retry(inmateUrl);
   const $ = cheerio.load(data);
 
-  const chargeInformation = await getChargeInformation($, data);
-  const bondInformation = await getBondInformation($, data);
-  const inmateProfile = await getInmateProfile($, data);
+  const chargeInformation = getChargeInformation($, data);
+  const bondInformation = getBondInformation($, data);
+  const inmateProfile = getInmateProfile($, data);
   return new InmateAggregate(inmateProfile, bondInformation, chargeInformation);
 }
 

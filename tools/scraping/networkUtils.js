@@ -22,6 +22,25 @@ class NetworkUtils {
       return this.respectfully_get_with_retry(url, remainingAttempts - 1);
     }
   }
+
+  static async respectful_axios(axiosConfig) {
+    const remainingDelay = Date.now() < NetworkUtils.nextCommandTime ? NetworkUtils.nextCommandTime - Date.now() : 0;
+    await sleep(remainingDelay);
+
+    NetworkUtils.nextCommandTime = Date.now() + config.sleepBetweenRequests;
+    return axios(axiosConfig);
+  }
+
+  static async respectful_axios_with_retry(axiosConfig, remainingAttempts = 2) {
+    try {
+      return await NetworkUtils.respectful_axios(axiosConfig);
+    } catch (error) {
+      if (remainingAttempts < 1) {
+        throw new Error(`Failed to fetch. ${error}`);
+      }
+      return this.respectful_axios_with_retry(axiosConfig, remainingAttempts - 1);
+    }
+  }
 }
 
 function sleep(ms) {

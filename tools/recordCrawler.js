@@ -20,6 +20,7 @@ async function main() {
     const listings = await getListingsForDates(dates);
 
     for (const listing of listings) {
+      // insert
     }
   } catch (err) {
     console.log(err);

@@ -64,45 +64,6 @@ async function getInmateNames(inmateUrl) {
   return inmateData;
 }
 
-async function getImgBlob(imgUrl) {
-  if (!imgUrl) {
-    return null;
-  }
-
-  async function attemptRequest(url, attempt = 1) {
-    const maxAttempts = 3;
-    const delay_mS = Math.pow(2, attempt) * 1000; // Exponential delay (2^attempt seconds)
-
-    try {
-
-      if (attempt > maxAttempts) {
-        throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
-      }
-      return await axios.get(imgUrl, {
-        responseType: "arraybuffer",
-      });
-
-    } catch (error) {
-      if (attempt <= maxAttempts) {
-        console.log(`Request failed on attempt ${attempt}. Retrying in ${delay_mS}ms.`);
-        console.log("Request url: ", imgUrl);
-        await sleep(delay_mS);
-        return await attemptRequest(url, attempt + 1);
-      } else {
-        console.error(error);
-        throw new Error(`Failed to fetch data after ${maxAttempts} attempts.`);
-      }
-    }
-  }
-
-  // Maybe we should make a global rate limiter?
-  // Really wish we could just have a static function wrapping axios.get
-  await sleep(config.sleepBetweenRequests);
-  const reponse = await attemptRequest(imgUrl);
-
-  return reponse.data;
-}
-
 async function buildInmateFromTd($, td) {
   // Example row:
   // <tr>
@@ -327,14 +288,25 @@ function getIncarcerationInformation($) {
 }
 
 async function getImgBlob($) {
-  // TODO! Make sure we get the FULL image
-  return [];
+  const imgUrl = $('.inmates img').attr('src');
+  if (!imgUrl) {
+    return null;
+  }
+
+  try {
+    const response = await NetworkUtils.respectfully_get_with_retry(imgUrl);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    return null;
+  }
 }
 
-function getInmateProfile($) {
+
+async function getInmateProfile($) {
   const { first, middle, last, affix, permanentId, sex, dob, height, weight, race, eyeColor, aliases } = getCoreProfileData($);
   const { arrestingAgency, bookingDate, bookingNum } = getIncarcerationInformation($);
-  const imgBlob = getImgBlob($);
+  const imgBlob = await getImgBlob($);
 
   return new InmateProfile(
     first,
@@ -362,7 +334,7 @@ async function buildInmateAggregate(inmateUrl) {
 
   const chargeInformation = getChargeInformation($, data);
   const bondInformation = getBondInformation($, data);
-  const inmateProfile = getInmateProfile($, data);
+  const inmateProfile = await getInmateProfile($, data);
   return new InmateAggregate(inmateProfile, bondInformation, chargeInformation);
 }
 

@@ -60,7 +60,7 @@ const scJailIoTableCreate = {
     CREATE TABLE IF NOT EXISTS bond (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       inmate_id INTEGER NOT NULL,
-      type TEXT NOT NULL CHECK (type <> ''),
+      type TEXT NOT NULL,
       amount_pennies INTEGER NOT NULL,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id)
     )
@@ -69,9 +69,9 @@ const scJailIoTableCreate = {
     CREATE TABLE IF NOT EXISTS charge (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       inmate_id INTEGER NOT NULL,
-      description TEXT NOT NULL CHECK (description <> ''),
-      grade TEXT NOT NULL CHECK (grade <> ''),
-      offense_date TEXT NOT NULL CHECK (offense_date <> ''),
+      description TEXT NOT NULL,
+      grade TEXT NOT NULL,
+      offense_date TEXT NOT NULL,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id)
     )
   `

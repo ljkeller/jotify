@@ -13,7 +13,7 @@ class InmateProfile {
     height,
     weight,
     race,
-    eye_color,
+    eyeColor,
     aliases,
     imgBlob,
   ) {
@@ -30,7 +30,7 @@ class InmateProfile {
     this.height = height;
     this.weight = weight;
     this.race = race;
-    this.eye_color = eye_color;
+    this.eyeColor = eyeColor;
     this.aliases = aliases;
     this.imgBlob = imgBlob;
   }

@@ -164,10 +164,6 @@ async function buildInmateFromTd($, td) {
   );
 }
 
-async function buildListingFromTr($, tr) {
-  return [];
-}
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -254,7 +250,7 @@ async function getListingsForDates(dateArr) {
   let listingsForDates = [];
   for (const date of dateArr) {
     try {
-      const listing = await getListings(date);
+      const listing = await getListingsForDate(date);
       listingsForDates = listingsForDates.concat(listing);
     } catch (err) {
       console.error(`Found ${err} when visiting ${date}. Skipping...`);
@@ -290,7 +286,60 @@ async function getChargeInformation($) {
   return charges;
 }
 async function getInmateProfile($) {
-  return new InmateProfile();
+  // TODO!
+  return {
+    first: "",
+    middle: "",
+    last: "",
+    affix: "",
+    permanentId: "",
+    sex: "",
+    dob: "",
+    height: "",
+    weight: "",
+    race: "",
+    eyeColor: "",
+    aliases: []
+  }
+}
+
+async function getIncarcerationInformation($) {
+  // TODO!
+  return {
+    arrestingAgency: "",
+    bookingDate: "",
+    bookingNum: ""
+  }
+}
+
+async function getImgBlob($) {
+  // TODO! Make sure we get the FULL image
+  return [];
+}
+
+async function getInmateProfile($) {
+  const { first, middle, last, affix, permanentId, sex, dob, height, weight, race, eyeColor, aliases } = getInmateProfile($);
+  const { arrestingAgency, bookingDate, bookingNum } = getIncarcerationInformation($);
+  const imgBlob = await getImgBlob($);
+
+  return new InmateProfile(
+    first,
+    middle,
+    last,
+    affix,
+    permanentId,
+    sex,
+    dob,
+    arrestingAgency,
+    bookingDate,
+    bookingNum,
+    height,
+    weight,
+    race,
+    eyeColor,
+    aliases,
+    imgBlob
+  );
 }
 
 async function buildInmateAggregate(inmateUrl) {
@@ -303,13 +352,13 @@ async function buildInmateAggregate(inmateUrl) {
   return new InmateAggregate(inmateProfile, bondInformation, chargeInformation);
 }
 
-async function getListings(date, remainingAttempts = 2, backoffSeconds = 5) {
+async function getListingsForDate(date, remainingAttempts = 2, backoffSeconds = 5) {
   const inmates = [];
   const response = await NetworkUtils.respectfully_get_with_retry(config.datelessInmatesUrl + date, remainingAttempts);
 
   const html = response.data;
   if (html.includes("You are being redirected") && remainingAttempts > 0) {
-    return await getListings(date, remainingAttempts - 1, backoffSeconds * 2);
+    return await getListingsForDate(date, remainingAttempts - 1, backoffSeconds * 2);
   } else if (html.includes("You are being redirected")) {
     throw new Error(`Failed to fetch data (redirected) after ${remainingAttempts} attempts.`);
   }

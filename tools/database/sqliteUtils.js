@@ -18,87 +18,105 @@ function createTables(db) {
   db.prepare(scJailIoTableCreate.chargeInformation).run();
 }
 
-function serializeInmateAggregate(db, inmateAggregate) {
-  const profile = inmateAggregate.inmateProfile;
-  db.transaction((inmateAggregate) => {
-    let info = db.prepare(`
-      INSERT INTO inmate
-      VALUES
-      (NULL, @first_name, @middle_name, @last_name, @affix, @permanent_id, @sex, @dob, @arresting_agency, @booking_date, @booking_number, @height, @weight, @race, @eye_color, @img_url)
-    `).run(
-      profile.first,
-      profile.middle,
-      profile.last,
-      profile.affix,
-      profile.permanentId,
-      profile.sex,
-      profile.dob,
-      profile.arrestingAgency,
-      profile.bookingDateIso8601,
-      profile.bookingNumber,
-      profile.height,
-      profile.weight,
-      profile.race,
-      profile.eyeColor,
-      NULL
-    );
-    const inmateId = info.lastInsertRowId;
-    // TODO: insert image url once we're storing images in S3
+// Todo: optimize transactions / fallbacks
+// Do we really want transaction canceled if one alias is bad?
+function serializeInmateAggregate(db, inmate) {
+  try {
+    const addAggregate = db.transaction((inmate) => {
+      const profile = inmate.inmateProfile;
 
-    const aliasIds = [];
-    for (const alias of profile.aliases) {
-      // check if alias exists
-      info = db.prepare(`
+      let info = db.prepare(`
+        INSERT INTO inmate
+        VALUES
+        (NULL, @first_name, @middle_name, @last_name, @affix, @permanent_id, @sex, @dob, @arresting_agency, @booking_date, @booking_number, @height, @weight, @race, @eye_color, NULL)
+      `).run(
+        {
+          first_name: profile.first,
+          middle_name: profile.middle,
+          last_name: profile.last,
+          affix: profile.affix,
+          permanent_id: profile.permanentId,
+          sex: profile.sex,
+          dob: profile.dob,
+          arresting_agency: profile.arrestingAgency,
+          booking_date: profile.bookingDateIso8601,
+          booking_number: profile.bookingNumber,
+          height: profile.height,
+          weight: profile.weight,
+          race: profile.race,
+          eye_color: profile.eyeColor
+        });
+      const inmateId = info.lastInsertRowid;
+      // TODO: insert image url once we're storing images in S3
+
+      const aliasGetStmt = db.prepare(`
+        SELECT id
+        FROM alias
+        WHERE alias = @alias
+      `);
+      const aliasInsertStmt = db.prepare(`
         INSERT INTO alias
         VALUES
         (NULL, @alias)
-      `).run(alias);
-      aliasIds.push(info.lastInsertRowId);
-    }
-
-    db.prepare(`
-      INSERT INTO img
-      VALUES
-      (NULL, @inmate_id, @img_blob)
-    `).run(
-      inmateId,
-      profile.imgBlob
-    );
-
-    for (const bond of inmateAggregate.bondInformation) {
-      // check if exists first
-      db.prepare(`
-        INSERT INTO bond
-        VALUES
-        (NULL, @inmate_id, @type, @amount_pennies)
-      `).run(
-        inmateId,
-        bond.type,
-        bond.amountPennies
-      );
-    }
-
-    for (const aliasId of aliasIds) {
-      db.prepare(`
+      `);
+      const inmateAliasInsertStmt = db.prepare(`
         INSERT INTO inmate_alias
         VALUES
         (@inmate_id, @alias_id)
-      `).run(inmateId, aliasId);
-    }
+      `);
 
-    for (const charge of inmateAggregate.chargeInformation) {
+      // TODO: Investigate if make this a transaction
+      for (const alias of profile.aliases) {
+        if (!alias) {
+          continue;
+        }
+        let info = null;
+        let aliasQueryResp = aliasGetStmt.get({ alias });
+        if (!aliasQueryResp) {
+          info = aliasInsertStmt.run({ alias: alias });
+        }
+        inmateAliasInsertStmt.run({ inmate_id: inmateId, alias_id: aliasQueryResp ? aliasQueryResp.id : info.lastInsertRowid });
+      }
+
       db.prepare(`
-        INSERT INTO charge
+        INSERT INTO img
         VALUES
-        (NULL, @inmate_id, @description, @grade, @offense_date)
-      `).run(
-        inmateId,
-        charge.description,
-        charge.grade,
-        charge.offenseDate
-      );
-    }
-  });
+        (NULL, @inmate_id, @img_blob)
+      `).run({
+        inmate_id: inmateId,
+        img_blob: profile.imgBlob
+      });
+
+      for (const bond of inmate.bondInformation) {
+        db.prepare(`
+          INSERT INTO bond
+          VALUES
+          (NULL, @inmate_id, @type, @amount_pennies)
+        `).run({
+          inmate_id: inmateId,
+          type: bond.type,
+          amount_pennies: bond.amountPennies
+        });
+      }
+
+      for (const charge of inmate.chargeInformation) {
+        db.prepare(`
+          INSERT INTO charge
+          VALUES
+          (NULL, @inmate_id, @description, @grade, @offense_date)
+        `).run({
+          inmate_id: inmateId,
+          description: charge.description,
+          grade: charge.grade,
+          offense_date: charge.offenseDate
+        });
+      }
+    });
+    addAggregate(inmate);
+
+  } catch (error) {
+    console.log("Error serializing inmate: ", error);
+  }
 }
 
-module.exports = { setupDbCloseConditions, createTables };
+module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate };

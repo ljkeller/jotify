@@ -1,11 +1,11 @@
 class BondInformation {
-    constructor(
-        type,
-        amount,
-    ) {
-        this.type = type;
-        this.amount = amount;
-    }
+  constructor(
+    type,
+    amountPennies,
+  ) {
+    this.type = type;
+    this.amountPennies = amountPennies;
+  }
 }
 
 module.exports = BondInformation;

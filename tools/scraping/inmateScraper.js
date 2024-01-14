@@ -9,21 +9,27 @@ const ChargeInformation = require("../models/chargeInformation");
 const { config } = require("../config");
 const { dollarsToCents } = require("./currency");
 
+// Get a set of aliases from a string
+// Example: "John Doe, Johnny Doe, Johny Doe" -> Set("John Doe", "Johnny Doe", "Johny Doe")
+// Example: "No alias information" -> Set()
+// Example: "" -> Set()
+// Example: "john, jane, john" -> Set("john", "jane")
+//! todo: write some unit tests
 function getAliases(aliasesStr) {
   // instead of no alias, SC jail website uses "No alias information"
   const noAlias = "no alias information";
   if (aliasesStr && aliasesStr.toLowerCase() !== noAlias) {
     try {
-      return aliasesStr
+      return new Set(aliasesStr
         .split(",")
         .map((alias) => alias.trim())
-        .filter((alias) => alias.length > 0);
+        .filter((alias) => alias.length > 0));
     } catch (err) {
       console.log("Error parsing aliases: ", err);
-      return [];
+      return new Set();
     }
   } else {
-    return [];
+    return new Set();
   }
 }
 
@@ -81,7 +87,6 @@ function getCoreProfileData($) {
   const race = $('dt:contains("Race:")').next('dd').text().trim();
   const eyeColor = $('dt:contains("Eye Color:")').next('dd').text().trim();
   const aliasPlaceholder = $('dt:contains("Alias(es):")').next('dd').text().trim();
-  console.log("Alias placeholder: ", aliasPlaceholder);
 
   return {
     first: first,
@@ -179,7 +184,7 @@ async function getListingsForDate(date, remainingAttempts = 2, backoffSeconds = 
       if (relativeInmateUrl && relativeInmateUrl.startsWith("?")) {
         // Dont duplicate '?' from href
         const inmate = await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl.slice(1))
-        console.log(inmate);
+        // console.log(inmate);
         inmates.push(inmate);
       }
       else {

@@ -7,11 +7,12 @@ const config = {
   // Requires appending inmate id (sysid=XX...)
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
-  sleepBetweenRequests: 125, // ms
+  sleepBetweenRequests: 1000, // ms
   databaseFile: ":memory:",
   lastNDays: 1,
 };
 
+// TODO: defaults?
 const scJailIoTableCreate = {
   inmate: `
     CREATE TABLE IF NOT EXISTS inmate (
@@ -44,7 +45,7 @@ const scJailIoTableCreate = {
       inmate_id INTEGER NOT NULL,
       alias_id INTEGER NOT NULL,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id),
-      FOREIGN KEY (alias_id) REFERENCES aliases(id),
+      FOREIGN KEY (alias_id) REFERENCES alias(id),
       PRIMARY KEY (inmate_id, alias_id)
     )
   `,
@@ -68,10 +69,10 @@ const scJailIoTableCreate = {
   chargeInformation: `
     CREATE TABLE IF NOT EXISTS charge (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      inmate_id INTEGER NOT NULL,
-      description TEXT NOT NULL,
-      grade TEXT NOT NULL,
-      offense_date TEXT NOT NULL,
+      inmate_id INTEGER,
+      description TEXT,
+      grade TEXT,
+      offense_date TEXT,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id)
     )
   `

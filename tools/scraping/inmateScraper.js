@@ -8,6 +8,7 @@ const ChargeInformation = require("../models/chargeInformation");
 
 const { config } = require("../config");
 const { dollarsToCents } = require("./currency");
+const { scilDateTimeToIso8601 } = require("../dateUtils");
 
 // Get a set of aliases from a string
 // Example: "John Doe, Johnny Doe, Johny Doe" -> Set("John Doe", "Johnny Doe", "Johny Doe")
@@ -107,8 +108,7 @@ function getCoreProfileData($) {
 function getIncarcerationInformation($) {
   return {
     arrestingAgency: $("dt:contains('Arresting Agency')").next('dd').text().trim(),
-    // TODO! enforce date format
-    bookingDate: $("dt:contains('Booking Date Time')").next('dd').text().trim(),
+    bookingDate: scilDateTimeToIso8601($("dt:contains('Booking Date Time')").next('dd').text().trim()),
     bookingNum: $("dt:contains('Booking Number')").next('dd').text().trim()
   }
 }

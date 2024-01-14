@@ -25,6 +25,9 @@ function serializeInmateAggregate(db, inmate) {
     const addAggregate = db.transaction((inmate) => {
       const profile = inmate.inmateProfile;
 
+      // The reason we can always insert all inmates is because the current
+      // schema has a unique constraint across several columns. Thus,
+      // duplicates will error out.
       let info = db.prepare(`
         INSERT INTO inmate
         VALUES

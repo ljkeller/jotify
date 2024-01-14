@@ -8,11 +8,10 @@ const config = {
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
   sleepBetweenRequests: 1000, // ms
-  databaseFile: "checkdup.db",
+  databaseFile: ":memory:",
   lastNDays: 1,
 };
 
-// TODO: defaults?
 const scJailIoTableCreate = {
   inmate: `
     CREATE TABLE IF NOT EXISTS inmate (
@@ -63,7 +62,7 @@ const scJailIoTableCreate = {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       inmate_id INTEGER NOT NULL,
       type TEXT NOT NULL,
-      amount_pennies INTEGER NOT NULL,
+      amount_pennies INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id)
     )
   `,

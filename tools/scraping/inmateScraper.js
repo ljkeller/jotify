@@ -8,7 +8,7 @@ const ChargeInformation = require("../models/chargeInformation");
 
 const { config } = require("../config");
 const { dollarsToCents } = require("./currency");
-const { scilDateTimeToIso8601 } = require("../dateUtils");
+const { scilDateTimeToIso8601, ambiguousDateToIso8601Date } = require("../dateUtils");
 
 // Get a set of aliases from a string
 // Example: "John Doe, Johnny Doe, Johny Doe" -> Set("John Doe", "Johnny Doe", "Johny Doe")
@@ -67,7 +67,7 @@ function getChargeInformation($) {
     const td = $(tr).find("td");
     const description = $(td[1]).text().trim();
     const grade = $(td[2]).text().trim();
-    const offenseDate = $(td[3]).text().trim();
+    const offenseDate = ambiguousDateToIso8601Date($(td[3]).text().trim());
     charges.push(new ChargeInformation(description, grade, offenseDate));
   });
 
@@ -81,8 +81,7 @@ function getCoreProfileData($) {
   const affix = $('dt:contains("Affix:")').next('dd').text().trim();
   const permanentId = $('dt:contains("Permanent ID:")').next('dd').text().trim();
   const sex = $('dt:contains("Sex:")').next('dd').text().trim();
-  // TODO! enforce date format
-  const dob = $('dt:contains("Date of Birth:")').next('dd').text().trim();
+  const dob = ambiguousDateToIso8601Date($('dt:contains("Date of Birth:")').next('dd').text().trim());
   const height = $('dt:contains("Height:")').next('dd').text().trim();
   const weight = $('dt:contains("Weight:")').next('dd').text().trim();
   const race = $('dt:contains("Race:")').next('dd').text().trim();

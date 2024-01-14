@@ -12,7 +12,7 @@ main();
 async function main() {
   const dates = getLastNDaysLocal(config.lastNDays);
 
-  const db = new Database(config.databaseFile, { verbose: console.log });
+  const db = new Database(config.databaseFile, { verbose: config.printDbQueries ? console.log : null });
   setupDbCloseConditions(db);
 
   // eventually, we will want to crawl continuously

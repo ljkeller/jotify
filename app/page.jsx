@@ -1,3 +1,6 @@
+import { RiUserSearchFill } from "react-icons/ri";
+import { FaMask } from 'react-icons/fa';
+
 import styles from '../styles/Home.module.css'
 import Image from 'next/image';
 import Database from 'better-sqlite3';
@@ -81,11 +84,13 @@ export default function Home() {
           <span>jail.io</span>
         </h1>
 
-        <div className={styles.search}>
-          <input type="text" placeholder="Search..." />
-          <button>Search</button>
+        <div className={styles.searchOptionsContainer}>
+          <FaMask className={`${styles.searchIcon} ${styles.complementary}`} />
+          <div className={styles.search}>
+            <RiUserSearchFill className={styles.searchIcon} />
+            <input type="text" placeholder="Search by name..." />
+          </div>
         </div>
-
 
         <div className={styles.icons}></div>
         <div className={styles.grid7Days}>
@@ -95,7 +100,7 @@ export default function Home() {
         <div className={styles.records}>
           {records}
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   )
 }

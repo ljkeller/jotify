@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import styles from '/styles/Record.module.css';
 
@@ -31,7 +32,7 @@ function getInmate() {
     "130",
     "white",
     "brown",
-    ["Ash", "Ashy", "Ashy K", "Shakina", "Shakina K", "Shakina Kellenberger"],
+    ["Ash", "Ash", "Ashy", "Ashy K", "Shakina", "Ashy", "Ashy K", "Shakina", "Shakina K", "Shakina Kellenberger"],
     null,
   );
   return new InmateAggregate(
@@ -46,34 +47,77 @@ export default function Record({ record }) {
   return (
     <div className={styles.recordOuter}>
       <div className={styles.profileSidebar}>
+        <Image
+          src='/in1.jpg'
+          width={300}
+          height={375}
+          className={styles.profileImage}
+          alt='inmate image'
+          priority={true}
+        ></Image>
         <div className={styles.profileContainer}>
-          <Image
-            src='/in1.jpg'
-            width={300}
-            height={375}
-            className={styles.profileImage}
-            alt='inmate image'
-            priority={true}
-          ></Image>
-          <h3>Profile</h3>
-          <div>
-            <div className={styles.profileRow}>first: </div>
+
+          <h3 className={styles.primaryHeader}>Profile</h3>
+          <div className={styles.kvProfile}>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>First: </div>
+              <div className={styles.value}>{inmate.inmateProfile.first}</div>
+            </div><div className={styles.kvContainer}>
+              <div className={styles.key}>Middle: </div>
+              <div className={styles.value}>{inmate.inmateProfile.middle}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Last: </div>
+              <div className={styles.value}>{inmate.inmateProfile.last}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Affix: </div>
+              <div className={styles.value}>{inmate.inmateProfile.affix}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Permanent ID: </div>
+              <div className={styles.value}>{inmate.inmateProfile.permanentId}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Sex: </div>
+              <div className={styles.value}>{inmate.inmateProfile.sex}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Date of birth: </div>
+              <div className={styles.value}>{inmate.inmateProfile.dob}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Height: </div>
+              <div className={styles.value}>{inmate.inmateProfile.height}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Weight: </div>
+              <div className={styles.value}>{inmate.inmateProfile.weight}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Race: </div>
+              <div className={styles.value}>{inmate.inmateProfile.race}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Eye Color: </div>
+              <div className={styles.value}>{inmate.inmateProfile.eyeColor}</div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className={styles.inmateRecordColumn}>
-        <h1>{inmate.inmateProfile.getFullName()}</h1>
-        <div className={styles.aliasContainer}>
-          <h3>Also Known As</h3>
-          <ul className={styles.aliasList}>
+        <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
+        <div className={styles.aliasHeaderContainer}>
+          <h3 className={styles.secondaryHeader}>🎭Aliases</h3>
+          <div className={styles.aliasDivider}>
             {inmate.inmateProfile.aliases.map((alias, idx) =>
-              <li key={idx}>{alias}</li>
+              <Link href={`/alias/${alias}`} prefetch={false} key={idx} className={styles.aliasLink}>{alias}</Link>
             )}
-          </ul>
+          </div>
         </div>
-        <div className={styles.ChargeInformation}>
-          <h3>Charges</h3>
+        <div className={styles.chargeInformation}>
+          <h3 className={styles.secondaryHeader}>Charges</h3>
           <ul className={styles.chargeList}>
             {inmate.chargeInformation.map((charge, idx) =>
               <li key={idx}>{charge.offenseDate + " " + charge.description + " " + charge.grade}</li>
@@ -81,7 +125,7 @@ export default function Record({ record }) {
           </ul>
         </div>
         <div className={styles.bondInformation}>
-          <h3>Bond</h3>
+          <h3 className={styles.secondaryHeader}>Bond</h3>
           <ul className={styles.bondList}>
             {inmate.bondInformation.map((bond, idx) =>
               <li key={idx}>{bond.type + " $" + bond.amountPennies}</li>
@@ -91,7 +135,7 @@ export default function Record({ record }) {
       </div>
 
       <div className={styles.recommendedSidebar}>
-        <h2>Related</h2>
+        <h2 className={styles.primaryHeader}>Related</h2>
       </div>
     </ div >
   );

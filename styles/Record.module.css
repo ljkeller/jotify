@@ -1,0 +1,151 @@
+.recordOuter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+
+  color: var(--text-light);
+}
+
+.inmateName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-top: 0px;
+
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.primaryHeader,
+.secondaryHeader {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0px;
+}
+
+.primaryHeader {
+  color: var(--primary-color);
+}
+
+.secondaryHeader {
+  color: var(--complementary-color);
+}
+
+.profileSidebar {}
+
+.profileContainer {
+  padding: 10px 0;
+  /* background-color: var(--background-color-two); */
+  border-radius: 8px;
+}
+
+.kvContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
+
+  background-color: var(--background-color-two);
+  box-shadow: 0 2px 4px var(--text-shadow);
+}
+
+.key {
+  font-weight: bold;
+  color: var(--complementary-color);
+}
+
+.profileImage {
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.profileRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inmateRecordColumn {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding: 20px;
+  /* background-color: var(--background-color-two); */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--text-shadow);
+  margin: 0px 15px 0px 15px;
+  gap: 20px;
+  max-width: 600px;
+  width: 100%;
+  height: fit-content;
+}
+
+.aliasHeaderContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.aliasDivider {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chargeInformation,
+.bondInformation {
+  background-color: var(--background-color-two);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chargeList,
+.bondList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.aliasLink {
+  margin: 0;
+  padding: 10px;
+  color: var(--text-dark);
+
+  background-color: var(--primary-color);
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px var(--secondary-color);
+
+  text-decoration: none;
+  font-weight: 600;
+  /* font-size: 0.9rem; */
+}
+
+.aliasLink:hover {
+  background-color: var(--complementary-color);
+  color: var(--text-light);
+  scale: 1.08;
+}
+
+.chargeList li,
+.bondList li {
+  padding: 10px;
+  border-bottom: 1px solid var(--text-shadow);
+}
+
+.chargeList li:last-child,
+.bondList li:last-child {
+  border-bottom: none;
+}
+
+.recommendedSidebar {}

@@ -42,8 +42,22 @@ function getInmate() {
   );
 }
 
+function getRecommended() {
+  return [
+    {
+      firstLast: "DERRICK GULLEY",
+      imgPath: "/in2.jpg"
+    },
+    {
+      firstLast: "GUADALUPE PADAVICH",
+      imgPath: "/in3.jpg"
+    }
+  ];
+}
+
 export default function Record({ record }) {
   const inmate = getInmate();
+  const recommended = getRecommended();
   return (
     <div className={styles.recordOuter}>
       <div className={styles.profileSidebar}>
@@ -136,6 +150,12 @@ export default function Record({ record }) {
 
       <div className={styles.recommendedSidebar}>
         <h2 className={styles.primaryHeader}>Related</h2>
+        {recommended.map((inmate, idx) =>
+          <div key={idx} className={styles.recommendedContainer}>
+            <Image className={styles.recommendedImg} src={inmate.imgPath} width={40} height={50} alt={`${styles.firstLast} img`} />
+            <Link className={`${styles.hiddenLink} ${styles.recommendedLink}`} href="/record" >{inmate.firstLast}</Link>
+          </div>
+        )}
       </div>
     </ div >
   );

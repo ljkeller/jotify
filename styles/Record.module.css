@@ -34,7 +34,11 @@
   color: var(--complementary-color);
 }
 
-.profileSidebar {}
+.profileSidebar {
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--text-shadow);
+}
 
 .profileContainer {
   padding: 10px 0;
@@ -148,4 +152,43 @@
   border-bottom: none;
 }
 
-.recommendedSidebar {}
+.recommendedSidebar {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--text-shadow);
+  height: fit-content
+}
+
+.hiddenLink {
+  text-decoration: none;
+}
+
+.recommendedContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 10px;
+  background-color: var(--background-color-two);
+  box-shadow: 0 2px 4px var(--text-shadow);
+}
+
+.recommendedContainer:hover,
+.recommendedContainer .recommendedLink:hover {
+  color: var(--complementary-color);
+  scale: 1.01;
+}
+
+.recommendedImg {
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  width: 40px;
+  height: 40px;
+}
+
+.recommendedLink {
+  margin: 5px;
+  color: var(--primary-color);
+  font-weight: 600;
+}

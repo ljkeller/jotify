@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { FaMask } from 'react-icons/fa';
 
 import styles from '/styles/Record.module.css';
 
@@ -123,7 +124,10 @@ export default function Record({ record }) {
       <div className={styles.inmateRecordColumn}>
         <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
         <div className={styles.aliasHeaderContainer}>
-          <h3 className={styles.secondaryHeader}>🎭Aliases</h3>
+          <div className={styles.iconHeader}>
+            <FaMask className={styles.icon} />
+            <h3 className={styles.secondaryHeader}>Aliases</h3>
+          </div>
           <div className={styles.aliasDivider}>
             {inmate.inmateProfile.aliases.map((alias, idx) =>
               <Link href={`/alias/${alias}`} prefetch={false} key={idx} className={styles.aliasLink}>{alias}</Link>

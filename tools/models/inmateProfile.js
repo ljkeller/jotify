@@ -34,6 +34,15 @@ class InmateProfile {
     this.aliases = aliases;
     this.imgBlob = imgBlob;
   }
+
+  getCoreAttributes() {
+    return {
+      firstName: this.first,
+      lastName: this.last,
+      dob: this.dob,
+      bookingDate: this.bookingDateIso8601,
+    }
+  }
 }
 
 module.exports = InmateProfile;

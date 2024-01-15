@@ -118,7 +118,7 @@ function serializeInmateAggregate(db, inmate) {
     addAggregate(inmate);
 
   } catch (error) {
-    console.log(`Error serializing inmate: ${inmate}. Error -> ${error}`);
+    console.error(`Error serializing inmate: ${JSON.stringify(inmate.inmateProfile.getCoreAttributes(), null, 2)}. Error -> ${error}`);
   }
 }
 

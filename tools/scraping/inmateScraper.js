@@ -16,6 +16,7 @@ const { scilDateTimeToIso8601, ambiguousDateToIso8601Date } = require("../dateUt
 // Example: "" -> Set()
 // Example: "john, jane, john" -> Set("john", "jane")
 //! todo: write some unit tests
+//! TODO: dont let this happen "GUEY"
 function getAliases(aliasesStr) {
   // instead of no alias, SC jail website uses "No alias information"
   const noAlias = "no alias information";

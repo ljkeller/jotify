@@ -1,42 +1,43 @@
 .header {
-    width: 100%;
-    /* background-color: #333; */
-    padding: 1rem 0;
+  width: 100%;
+  padding: 1rem 0;
+
+  border-bottom: 1px solid var(--background-color-two);
 }
 
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
 .complementary {
-    color: var(--complementary-color);
+  color: var(--complementary-color);
 }
 
 /* Make sure to change color of <sc> and <jail.io> when either are hovered! */
 .logo:hover,
 .logo:hover .complementary,
 .link:hover {
-    color: var(--text-light);
+  color: var(--text-light);
 }
 
 .links {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .link {
-    text-decoration: none;
-    color: var(--text-shadow);
-    margin: 10px;
+  text-decoration: none;
+  color: var(--text-shadow);
+  margin: 10px;
 }

@@ -35,6 +35,10 @@ class InmateProfile {
     this.imgBlob = imgBlob;
   }
 
+  getFullName() {
+    return `${this.first} ${this.middle} ${this.last} ${this.affix}`;
+  }
+
   getCoreAttributes() {
     return {
       firstName: this.first,

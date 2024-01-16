@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
+import { addDays, parse, formatISO, add } from 'date-fns';
+
 import styles from '/styles/DateScroller.module.css';
 import Record from '/app/ui/compressedRecord';
 
@@ -49,12 +51,31 @@ function getInmateData(date) {
   return [r1, r2, r3];
 }
 
+function getNextDayQuery(date) {
+  return "/date?date=" + formatISO(addDays(date, 1), { representation: 'date' });
+}
+
+function getPrevDayQuery(date) {
+  return "/date?date=" + formatISO(addDays(date, -1), { representation: 'date' });
+}
+
+
 export default function DateScroller({ params, searchParams }) {
 
   console.log(params);
   console.log(searchParams);
+  let date = null;
+  // TODO: fix off by one error
+  try {
+    date = parse(searchParams?.date, 'yyyy-MM-dd', new Date());
+    date = formatISO(date, { representation: 'date' });
+  } catch (err) {
+    // TODO: specify errors for client here
+    // TODO: use central time zone, not just local time zone
+    console.log("error parsing date, using today's date");
+    date = formatISO(new Date(), { representation: 'date' });
+  }
 
-  const date = searchParams?.date || new Date().toLocaleDateString();
   // TODO: error handle search params
   const inmateData = getInmateData(date);
   // TODO: remove this priority heuristic that makes first 5 records priority
@@ -70,9 +91,9 @@ export default function DateScroller({ params, searchParams }) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>
-          <Link className={styles.headerIcon} href="/date"><SlArrowLeft /></Link>
+          <Link className={styles.headerIcon} href={getPrevDayQuery(date)}><SlArrowLeft /></Link>
           {date}
-          <Link className={styles.headerIcon} href="/date"><SlArrowRight /></Link>
+          <Link className={styles.headerIcon} href={getNextDayQuery(date)}><SlArrowRight /></Link>
         </h1>
       </div>
       <div className={styles.filters}>

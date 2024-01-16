@@ -12,6 +12,7 @@ main();
 async function main() {
   const dates = getLastNDaysLocal(config.lastNDays);
 
+  console.log(`Building db: ${config.databaseFile}`);
   const db = new Database(config.databaseFile, { verbose: config.printDbQueries ? console.log : null });
   setupDbCloseConditions(db);
 

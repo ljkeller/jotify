@@ -16,6 +16,7 @@ class InmateProfile {
     eyeColor,
     aliases,
     imgBlob,
+    scilSysId
   ) {
     this.first = first;
     this.middle = middle;
@@ -33,6 +34,7 @@ class InmateProfile {
     this.eyeColor = eyeColor;
     this.aliases = aliases;
     this.imgBlob = imgBlob;
+    this.scilSysId = scilSysId;
   }
 
   getFullName() {

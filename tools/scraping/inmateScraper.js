@@ -113,7 +113,7 @@ function getIncarcerationInformation($) {
   }
 }
 
-async function getImgBlob($) {
+async function getImgBlobWithFallback($) {
   const imgUrl = $('.inmates img').attr('src');
   if (!imgUrl) {
     return null;
@@ -123,16 +123,16 @@ async function getImgBlob($) {
     const response = await NetworkUtils.respectfully_get_with_retry(imgUrl);
     return response.data;
   } catch (error) {
-    console.error('Error fetching image:', error);
+    console.error(`Error fetching image blob for ${imgUrl} with error ${error}. Storing null img blob.`);
     return null;
   }
 }
 
 
-async function getInmateProfile($) {
+async function getInmateProfile($, sysId) {
   const { first, middle, last, affix, permanentId, sex, dob, height, weight, race, eyeColor, aliases } = getCoreProfileData($);
   const { arrestingAgency, bookingDate, bookingNum } = getIncarcerationInformation($);
-  const imgBlob = await getImgBlob($);
+  const imgBlob = await getImgBlobWithFallback($);
 
   return new InmateProfile(
     first,
@@ -150,17 +150,20 @@ async function getInmateProfile($) {
     race,
     eyeColor,
     aliases,
-    imgBlob
+    imgBlob,
+    sysId
   );
 }
 
-async function buildInmateAggregate(inmateUrl) {
-  const { data } = await NetworkUtils.respectfully_get_with_retry(inmateUrl);
+// Assumes dropped the leading '?' from sysId
+async function buildInmateAggregate(inmateSysId) {
+  const fullInmateUrl = config.baseInmateLink + inmateSysId;
+  const { data } = await NetworkUtils.respectfully_get_with_retry(fullInmateUrl);
   const $ = cheerio.load(data);
 
-  const chargeInformation = getChargeInformation($, data);
-  const bondInformation = getBondInformation($, data);
-  const inmateProfile = await getInmateProfile($, data);
+  const chargeInformation = getChargeInformation($);
+  const bondInformation = getBondInformation($);
+  const inmateProfile = await getInmateProfile($, inmateSysId);
   return new InmateAggregate(inmateProfile, bondInformation, chargeInformation);
 }
 
@@ -180,10 +183,10 @@ async function getListingsForDate(date, remainingAttempts = 2, backoffSeconds = 
   const rows = $(".inmates-table tr").slice(1).toArray();
   for (const tr of rows) {
     try {
-      let relativeInmateUrl = $(tr).find("td").first().find("a").attr("href");
-      if (relativeInmateUrl && relativeInmateUrl.startsWith("?")) {
+      let urlSysId = $(tr).find("td").first().find("a").attr("href");
+      if (urlSysId && urlSysId.startsWith("?")) {
         // Dont duplicate '?' from href
-        const inmate = await buildInmateAggregate(config.baseInmateLink + relativeInmateUrl.slice(1))
+        const inmate = await buildInmateAggregate(urlSysId.slice(1))
         // console.log(inmate);
         inmates.push(inmate);
       }
@@ -192,7 +195,7 @@ async function getListingsForDate(date, remainingAttempts = 2, backoffSeconds = 
         continue;
       }
     } catch (err) {
-      console.error(err);
+      console.error(`Failed to parse tr for inmate at sysid ${urlSysId} with error ${err}`);
       continue;
     }
   }

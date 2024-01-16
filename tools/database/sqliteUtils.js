@@ -31,7 +31,7 @@ function serializeInmateAggregate(db, inmate) {
       let info = db.prepare(`
         INSERT INTO inmate
         VALUES
-        (NULL, @first_name, @middle_name, @last_name, @affix, @permanent_id, @sex, @dob, @arresting_agency, @booking_date, @booking_number, @height, @weight, @race, @eye_color, NULL)
+        (NULL, @first_name, @middle_name, @last_name, @affix, @permanent_id, @sex, @dob, @arresting_agency, @booking_date, @booking_number, @height, @weight, @race, @eye_color, NULL, @scil_sysid, 0)
       `).run(
         {
           first_name: profile.first,
@@ -47,7 +47,8 @@ function serializeInmateAggregate(db, inmate) {
           height: profile.height,
           weight: profile.weight,
           race: profile.race,
-          eye_color: profile.eyeColor
+          eye_color: profile.eyeColor,
+          scil_sysid: profile.scilSysId
         });
       const inmateId = info.lastInsertRowid;
       // TODO: insert image url once we're storing images in S3

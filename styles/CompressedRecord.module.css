@@ -1,80 +1,80 @@
 .record {
-    display: flex;
-    /* align-items: center; */
-    width: 100%;
-    min-width: 500px;
-    max-width: 680px;
+  display: flex;
+  /* align-items: center; */
+  width: 100%;
+  min-width: 500px;
+  max-width: 680px;
 
-    background-color: var(--background-color-two);
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color-two);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .record:hover {
-    transform: scale(1.02);
-    cursor: pointer;
+  transform: scale(1.02);
+  cursor: pointer;
 }
 
 .mugshot {
-    margin-right: 15px;
+  margin-right: 15px;
 }
 
 .headerDetails {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .nameBox {
-    /* contrain names to prevent names expanding record container */
-    width: 400px;
+  /* contrain names to prevent names expanding record container */
+  width: 400px;
 }
 
 .name {
-    margin: 0;
-    /* show ellipsis in space of extremely long names */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--primary-color);
+  margin: 0;
+  /* show ellipsis in space of extremely long names */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--primary-color);
 }
 
 .name:hover {
-    color: var(--complementary-color);
+  color: var(--complementary-color);
 }
 
 .date {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--text-light);
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-light);
 }
 
 .severity {
-    padding-right: 5px;
+  padding-right: 5px;
 }
 
 .felony {
-    color: tomato;
+  color: tomato;
 }
 
 .misdemeanor {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .charges {
-    display: flex;
-    flex-direction: column;
-    padding-left: 1rem;
-    margin-top: 10px;
-    color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+  margin-top: 10px;
+  color: var(--text-light);
 }
 
 .charge {
-    margin: 0;
-    font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 .hiddenLink {
-    /* remove the automatic link styling */
-    text-decoration: none;
+  /* remove the automatic link styling */
+  text-decoration: none;
 }

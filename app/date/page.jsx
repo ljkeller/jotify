@@ -59,21 +59,21 @@ function getPrevDayQuery(date) {
   return "/date?date=" + formatISO(addDays(date, -1), { representation: 'date' });
 }
 
-
 export default function DateScroller({ params, searchParams }) {
-
-  console.log(params);
-  console.log(searchParams);
   let date = null;
-  // TODO: fix off by one error
+  let dateStrIso8601 = null;
   try {
     date = parse(searchParams?.date, 'yyyy-MM-dd', new Date());
-    date = formatISO(date, { representation: 'date' });
   } catch (err) {
     // TODO: specify errors for client here
     // TODO: use central time zone, not just local time zone
-    console.log("error parsing date, using today's date");
-    date = formatISO(new Date(), { representation: 'date' });
+    date = new Date();
+    date.setHours(0, 0, 0, 0);
+    console.log("error parsing date, using today's date: ", date);
+  } finally {
+    console.log("date before formatISO: ", date);
+    dateStrIso8601 = formatISO(date, { representation: 'date' });
+    console.log("dateStr after formatISO: ", dateStrIso8601);
   }
 
   // TODO: error handle search params
@@ -92,7 +92,7 @@ export default function DateScroller({ params, searchParams }) {
       <div className={styles.header}>
         <h1>
           <Link className={styles.headerIcon} href={getPrevDayQuery(date)}><SlArrowLeft /></Link>
-          {date}
+          {dateStrIso8601}
           <Link className={styles.headerIcon} href={getNextDayQuery(date)}><SlArrowRight /></Link>
         </h1>
       </div>

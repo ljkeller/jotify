@@ -123,4 +123,13 @@ function serializeInmateAggregate(db, inmate) {
   }
 }
 
-module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate };
+function getInmateIdsWithNullImages(db) {
+  return db.prepare(`
+    SELECT inmate.id, inmate.scil_sysid
+    FROM inmate
+    JOIN img ON inmate.id = img.inmate_id
+    WHERE img.img IS NULL;
+  `).all();
+}
+
+module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages };

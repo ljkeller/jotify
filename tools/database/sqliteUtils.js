@@ -132,4 +132,12 @@ function getInmateIdsWithNullImages(db) {
   `).all();
 }
 
-module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages };
+function countInmatesOnDate(db, iso8601DateStr) {
+  return db.prepare(`
+    SELECT COUNT(*)
+    FROM inmate
+    WHERE date(booking_date) = date(@iso8601DateStr)
+  `).get({ iso8601DateStr })['COUNT(*)'];
+}
+
+module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate };

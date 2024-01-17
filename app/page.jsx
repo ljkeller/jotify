@@ -2,13 +2,13 @@ import { RiUserSearchFill } from "react-icons/ri";
 import { FaMask } from 'react-icons/fa';
 
 import styles from '../styles/Home.module.css'
-import Image from 'next/image';
 import Database from 'better-sqlite3';
+import { formatISO } from 'date-fns';
 
-import Inmate from '../tools/models/Inmate';
-import { tables } from '../tools/config';
 import TrafficCalendar from './ui/trafficCalendar';
 import Record from '/app/ui/compressedRecord';
+import { config } from '/tools/config';
+import { countInmatesOnDate } from "/tools/database/sqliteUtils";
 
 function getInmateData() {
   const r1 = {
@@ -53,21 +53,26 @@ function getInmateData() {
   return [r1, r2, r3];
 }
 
+function getLast7DaysInmateTraffic(db) {
+  const traffic = [];
+  for (let i = 6; i >= 0; i--) {
+    let date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = formatISO(date, { representation: 'date' });
+    traffic.push({ date: dateStr, inmateCount: countInmatesOnDate(db, dateStr) });
+  }
+  return traffic;
+}
+
 export const metadata = {
   title: 'scjail.io Home',
   description: 'Scott county inmate listing- but better',
 }
 
 export default function Home() {
-  const trafficLast7Days = [
-    { date: "1/1/24", inmateCount: 13 },
-    { date: "1/2/24", inmateCount: 16 },
-    { date: "1/3/24", inmateCount: 19 },
-    { date: "1/4/24", inmateCount: 26 },
-    { date: "1/5/24", inmateCount: 23 },
-    { date: "1/6/24", inmateCount: 19 },
-    { date: "1/7/24", inmateCount: 3 },
-  ];
+  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null });
+  const trafficLast7Days = getLast7DaysInmateTraffic(db);
+  db.close();
 
   const inmateData = getInmateData();
   // TODO: remove this priority heuristic that makes first 5 records priority

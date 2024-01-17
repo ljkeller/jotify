@@ -11,6 +11,8 @@ const config = {
   databaseFile: "last8daysfull-scjailio-1-14-24.db",
   printDbQueries: true,
   lastNDays: 2,
+
+  appReadFile: "last8daysfull-scjailio-1-14-24.db",
 };
 
 const scJailIoTableCreate = {

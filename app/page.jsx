@@ -8,7 +8,7 @@ import { formatISO } from 'date-fns';
 import TrafficCalendar from './ui/trafficCalendar';
 import Record from '/app/ui/compressedRecord';
 import { config } from '/tools/config';
-import { countInmatesOnDate } from "/tools/database/sqliteUtils";
+import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
 
 function getInmateData() {
   const r1 = {
@@ -72,6 +72,8 @@ export const metadata = {
 export default function Home() {
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null });
   const trafficLast7Days = getLast7DaysInmateTraffic(db);
+
+  const compressedRecordInfo = getCompressedInmateDataForDate(db, formatISO(new Date(), { representation: 'date' }));
   db.close();
 
   const inmateData = getInmateData();

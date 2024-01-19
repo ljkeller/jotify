@@ -23,7 +23,7 @@ async function findAndRepairNullImgInmates() {
       continue;
     }
 
-    // TODO! What type is this? Should we convert to string isntead of relying on coersion?
+    // TODO! What type is this? Should we convert to string instead of relying on coersion?
     const fullInmateUrl = config.baseInmateLink + scil_sysid;
     const data = await NetworkUtils.respectfully_get_with_retry(fullInmateUrl);
     const $ = cheerio.load(data);

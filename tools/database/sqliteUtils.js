@@ -142,4 +142,18 @@ function countInmatesOnDate(db, iso8601DateStr) {
   `).get({ iso8601DateStr })['COUNT(*)'];
 }
 
-module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate };
+function getCompressedInmateDataForDate(db, iso8601DateStr) {
+  console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
+  const inData = db.prepare(`
+    SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+    FROM inmate
+    WHERE date(booking_date) = date(@iso8601DateStr)
+  `).all({ iso8601DateStr });
+
+  // TODO: Figure out how to do this with one query? Do I need two?
+
+  console.log(inData);
+  return inData;
+}
+
+module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate };

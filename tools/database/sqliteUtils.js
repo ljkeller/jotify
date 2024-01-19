@@ -123,13 +123,15 @@ function serializeInmateAggregate(db, inmate) {
   }
 }
 
-function getInmateIdsWithNullImages(db) {
+function getInmateIdsWithNullImages(db, startDateISO, endDateISO) {
+  console.log("Getting inmates with null images between", startDateISO, " and ", endDateISO);
   return db.prepare(`
     SELECT inmate.id, inmate.scil_sysid
     FROM inmate
     JOIN img ON inmate.id = img.inmate_id
-    WHERE img.img IS NULL;
-  `).all();
+    WHERE img.img IS NULL AND
+    date(inmate.booking_date) BETWEEN date(@starting_date) AND date(@ending_date)
+  `).all({ starting_date: startDateISO, ending_date: endDateISO });
 }
 
 function countInmatesOnDate(db, iso8601DateStr) {

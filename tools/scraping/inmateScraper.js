@@ -203,4 +203,4 @@ async function getListingsForDate(date, remainingAttempts = 2, backoffSeconds = 
   return inmates;
 }
 
-module.exports = { getListingsForDates };
+module.exports = { getListingsForDates, getImgBlobWithFallback };

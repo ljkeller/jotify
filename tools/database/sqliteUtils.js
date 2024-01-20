@@ -150,10 +150,47 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
     WHERE date(booking_date) = date(@iso8601DateStr)
   `).all({ iso8601DateStr });
 
-  // TODO: Figure out how to do this with one query? Do I need two?
+  const compressedInmates = [];
+  for (const inmate of inData) {
+    try {
+      const charges = db.prepare(`
+        SELECT description, grade, offense_date
+        FROM charge
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
 
-  console.log(inData);
-  return inData;
+      const bond = db.prepare(`
+        SELECT type, amount_pennies
+        FROM bond
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
+      let bondPennies = bond.reduce((acc, curr) => acc + curr.amount_pennies, 0);
+      bondPennies = bond.some((bond) => bond.type.toLowerCase().includes('unbondable')) ? Infinity : bondPennies;
+
+      const img = db.prepare(`
+        SELECT img
+        FROM img
+        WHERE inmate_id = @inmate_id
+      `).get({ inmate_id: inmate.id });
+
+      const compressedInmate = {
+        first: inmate.first_name,
+        middle: inmate.middle_name,
+        last: inmate.last_name,
+        affix: inmate.affix,
+        bookingDate: inmate.booking_date,
+        dob: inmate.dob,
+        img: img.img,
+        charges: charges,
+        bond: bondPennies
+      };
+      compressedInmates.push(compressedInmate);
+    } catch (err) {
+      console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
+    }
+  }
+  console.log(compressedInmates.length);
+  return compressedInmates;
 }
 
 module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate };

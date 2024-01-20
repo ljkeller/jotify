@@ -3,8 +3,8 @@ function getMaxChargeGrade(charges) {
 }
 
 class CompressedInmate {
-  constructor(first, middle, last, affix, bookingDate, bondPennies, dob, img, charges) {
-    this.fullName = first + ' ' + middle + ' ' + last + ' ' + affix;
+  constructor(first, middle, last, affix, bookingDate, bondPennies, dob, img, charges, bondPennies) {
+    this.fullName = (first + ' ' + middle + ' ' + last + ' ' + affix).trim();
     this.bookingDate = bookingDate;
     this.bondPennies = bondPennies;
     this.dob = dob;

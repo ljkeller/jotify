@@ -8,11 +8,11 @@ const config = {
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
   sleepBetweenRequests: 10000, // ms
-  databaseFile: "last8daysfull-scjailio-1-14-24.db",
-  printDbQueries: true,
+  databaseFile: "scjailio-1-20-24.db",
+  printDbQueries: false,
   lastNDays: 2,
 
-  appReadFile: "last8daysfull-scjailio-1-14-24.db",
+  appReadFile: "scjailio-1-20-24.db",
 };
 
 const scJailIoTableCreate = {

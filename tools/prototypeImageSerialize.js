@@ -27,7 +27,7 @@ async function main() {
     SELECT img
     FROM img
     WHERE id = 1`).get();
-  console.log(postSerialize);
+  console.log(postSerialize.img);
   fs.writeFileSync('testPostSerialize.jpg', postSerialize.img, 'binary');
 
   db.close();

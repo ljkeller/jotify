@@ -1,16 +1,17 @@
 function getMaxChargeGrade(charges) {
-  charges.includes('felony') ? 'felony' : 'misdemeanor';
+  // TODO: parse array
+  return "misdemeanor";
 }
 
 class CompressedInmate {
-  constructor(first, middle, last, affix, bookingDate, bondPennies, dob, img, charges, bondPennies) {
+  constructor(first, middle, last, affix, bookingDate, bondPennies, dob, img, chargeInformationArray) {
     this.fullName = (first + ' ' + middle + ' ' + last + ' ' + affix).trim();
     this.bookingDate = bookingDate;
     this.bondPennies = bondPennies;
     this.dob = dob;
     this.img = img;
-    this.chargeGrade = getMaxChargeGrade(charges);
-    this.charges = charges;
+    this.chargeGrade = getMaxChargeGrade(chargeInformationArray);
+    this.chargeInformationArray = chargeInformationArray;
   }
 }
 

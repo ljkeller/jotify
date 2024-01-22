@@ -120,7 +120,8 @@ async function getImgBlobWithFallback($) {
   }
 
   try {
-    const response = await NetworkUtils.respectfully_get_with_retry(imgUrl);
+    const reqConf = { method: 'get', url: imgUrl, responseType: 'arraybuffer', responseEncoding: 'binary' };
+    const response = await NetworkUtils.respectful_axios(reqConf);
     return response.data;
   } catch (error) {
     console.error(`Error fetching image blob for ${imgUrl} with error ${error}. Storing null img blob.`);
@@ -187,7 +188,6 @@ async function getListingsForDate(date, remainingAttempts = 2, backoffSeconds = 
       if (urlSysId && urlSysId.startsWith("?")) {
         // Dont duplicate '?' from href
         const inmate = await buildInmateAggregate(urlSysId.slice(1))
-        // console.log(inmate);
         inmates.push(inmate);
       }
       else {

@@ -74,6 +74,9 @@ export default function Home() {
   const trafficLast7Days = getLast7DaysInmateTraffic(db);
 
   const compressedRecordInfo = getCompressedInmateDataForDate(db, formatISO(new Date(), { representation: 'date' }));
+  const compressedRecords = compressedRecordInfo.map((inmate, idx) =>
+    <Record key={idx} data={inmate} priority={idx < 5} />
+  );
   db.close();
 
   const inmateData = getInmateData();
@@ -105,7 +108,7 @@ export default function Home() {
         </div>
 
         <div className={styles.records}>
-          {records}
+          {compressedRecords}
         </div>
       </main >
     </div >

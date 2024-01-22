@@ -10,15 +10,16 @@ export default function CompressedRecord({ data, priority }) {
     const severity = <PiSealWarningFill />;
     return chargeGrade === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
   };
-  const charges = data.charges.map((charge, idx) =>
-    <li key={idx} className={styles.charge}>{charge}</li>
+  const charges = data.chargeInformationArray.map((chargeInfo, idx) =>
+    <li key={idx} className={styles.charge}>{chargeInfo.description}</li>
   );
 
   return (
     <Link className={styles.hiddenLink} href="/record" prefetch={false}>
       <div className={styles.record}>
         <Image
-          src={data.img}
+          // TODO: use s3 instead of precoded image
+          src={"/in1.jpg"}
           width={150}
           height={187}
           alt={`${data.fullName} mugshot`}

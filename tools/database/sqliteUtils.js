@@ -1,4 +1,6 @@
 const { scJailIoTableCreate } = require("../config");
+const CompressedInmate = require("/tools/models/compressedInmate");
+const ChargeInformation = require("/tools/models/chargeInformation");
 
 function setupDbCloseConditions(db) {
   process.on("exit", () => db.close());
@@ -158,6 +160,9 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
         FROM charge
         WHERE inmate_id = @inmate_id
       `).all({ inmate_id: inmate.id });
+      const chargeInformationArray = charges.map((charge) => {
+        return new ChargeInformation(charge.description, charge.grade, charge.offenseDate);
+      });
 
       const bond = db.prepare(`
         SELECT type, amount_pennies
@@ -173,23 +178,21 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
         WHERE inmate_id = @inmate_id
       `).get({ inmate_id: inmate.id });
 
-      const compressedInmate = {
-        first: inmate.first_name,
-        middle: inmate.middle_name,
-        last: inmate.last_name,
-        affix: inmate.affix,
-        bookingDate: inmate.booking_date,
-        dob: inmate.dob,
-        img: img.img,
-        charges: charges,
-        bond: bondPennies
-      };
+      const compressedInmate = new CompressedInmate(
+        inmate.first_name,
+        inmate.middle_name,
+        inmate.last_name,
+        inmate.affix,
+        inmate.booking_date,
+        bondPennies,
+        inmate.dob,
+        img.img,
+        chargeInformationArray);
       compressedInmates.push(compressedInmate);
     } catch (err) {
       console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
     }
   }
-  console.log(compressedInmates.length);
   return compressedInmates;
 }
 

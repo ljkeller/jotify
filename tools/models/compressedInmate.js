@@ -1,6 +1,5 @@
 function getMaxChargeGrade(charges) {
-  // TODO: parse array
-  return "misdemeanor";
+  return charges.some((charge) => charge.grade === 'felony') ? "felony" : "misdemeanor";
 }
 
 class CompressedInmate {

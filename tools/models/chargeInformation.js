@@ -3,14 +3,14 @@ class CrimeSeverity {
   static MISDEMEANOR = 'misdemeanor';
 
   static fromString(severity) {
-    switch (severity) {
+    switch (severity.toLowerCase()) {
       case 'felony':
         return CrimeSeverity.FELONY;
       case 'misdemeanor':
         return CrimeSeverity.MISDEMEANOR;
       default:
-        console.warn(`Unknown crime severity: ${severity}. Defaulting to misdemeanor.`);
-        return CrimeSeverity.MISDEMEANOR;
+        console.warn(`Unknown crime severity: ${severity}. Defaulting to empty.`);
+        return "";
     }
   }
 }
@@ -22,7 +22,7 @@ class ChargeInformation {
     offenseDate,
   ) {
     this.description = description;
-    this.grade = grade;
+    this.grade = CrimeSeverity.fromString(grade);
     this.offenseDate = offenseDate;
   }
 }

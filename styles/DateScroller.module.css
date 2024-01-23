@@ -1,62 +1,25 @@
 .container,
 .records {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .header {
-    margin: 20px 0;
-    font-size: 1.5rem;
-}
-
-.filters {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.filters button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-}
-
-
-.activeFilter {
-    background-color: var(--primary-color);
-    color: var(--text-dark);
-}
-
-.activeFilter:hover {
-    background-color: var(--complementary-color);
-    color: var(--text-light);
-}
-
-.inactiveFilter {
-    background-color: var(--background-color-two);
-    color: var(--text-light);
-}
-
-.inactiveFilter:hover {
-    background-color: var(--primary-color);
-    color: var(--text-dark);
+  margin: 20px 0;
+  font-size: 1.5rem;
 }
 
 .headerIcon {
-    color: var(--complementary-color);
-    padding: 0 1rem;
-    text-decoration: none;
-    font-size: 2.2rem;
-    font-weight: bold;
+  color: var(--complementary-color);
+  padding: 0 1rem;
+  text-decoration: none;
+  font-size: 2.2rem;
+  font-weight: bold;
 }
 
 .headerIcon:hover {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }

@@ -70,7 +70,7 @@ export const metadata = {
 }
 
 export default function Home() {
-  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null });
+  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
   const trafficLast7Days = getLast7DaysInmateTraffic(db);
 
   const compressedRecordInfo = getCompressedInmateDataForDate(db, formatISO(new Date(), { representation: 'date' }));

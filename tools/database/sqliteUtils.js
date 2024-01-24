@@ -1,6 +1,6 @@
 const { scJailIoTableCreate } = require("../config");
-const CompressedInmate = require("/tools/models/compressedInmate");
-const ChargeInformation = require("/tools/models/chargeInformation");
+const CompressedInmate = require("../models/compressedInmate");
+const ChargeInformation = require("../models/chargeInformation");
 
 function setupDbCloseConditions(db) {
   process.on("exit", () => db.close());

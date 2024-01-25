@@ -1,6 +1,11 @@
 const { scJailIoTableCreate } = require("../config");
+
 const CompressedInmate = require("../models/compressedInmate");
+
 const ChargeInformation = require("../models/chargeInformation");
+const BondInformation = require("../models/bondInformation");
+const InmateProfile = require("../models/inmateProfile");
+const InmateAggregate = require("../models/inmateAggregate");
 
 function setupDbCloseConditions(db) {
   process.on("exit", () => db.close());
@@ -196,4 +201,92 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
   return compressedInmates;
 }
 
-module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate };
+function getInmateAggregateDataForDate(db, iso8601DateStr) {
+  console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
+  const inData = db.prepare(`
+    SELECT id,
+    first_name,
+    middle_name,
+    last_name,
+    affix,
+    permanent_id,
+    sex,
+    dob,
+    arresting_agency,
+    booking_date,
+    booking_number,
+    height,
+    weight,
+    race,
+    eye_color,
+    img_url,
+    scil_sysid
+    FROM inmate
+    WHERE date(booking_date) = date(@iso8601DateStr)
+  `).all({ iso8601DateStr });
+
+  const inmateAggregates = [];
+  for (const inmate of inData) {
+    const inmateProfile = new InmateProfile(
+      inmate.first_name,
+      inmate.middle_name,
+      inmate.last_name,
+      inmate.affix,
+      inmate.permanent_id,
+      inmate.sex,
+      inmate.dob,
+      inmate.arresting_agency,
+      inmate.booking_date,
+      inmate.booking_number,
+      inmate.height,
+      inmate.weight,
+      inmate.race,
+      inmate.eye_color,
+      [],
+      [],
+      inmate.scil_sysid
+    );
+
+    try {
+      const charges = db.prepare(`
+        SELECT description, grade, offense_date
+        FROM charge
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
+      const chargeInformationArray = charges.map((charge) => {
+        return new ChargeInformation(charge.description, charge.grade, charge.offenseDate);
+      });
+
+      // TODO: Get aliases
+      const bond = db.prepare(`
+        SELECT type, amount_pennies
+        FROM bond
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
+      const bondInformationArray = bond.map((bond) =>
+        new BondInformation(bond.type, bond.amount_pennies)
+      );
+
+      // TODO! Replace with s3
+      const img = db.prepare(`
+        SELECT img
+        FROM img
+        WHERE inmate_id = @inmate_id
+      `).get({ inmate_id: inmate.id });
+      inmateProfile.imgBlob = img.img;
+
+      const inmateAggregate = new InmateAggregate(
+        inmateProfile,
+        bondInformationArray,
+        chargeInformationArray
+      );
+      inmateAggregates.push(inmateAggregate);
+    } catch (err) {
+      console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
+    }
+  }
+  console.log(inmateAggregates);
+  return inmateAggregates;
+}
+
+module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate, getInmateAggregateDataForDate };

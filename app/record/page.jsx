@@ -1,9 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaMask } from 'react-icons/fa';
+import Database from 'better-sqlite3';
 
 import styles from '/styles/Record.module.css';
+import { config } from '/tools/config';
 
+import { getInmateAggregateDataForDate } from '/tools/database/sqliteUtils';
 import ChargeInformation from '/tools/models/chargeInformation';
 import BondInformation from '/tools/models/bondInformation';
 import InmateAggregate from '/tools/models/inmateAggregate'
@@ -61,6 +64,11 @@ export default function Record({ record }) {
   const charges = [];
   const bondArr = [];
   const recommended = getRecommended();
+
+  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
+  const aggregates = getInmateAggregateDataForDate(db, "2024-01-12");
+  db.close();
+
   return (
     <div className={styles.recordOuter}>
       <div className={styles.profileSidebar}>

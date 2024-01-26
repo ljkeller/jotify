@@ -95,11 +95,12 @@
   flex-wrap: wrap;
 
   padding: 20px;
-  margin: 10px 20px;
   gap: 15px;
 
-  box-shadow: 0 2px 4px var(--background-color-two);
-  border: 1px solid var(--background-color-two);
+  /* Experimental */
+  /* margin: 10px 20px; */
+  /* box-shadow: 0 2px 4px var(--background-color-two); */
+  /* border: 1px solid var(--background-color-two); */
   border-radius: 8px;
 }
 
@@ -133,10 +134,12 @@
 
 .chargeInformation,
 .bondInformation {
-  background-color: var(--background-color-two);
+  display: flex;
+  flex-direction: column;
+
   border-radius: 8px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px var(--text-shadow);
 }
 
 .chargeList,
@@ -146,10 +149,23 @@
   margin: 0;
 }
 
-/* TODO: Finish styling */
-.tableHeader {}
+.tableHeader {
+  font-size: 1.2rem;
+}
 
-.tableData {}
+.tableRow {
+  background-color: #323232;
+  font-size: 1rem;
+}
+
+.tableRow:nth-child(odd) {
+  background-color: var(--background-color-two);
+}
+
+.tableData {
+  padding: 5px;
+  border-radius: 2px;
+}
 
 .aliasLink {
   margin: 0;

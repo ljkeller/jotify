@@ -143,57 +143,50 @@ export default function Record({ record }) {
             )}
           </div>
         </div>
-        <table className={styles.inmateTable}>
-          <thead>
-            <tr>
-              <th className={styles.tableHeader}>Offense Date</th>
-              <th className={styles.tableHeader}>Description</th>
-              <th className={styles.tableHeader}>Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inmate.chargeInformation.map((charge, index) => (
-              <tr key={index}>
-                <td className={styles.tableData}>{charge.offenseDate}</td>
-                <td className={styles.tableData}>{charge.description}</td>
-                <td className={styles.tableData}>{charge.grade}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
         <div className={styles.chargeInformation}>
           <h3 className={styles.secondaryHeader}>Charges</h3>
-          <ul className={styles.chargeList}>
-            {inmate.chargeInformation.map((charge, idx) =>
-              <li key={idx}>{charge.offenseDate + " " + charge.description + " " + charge.grade}</li>
-            )}
-          </ul>
-        </div>
-        <table className={styles.inmateTable}>
-          <thead>
-            <tr>
-              <th className={styles.tableHeader}>Type</th>
-              <th className={styles.tableHeader}>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inmate.bondInformation.map((bond, index) => (
-              <tr key={index}>
-                <td className={styles.tableData}>{bond.type}</td>
-                <td className={styles.tableData}>{bond.amountPennies}</td>
+          <table className={styles.inmateTable}>
+            <thead>
+              <tr>
+                <th className={styles.tableHeader}>Offense Date</th>
+                <th className={styles.tableHeader}>Description</th>
+                <th className={styles.tableHeader}>Grade</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {inmate.chargeInformation.map((charge, index) => (
+                <tr className={styles.tableRow} key={index}>
+                  <td className={styles.tableData}>{charge.offenseDate}</td>
+                  <td className={styles.tableData}>{charge.description}</td>
+                  <td className={styles.tableData}>{charge.grade}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
         <div className={styles.bondInformation}>
           <h3 className={styles.secondaryHeader}>Bond</h3>
-          <ul className={styles.bondList}>
-            {inmate.bondInformation.map((bond, idx) =>
-              <li key={idx}>{bond.type + " $" + bond.amountPennies}</li>
-            )}
-          </ul>
+          <table className={styles.inmateTable}>
+            <thead>
+              <tr>
+                <th className={styles.tableHeader}>Type</th>
+                <th className={styles.tableHeader}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inmate.bondInformation.map((bond, index) => (
+                <tr className={styles.tableRow} key={index}>
+                  <td className={styles.tableData}>{bond.type}</td>
+                  <td className={styles.tableData}>{bond.amountPennies}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
+
 
       <div className={styles.recommendedSidebar}>
         <h2 className={styles.primaryHeader}>Related</h2>

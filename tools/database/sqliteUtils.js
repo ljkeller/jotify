@@ -203,6 +203,7 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
 
 function getInmateAggregateDataForDate(db, iso8601DateStr) {
   console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
+  // TODO: make use of scil_sysid
   const inData = db.prepare(`
     SELECT id,
     first_name,
@@ -254,7 +255,7 @@ function getInmateAggregateDataForDate(db, iso8601DateStr) {
         WHERE inmate_id = @inmate_id
       `).all({ inmate_id: inmate.id });
       const chargeInformationArray = charges.map((charge) => {
-        return new ChargeInformation(charge.description, charge.grade, charge.offenseDate);
+        return new ChargeInformation(charge.description, charge.grade, charge.offense_date);
       });
 
       // TODO: Get aliases
@@ -285,7 +286,6 @@ function getInmateAggregateDataForDate(db, iso8601DateStr) {
       console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
     }
   }
-  console.log(inmateAggregates);
   return inmateAggregates;
 }
 

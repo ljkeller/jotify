@@ -60,13 +60,12 @@ function getRecommended() {
 }
 
 export default function Record({ record }) {
-  const inmate = getInmate();
-  const charges = [];
-  const bondArr = [];
+  // const inmate = getInmate();
   const recommended = getRecommended();
 
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const aggregates = getInmateAggregateDataForDate(db, "2024-01-12");
+  const aggregates = getInmateAggregateDataForDate(db, "2024-01-22");
+  const inmate = aggregates[0];
   db.close();
 
   return (
@@ -153,7 +152,7 @@ export default function Record({ record }) {
             </tr>
           </thead>
           <tbody>
-            {charges.map((charge, index) => (
+            {inmate.chargeInformation.map((charge, index) => (
               <tr key={index}>
                 <td className={styles.tableData}>{charge.offenseDate}</td>
                 <td className={styles.tableData}>{charge.description}</td>
@@ -178,7 +177,7 @@ export default function Record({ record }) {
             </tr>
           </thead>
           <tbody>
-            {bondArr.map((bond, index) => (
+            {inmate.bondInformation.map((bond, index) => (
               <tr key={index}>
                 <td className={styles.tableData}>{bond.type}</td>
                 <td className={styles.tableData}>{bond.amountPennies}</td>

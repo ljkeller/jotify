@@ -258,7 +258,21 @@ function getInmateAggregateDataForDate(db, iso8601DateStr) {
         return new ChargeInformation(charge.description, charge.grade, charge.offense_date);
       });
 
-      // TODO: Get aliases
+      const aliasIds = db.prepare(`
+        SELECT alias_id
+        FROM inmate_alias
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
+      const aliases = aliasIds.map((aliasId) => {
+        const alias = db.prepare(`
+          SELECT alias
+          FROM alias
+          WHERE id = @alias_id
+        `).get({ alias_id: aliasId.alias_id });
+        return alias ? alias.alias : null;
+      });
+      inmateProfile.aliases = aliases ? aliases : [];
+
       const bond = db.prepare(`
         SELECT type, amount_pennies
         FROM bond

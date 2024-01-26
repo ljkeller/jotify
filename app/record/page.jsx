@@ -64,7 +64,7 @@ export default function Record({ record }) {
   const recommended = getRecommended();
 
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const aggregates = getInmateAggregateDataForDate(db, "2024-01-22");
+  const aggregates = getInmateAggregateDataForDate(db, "2024-01-21");
   const inmate = aggregates[0];
   db.close();
 

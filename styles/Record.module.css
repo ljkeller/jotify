@@ -73,6 +73,11 @@
   color: var(--complementary-color);
 }
 
+.outLink {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
 .profileImage {
   border-radius: 8px;
   margin-bottom: 15px;

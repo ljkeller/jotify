@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaMask } from 'react-icons/fa';
+import { FiExternalLink } from "react-icons/fi";
 import Database from 'better-sqlite3';
 import { parseISO, format } from 'date-fns';
 
@@ -115,6 +116,10 @@ export default function Record({ record, searchParams }) {
             <div className={styles.kvContainer}>
               <div className={styles.key}>Eye Color: </div>
               <div className={styles.value}>{inmate.inmateProfile.eyeColor}</div>
+            </div>
+            <div className={styles.kvContainer}>
+              <div className={styles.key}>Scott County link: </div>
+              <a href={config.baseInmateLink + inmate.inmateProfile.scilSysId} target="_blank" className={`${styles.hiddenLink} ${styles.outLink}`}> Go <FiExternalLink /></a>
             </div>
           </div>
         </div>

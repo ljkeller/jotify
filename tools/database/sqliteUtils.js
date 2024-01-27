@@ -202,30 +202,58 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
   return compressedInmates;
 }
 
-function getInmateAggregateData(db, id) {
+/**
+ * Get inmate aggregate data for a given inmate id, or random if null id
+ * @param {*} db database to query
+ * @param {*} id target ID (or null for random)
+ * @returns InmateAggregate
+ */
+function getInmateAggregateData(db, id = null) {
   try {
     // TODO: make use of scil_sysid
-    const inmate = db.prepare(`
-    SELECT id,
-    first_name,
-    middle_name,
-    last_name,
-    affix,
-    permanent_id,
-    sex,
-    dob,
-    arresting_agency,
-    booking_date,
-    booking_number,
-    height,
-    weight,
-    race,
-    eye_color,
-    img_url,
-    scil_sysid
-    FROM inmate
-    WHERE id = @id
-    `).get({ id });
+    const inmate = id ? db.prepare(`
+      SELECT id,
+      first_name,
+      middle_name,
+      last_name,
+      affix,
+      permanent_id,
+      sex,
+      dob,
+      arresting_agency,
+      booking_date,
+      booking_number,
+      height,
+      weight,
+      race,
+      eye_color,
+      img_url,
+      scil_sysid
+      FROM inmate
+      WHERE id = @id
+    `).get({ id })
+      : db.prepare(`
+          SELECT id,
+          first_name,
+          middle_name,
+          last_name,
+          affix,
+          permanent_id,
+          sex,
+          dob,
+          arresting_agency,
+          booking_date,
+          booking_number,
+          height,
+          weight,
+          race,
+          eye_color,
+          img_url,
+          scil_sysid
+          FROM inmate
+          ORDER BY RANDOM()
+          LIMIT 1
+    `).get();
 
     const inmateProfile = new InmateProfile(
       inmate.first_name,

@@ -7,10 +7,6 @@ import styles from '/styles/Record.module.css';
 import { config } from '/tools/config';
 
 import { getInmateAggregateData } from '/tools/database/sqliteUtils';
-import ChargeInformation from '/tools/models/chargeInformation';
-import BondInformation from '/tools/models/bondInformation';
-import InmateAggregate from '/tools/models/inmateAggregate'
-import InmateProfile from '/tools/models/inmateProfile';
 
 function getRecommended() {
   return [
@@ -32,8 +28,13 @@ export default function Record({ record, searchParams }) {
   try {
     const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
     try {
-      const queryId = parseInt(searchParams.id);
-      inmate = getInmateAggregateData(db, queryId);
+      if (!searchParams.id) {
+        // Get random inmate because no id
+        inmate = getInmateAggregateData(db);
+      } else {
+        const queryId = parseInt(searchParams.id);
+        inmate = getInmateAggregateData(db, queryId);
+      }
     } catch (err) {
       console.log(err);
       // TODO: return error page / val

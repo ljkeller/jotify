@@ -6,45 +6,11 @@ import Database from 'better-sqlite3';
 import styles from '/styles/Record.module.css';
 import { config } from '/tools/config';
 
-import { getInmateAggregateDataForDate } from '/tools/database/sqliteUtils';
+import { getInmateAggregateData } from '/tools/database/sqliteUtils';
 import ChargeInformation from '/tools/models/chargeInformation';
 import BondInformation from '/tools/models/bondInformation';
 import InmateAggregate from '/tools/models/inmateAggregate'
 import InmateProfile from '/tools/models/inmateProfile';
-
-function getInmate() {
-  const bondInformation = [new BondInformation("foo", 100000), new BondInformation("bar", 500000)];
-  const chargeInformation = [
-    new ChargeInformation("DRIVE WHILE REVOKED", "Misdemeanor", "2019-01-01"),
-    new ChargeInformation("DRIVING WHILE BARRED", "Misdemeanor", "2019-01-01"),
-    new ChargeInformation("DUS", "Misdemeanor", "2019-01-01"),
-    new ChargeInformation("LEAVE SCENE OF ACCIDENT", "Misdemeanor", "2019-01-01"),
-    new ChargeInformation("TURN SIGNAL", "Misdemeanor", "2019-01-01"),
-  ];
-  const inmateProfile = new InmateProfile(
-    "Ashtin",
-    "Shakina",
-    "Kellenberger",
-    "",
-    "11123-88",
-    "Female",
-    "1988-02-14",
-    "DPD",
-    "1/4/2024 6:06 PM",
-    "18067",
-    "5' 6\"",
-    "130",
-    "white",
-    "brown",
-    ["Ash", "Ash", "Ashy", "Ashy K", "Shakina", "Ashy", "Ashy K", "Shakina", "Shakina K", "Shakina Kellenberger"],
-    null,
-  );
-  return new InmateAggregate(
-    inmateProfile,
-    bondInformation,
-    chargeInformation,
-  );
-}
 
 function getRecommended() {
   return [
@@ -59,14 +25,27 @@ function getRecommended() {
   ];
 }
 
-export default function Record({ record }) {
-  // const inmate = getInmate();
+export default function Record({ record, searchParams }) {
   const recommended = getRecommended();
 
-  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const aggregates = getInmateAggregateDataForDate(db, "2024-01-21");
-  const inmate = aggregates[0];
-  db.close();
+  let inmate;
+  try {
+    const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
+    try {
+      const queryId = parseInt(searchParams.id);
+      inmate = getInmateAggregateData(db, queryId);
+    } catch (err) {
+      console.log(err);
+      // TODO: return error page / val
+      return <div>Oops, something went wrong</div>;
+    } finally {
+      db.close();
+    }
+  } catch (err) {
+    // TODO: error handling (code around 500) + styling
+    console.log(err);
+    return <h1>Oops, something went wrong on our end</h1>;
+  }
 
   return (
     <div className={styles.recordOuter}>

@@ -201,10 +201,10 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
   return compressedInmates;
 }
 
-function getInmateAggregateDataForDate(db, iso8601DateStr) {
-  console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
-  // TODO: make use of scil_sysid
-  const inData = db.prepare(`
+function getInmateAggregateData(db, id) {
+  try {
+    // TODO: make use of scil_sysid
+    const inmate = db.prepare(`
     SELECT id,
     first_name,
     middle_name,
@@ -223,11 +223,9 @@ function getInmateAggregateDataForDate(db, iso8601DateStr) {
     img_url,
     scil_sysid
     FROM inmate
-    WHERE date(booking_date) = date(@iso8601DateStr)
-  `).all({ iso8601DateStr });
+    WHERE id = @id
+    `).get({ id });
 
-  const inmateAggregates = [];
-  for (const inmate of inData) {
     const inmateProfile = new InmateProfile(
       inmate.first_name,
       inmate.middle_name,
@@ -248,59 +246,56 @@ function getInmateAggregateDataForDate(db, iso8601DateStr) {
       inmate.scil_sysid
     );
 
-    try {
-      const charges = db.prepare(`
+    const charges = db.prepare(`
         SELECT description, grade, offense_date
         FROM charge
         WHERE inmate_id = @inmate_id
       `).all({ inmate_id: inmate.id });
-      const chargeInformationArray = charges.map((charge) => {
-        return new ChargeInformation(charge.description, charge.grade, charge.offense_date);
-      });
+    const chargeInformationArray = charges.map((charge) => {
+      return new ChargeInformation(charge.description, charge.grade, charge.offense_date);
+    });
 
-      const aliasIds = db.prepare(`
+    const aliasIds = db.prepare(`
         SELECT alias_id
         FROM inmate_alias
         WHERE inmate_id = @inmate_id
       `).all({ inmate_id: inmate.id });
-      const aliases = aliasIds.map((aliasId) => {
-        const alias = db.prepare(`
+    const aliases = aliasIds.map((aliasId) => {
+      const alias = db.prepare(`
           SELECT alias
           FROM alias
           WHERE id = @alias_id
         `).get({ alias_id: aliasId.alias_id });
-        return alias ? alias.alias : null;
-      });
-      inmateProfile.aliases = aliases ? aliases : [];
+      return alias ? alias.alias : null;
+    });
+    inmateProfile.aliases = aliases ? aliases : [];
 
-      const bond = db.prepare(`
+    const bond = db.prepare(`
         SELECT type, amount_pennies
         FROM bond
         WHERE inmate_id = @inmate_id
       `).all({ inmate_id: inmate.id });
-      const bondInformationArray = bond.map((bond) =>
-        new BondInformation(bond.type, bond.amount_pennies)
-      );
+    const bondInformationArray = bond.map((bond) =>
+      new BondInformation(bond.type, bond.amount_pennies)
+    );
 
-      // TODO! Replace with s3
-      const img = db.prepare(`
+    // TODO! Replace with s3
+    const img = db.prepare(`
         SELECT img
         FROM img
         WHERE inmate_id = @inmate_id
       `).get({ inmate_id: inmate.id });
-      inmateProfile.imgBlob = img.img;
+    inmateProfile.imgBlob = img.img;
 
-      const inmateAggregate = new InmateAggregate(
-        inmateProfile,
-        bondInformationArray,
-        chargeInformationArray
-      );
-      inmateAggregates.push(inmateAggregate);
-    } catch (err) {
-      console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
-    }
+    return new InmateAggregate(
+      inmateProfile,
+      bondInformationArray,
+      chargeInformationArray
+    );
+  } catch (err) {
+    console.error(`Error getting inmate data for inmate id ${id}. Error: ${err}`);
+    throw err;
   }
-  return inmateAggregates;
 }
 
-module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate, getInmateAggregateDataForDate };
+module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate, getInmateAggregateData };

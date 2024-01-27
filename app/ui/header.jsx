@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
+
 import styles from '/styles/Header.module.css';
 
 export default function Header() {
@@ -10,6 +12,7 @@ export default function Header() {
           jail.io
         </Link>
         <div className={styles.links}>
+          <Link href="/record" prefetch={false} className={styles.logo}><GiPerspectiveDiceSixFacesRandom /></Link>
           <Link href="/disclaimer" className={styles.link}>
             Disclaimer
           </Link>

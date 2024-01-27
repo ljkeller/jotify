@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaMask } from 'react-icons/fa';
 import Database from 'better-sqlite3';
+import { parseISO, format } from 'date-fns';
 
 import styles from '/styles/Record.module.css';
 import { config } from '/tools/config';
@@ -46,6 +47,15 @@ export default function Record({ record, searchParams }) {
     // TODO: error handling (code around 500) + styling
     console.log(err);
     return <h1>Oops, something went wrong on our end</h1>;
+  }
+
+  let consumerFormatBookingDate;
+  try {
+    const bookingDate = parseISO(inmate.inmateProfile.bookingDateIso8601);
+    consumerFormatBookingDate = format(bookingDate, "MMMM d, yyyy 'at' h:mm a");
+  } catch (err) {
+    console.log("Error parsing booking date: " + err);
+    consumerFormatBookingDate = "unknown";
   }
 
   return (
@@ -111,7 +121,10 @@ export default function Record({ record, searchParams }) {
       </div>
 
       <div className={styles.inmateRecordColumn}>
-        <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
+        <div>
+          <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
+          <h3 className={`${styles.secondaryHeader}`}>Booked: {consumerFormatBookingDate}</h3>
+        </div>
         <div className={styles.aliasHeaderContainer}>
           <div className={styles.iconHeader}>
             <FaMask className={styles.icon} />
@@ -121,6 +134,7 @@ export default function Record({ record, searchParams }) {
             {inmate.inmateProfile.aliases.map((alias, idx) =>
               <Link href={`/alias/${alias}`} prefetch={false} key={idx} className={styles.aliasLink}>{alias}</Link>
             )}
+            {inmate.inmateProfile.aliases.length === 0 ? <div className={styles.noAliases}>No known aliases</div> : null}
           </div>
         </div>
 

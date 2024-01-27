@@ -196,7 +196,7 @@ export default function Record({ record, searchParams }) {
         <h2 className={styles.primaryHeader}>Related</h2>
         {recommended.map((inmate, idx) =>
           <div key={idx} className={styles.recommendedContainer}>
-            <Image className={styles.recommendedImg} src={inmate.imgPath} width={40} height={50} alt={`${styles.firstLast} img`} />
+            <Image className={styles.recommendedImg} src={inmate.imgPath} width={40} height={40} alt={`${styles.firstLast} img`} />
             <Link className={`${styles.hiddenLink} ${styles.recommendedLink}`} href="/record" >{inmate.firstLast}</Link>
           </div>
         )}

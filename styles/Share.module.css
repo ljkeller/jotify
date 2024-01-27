@@ -1,0 +1,15 @@
+.share:hover {
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.share {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+
+  margin: 0 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--background-color-two);
+}

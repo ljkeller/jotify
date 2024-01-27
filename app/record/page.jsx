@@ -8,6 +8,7 @@ import { parseISO, format } from 'date-fns';
 import styles from '/styles/Record.module.css';
 import { config } from '/tools/config';
 import { centsToDollars } from '/tools/scraping/currency';
+import Share from '/app/ui/share';
 
 import { getInmateAggregateData } from '/tools/database/sqliteUtils';
 
@@ -120,7 +121,7 @@ export default function Record({ record, searchParams }) {
             </div>
             <div className={styles.kvContainer}>
               <div className={styles.key}>Scott County link: </div>
-              <a href={config.baseInmateLink + inmate.inmateProfile.scilSysId} target="_blank" className={`${styles.hiddenLink} ${styles.outLink}`}> Go <FiExternalLink /></a>
+              <a href={config.baseInmateLink + inmate.inmateProfile.scilSysId} target="_blank" className={`${styles.hiddenLink} ${styles.outLink}`}><FiExternalLink /> Go</a>
             </div>
           </div>
         </div>
@@ -143,7 +144,6 @@ export default function Record({ record, searchParams }) {
             {inmate.inmateProfile.aliases.length === 0 ? <div className={styles.noAliases}>No known aliases</div> : null}
           </div>
         </div>
-
         <div className={styles.chargeInformation}>
           <h3 className={styles.secondaryHeader}>Charges</h3>
           <table className={styles.inmateTable}>
@@ -184,6 +184,10 @@ export default function Record({ record, searchParams }) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className={styles.shareContainer}>
+          <Share />
         </div>
       </div>
 

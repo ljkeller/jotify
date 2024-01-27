@@ -146,6 +146,13 @@
   box-shadow: 0 2px 4px var(--text-shadow);
 }
 
+.shareContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .chargeList,
 .bondList {
   list-style-type: none;

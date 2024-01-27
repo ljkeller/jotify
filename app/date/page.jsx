@@ -52,8 +52,11 @@ export default function DateScroller({ params, searchParams }) {
         </h1>
       </div>
       <DateSorting />
-      <div className={styles.records}>
-        {records}
+      <div className={styles.recordsWrapper}>
+        <h3 className={styles.miniHeader}>Showing {records.length} records</h3>
+        <div className={styles.records}>
+          {records}
+        </div>
       </div>
     </div >
   );

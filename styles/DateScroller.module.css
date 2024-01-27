@@ -7,6 +7,18 @@
   width: 100%;
 }
 
+.recordsWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.miniHeader {
+  font-size: 1.1rem;
+  margin: 5px 0;
+
+  color: var(--text-light);
+}
+
 .header {
   margin: 20px 0;
   font-size: 1.5rem;

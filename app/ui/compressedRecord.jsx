@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { format, parseISO } from 'date-fns';
 import { PiSealWarningFill, PiSubtitlesDuotone } from 'react-icons/pi';
 import { TbFlag } from "react-icons/tb";
 
@@ -18,6 +19,16 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
     charges.push(<li key={idx} className={styles.charge}>{compressedInmate.chargeInformationArray[idx].description}</li>);
   }
   const numHiddenCharges = compressedInmate.chargeInformationArray.length - MAX_SHOW_CHARGES;
+
+  let consumerFormatBookingDate;
+  try {
+    console.log(compressedInmate);
+    const bookingDate = parseISO(compressedInmate.bookingDate);
+    consumerFormatBookingDate = format(bookingDate, "MMMM d, yyyy 'at' h:mm a");
+  } catch (err) {
+    console.log("Error parsing booking date: " + err);
+    consumerFormatBookingDate = "unknown";
+  }
 
   return (
     <Link className={styles.hiddenLink} href={`/record?id=${compressedInmate.id}`} prefetch={false} >
@@ -39,7 +50,7 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
                 {compressedInmate.fullName}
               </h3>
             </div>
-            <h4 className={styles.date}>{compressedInmate.bookingDate}</h4>
+            <h4 className={styles.date}>{consumerFormatBookingDate}</h4>
             <ul className={styles.charges}>
               {charges}
               {

@@ -32,12 +32,12 @@ export default function DateScroller({ params, searchParams }) {
     dateStrIso8601 = formatISO(date, { representation: 'date' });
   }
 
-  // TODO: error handle search params
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
   const inmateData = getCompressedInmateDataForDate(db, dateStrIso8601);
   db.close();
 
-  // TODO: remove this priority heuristic that makes first 5 records priority
+  // TODO: remove this priority heuristic that makes first 5 records priority?
+  // TODO: sort records on client side (cause all should be here)
   const records = inmateData.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />
   );

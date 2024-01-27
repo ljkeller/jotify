@@ -184,6 +184,7 @@ function getCompressedInmateDataForDate(db, iso8601DateStr) {
       `).get({ inmate_id: inmate.id });
 
       const compressedInmate = new CompressedInmate(
+        inmate.id,
         inmate.first_name,
         inmate.middle_name,
         inmate.last_name,

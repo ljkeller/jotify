@@ -10,49 +10,6 @@ import Record from '/app/ui/compressedRecord';
 import { config } from '/tools/config';
 import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
 
-function getInmateData() {
-  const r1 = {
-    fullName: 'ASHTIN SHAKINA KELLENBERGER',
-    bookingDate: '1/4/2024 6:06 PM',
-    bond: "$2,500.00",
-    age: 30,
-    img: '/in1.jpg',
-    chargeGrade: 'misdemeanor',
-    charges: [
-      "DRIVE WHILE REVOKED",
-      "DRIVING WHILE BARRED",
-      "DUS",
-      "LEAVE SCENE OF ACCIDENT",
-      "TURN SIGNAL"
-    ]
-  };
-  const r2 = {
-    fullName: 'DERRICK LORENZO GULLEY',
-    bookingDate: '1/3/2024 7:58 PM',
-    bond: "$600.00",
-    age: 54,
-    img: '/in2.jpg',
-    chargeGrade: 'felony',
-    charges: [
-      "HARASSMENT FIRST DEGREE"
-    ]
-  };
-  const r3 = {
-    fullName: 'GUADALUPE ECTOR PADAVICH',
-    bookingDate: '1/4/2024 10:53 AM',
-    bond: "$1,000.00",
-    age: 44,
-    img: '/in3.jpg',
-    chargeGrade: 'misdemeanor',
-    charges: [
-      "INTERFER W/OFFOCIAL ACTS",
-      "INTOXICATION"
-    ]
-  };
-
-  return [r1, r2, r3];
-}
-
 function getLast7DaysInmateTraffic(db) {
   const traffic = [];
   for (let i = 6; i >= 0; i--) {
@@ -78,12 +35,6 @@ export default function Home() {
     <Record key={idx} data={inmate} priority={idx < 5} />
   );
   db.close();
-
-  const inmateData = getInmateData();
-  // TODO: remove this priority heuristic that makes first 5 records priority
-  const records = inmateData.map((inmate, idx) =>
-    <Record key={idx} data={inmate} priority={idx < 5} />
-  );
 
   return (
     <div className={styles.container}>

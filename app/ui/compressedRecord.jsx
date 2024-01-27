@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { PiSealWarningFill } from 'react-icons/pi';
+import { PiSealWarningFill, PiSubtitlesDuotone } from 'react-icons/pi';
+import { TbFlag } from "react-icons/tb";
 
 import styles from '/styles/CompressedRecord.module.css';
+
+const MAX_SHOW_CHARGES = 3
 
 export default function CompressedRecord({ data, priority }) {
   // TODO? lowercase charge data
@@ -10,9 +13,11 @@ export default function CompressedRecord({ data, priority }) {
     const severity = <PiSealWarningFill />;
     return chargeGrade === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
   };
-  const charges = data.chargeInformationArray.map((chargeInfo, idx) =>
-    <li key={idx} className={styles.charge}>{chargeInfo.description}</li>
-  );
+  const charges = [];
+  for (let idx = 0; idx < data.chargeInformationArray.length && idx < MAX_SHOW_CHARGES; idx++) {
+    charges.push(<li key={idx} className={styles.charge}>{data.chargeInformationArray[idx].description}</li>);
+  }
+  const numHiddenCharges = data.chargeInformationArray.length - MAX_SHOW_CHARGES;
 
   return (
     <Link className={styles.hiddenLink} href="/record" prefetch={false}>
@@ -27,19 +32,28 @@ export default function CompressedRecord({ data, priority }) {
           priority={priority}
         />
         <div className={styles.headerDetails}>
-          <div className={styles.nameBox}>
-            <h3 className={`${styles.name}`}>
-              {warningIcon(data.chargeGrade)}
-              {data.fullName}
-            </h3>
+          <div className={styles.textBox}>
+            <div className={styles.nameBox}>
+              <h3 className={`${styles.name}`}>
+                {warningIcon(data.chargeGrade)}
+                {data.fullName}
+              </h3>
+            </div>
+            <h4 className={styles.date}>{data.bookingDate}</h4>
+            <ul className={styles.charges}>
+              {charges}
+              {
+                data.chargeInformationArray.length > MAX_SHOW_CHARGES ? <div className={`${styles.compressedNameBox} ${styles.alertStyle}`}>
+                  <TbFlag />
+                  {data.chargeInformationArray.length > MAX_SHOW_CHARGES ? <span>{numHiddenCharges} more {numHiddenCharges > 1 ? "charges" : "charge"}</span> : null}
+                </div>
+                  : null
+              }
+            </ul>
           </div>
-          <h4 className={styles.date}>{data.bookingDate}</h4>
-          <ul className={styles.charges}>
-            {charges}
-          </ul>
         </div>
-      </div>
-    </Link>
+      </div >
+    </Link >
 
   );
 }

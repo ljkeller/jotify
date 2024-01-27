@@ -24,6 +24,17 @@
 .headerDetails {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.viewMoreIcon {
+  color: var(--text-light);
+  font-size: 1.5rem;
+}
+
+.alertStyle {
+  color: var(--tertiary-color);
+  margin: 5px;
 }
 
 .nameBox {
@@ -54,7 +65,7 @@
 }
 
 .felony {
-  color: tomato;
+  color: var(--tertiary-color);
 }
 
 .misdemeanor {

@@ -7,6 +7,7 @@ import { parseISO, format } from 'date-fns';
 
 import styles from '/styles/Record.module.css';
 import { config } from '/tools/config';
+import { centsToDollars } from '/tools/scraping/currency';
 
 import { getInmateAggregateData } from '/tools/database/sqliteUtils';
 
@@ -178,7 +179,7 @@ export default function Record({ record, searchParams }) {
               {inmate.bondInformation.map((bond, index) => (
                 <tr className={styles.tableRow} key={index}>
                   <td className={styles.tableData}>{bond.type}</td>
-                  <td className={styles.tableData}>{bond.amountPennies}</td>
+                  <td className={styles.tableData}>{centsToDollars(bond.amountPennies)}</td>
                 </tr>
               ))}
             </tbody>

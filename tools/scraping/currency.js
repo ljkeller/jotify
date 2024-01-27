@@ -12,4 +12,23 @@ var dollarsToCents = function (value) {
   return value ? Math.round(parseFloat(value) * 100) : 0;
 }
 
-module.exports = { dollarsToCents };
+const options = {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}
+
+function centsToDollars(value) {
+  let intermediate;
+  try {
+    intermediate = (value + '').replace(/[^\d.-]/g, '');
+    intermediate = parseFloat(intermediate);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    return intermediate ? (intermediate / 100).toLocaleString('en-US', options) : "$0.00";
+  }
+}
+
+module.exports = { dollarsToCents, centsToDollars };

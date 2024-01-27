@@ -12,7 +12,7 @@ export default function Header() {
           jail.io
         </Link>
         <div className={styles.links}>
-          <Link href="/record" prefetch={false} className={styles.logo}><GiPerspectiveDiceSixFacesRandom /></Link>
+          <a href="/record" className={styles.logo}><GiPerspectiveDiceSixFacesRandom /></a>
           <Link href="/disclaimer" className={styles.link}>
             Disclaimer
           </Link>

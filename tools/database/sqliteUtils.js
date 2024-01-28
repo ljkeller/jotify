@@ -7,6 +7,11 @@ const BondInformation = require("../models/bondInformation");
 const InmateProfile = require("../models/inmateProfile");
 const InmateAggregate = require("../models/inmateAggregate");
 
+// TODO: We'll need to introduce a translational layer for sorting
+// inmates by other tables, like bond, charge, etc.
+const INMATE_SORT_OPTIONS = new Map([['name', 'last_name'], ['date', 'booking_date'], ['popularity', 'record_visits'], ['age', 'dob']]);
+const SORT_DIRECTIONS = new Set(['asc', 'desc']);
+
 function setupDbCloseConditions(db) {
   process.on("exit", () => db.close());
   process.on("SIGHUP", () => process.exit(128 + 1));
@@ -149,13 +154,32 @@ function countInmatesOnDate(db, iso8601DateStr) {
   `).get({ iso8601DateStr })['COUNT(*)'];
 }
 
-function getCompressedInmateDataForDate(db, iso8601DateStr) {
+function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
+  console.log(sortConfig);
+  console.log(INMATE_SORT_OPTIONS);
+  console.log(SORT_DIRECTIONS);
+  const sortMethod = sortConfig && INMATE_SORT_OPTIONS.has(sortConfig.option) && SORT_DIRECTIONS.has(sortConfig.direction) ? sortConfig : null;
+
   console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
-  const inData = db.prepare(`
+  let inData = null;
+  if (!sortMethod) {
+    console.log('default sorting');
+
+    inData = db.prepare(`
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
     FROM inmate
     WHERE date(booking_date) = date(@iso8601DateStr)
   `).all({ iso8601DateStr });
+  } else {
+    console.log('parameterized sorting');
+
+    inData = db.prepare(`
+    SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+    FROM inmate
+    WHERE date(booking_date) = date(@iso8601DateStr)
+    ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)} ${sortConfig.direction}
+  `).all({ iso8601DateStr });
+  }
 
   const compressedInmates = [];
   for (const inmate of inData) {

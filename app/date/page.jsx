@@ -27,6 +27,7 @@ const defaultSort = { option: 'date', direction: 'desc' };
 export default function DateScroller({ params, searchParams }) {
   let date = null;
   let dateStrIso8601 = null;
+  console.log(`searchParams: ${JSON.stringify(searchParams)}`);
   try {
     date = parse(searchParams?.date, 'yyyy-MM-dd', new Date());
   } catch (err) {
@@ -48,7 +49,6 @@ export default function DateScroller({ params, searchParams }) {
   } catch (err) {
     console.log("Error parsing sort options: " + err);
   }
-  console.log(`Search config: ${JSON.stringify(sortConfig, null, 2)}`);
 
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
   const inmateData = getCompressedInmateDataForDate(db, dateStrIso8601, sortConfig);
@@ -69,7 +69,7 @@ export default function DateScroller({ params, searchParams }) {
           <Link className={styles.headerIcon} href={getNextDayQuery(date)}><SlArrowRight /></Link>
         </h1>
       </div>
-      <DateSorting date={dateStrIso8601} />
+      <DateSorting date={dateStrIso8601} serverSortConfig={sortConfig} />
       <div className={styles.recordsWrapper}>
         <h3 className={styles.miniHeader}>Showing {records.length} records</h3>
         <div className={styles.records}>

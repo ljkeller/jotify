@@ -5,65 +5,31 @@
   margin-bottom: 20px;
 }
 
-.textIconsBundle {
-  display: flex;
-  align-items: center;
+.sortingLink {
   gap: 10px;
+  padding: 5px 10px;
+  border-radius: 10px;
 
   font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+}
 
-  padding: 5px 10px;
+.sortingLink:hover {
+  background-color: var(--primary-color);
+  color: var(--text-dark);
+}
+
+.active {
+  color: var(--text-dark);
+  background-color: var(--primary-color);
+  box-shadow: 0 0 4px var(--primary-color);
+}
+
+.inactive {
   color: var(--complementary-color);
-
-  /* background-color: var(--background-color-two); */
-  /* border-radius: 10px; */
-  /* border: 1px solid var(--complementary-color); */
-}
-
-.upperLowerIcons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  gap: 2px;
-
-  font-size: 1.5rem;
-}
-
-.filters button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s;
-}
-
-.activeFilter,
-.inactiveFilter {
-  border: 1px solid var(--primary-color);
-  border-radius: 10px;
-  padding: 4px;
-}
-
-.activeFilter {
-  background-color: var(--primary-color);
-  color: var(--text-dark);
-}
-
-.activeFilter:hover {
-  background-color: var(--complementary-color);
-  color: var(--text-light);
-}
-
-.inactiveFilter {
   background-color: var(--background-color-two);
-  color: var(--primary-color);
-}
-
-.inactiveFilter:hover {
-  background-color: var(--primary-color);
-  color: var(--text-dark);
+  box-shadow: 0 0 4px var(--background-color-two);
 }
 
 .headerIcon {

@@ -9,7 +9,7 @@ class CrimeSeverity {
       case 'misdemeanor':
         return CrimeSeverity.MISDEMEANOR;
       default:
-        console.warn(`Unknown crime severity: ${severity}. Defaulting to empty.`);
+        // console.warn(`Unknown crime severity: ${severity}. Defaulting to empty.`);
         return "";
     }
   }

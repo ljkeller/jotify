@@ -155,23 +155,17 @@ function countInmatesOnDate(db, iso8601DateStr) {
 }
 
 function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
-  console.log(sortConfig);
-  console.log(INMATE_SORT_OPTIONS);
-  console.log(SORT_DIRECTIONS);
   const sortMethod = sortConfig && INMATE_SORT_OPTIONS.has(sortConfig.option) && SORT_DIRECTIONS.has(sortConfig.direction) ? sortConfig : null;
 
   console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
   let inData = null;
   if (!sortMethod) {
-    console.log('default sorting');
-
     inData = db.prepare(`
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
     FROM inmate
     WHERE date(booking_date) = date(@iso8601DateStr)
   `).all({ iso8601DateStr });
   } else {
-    console.log('parameterized sorting');
 
     inData = db.prepare(`
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date

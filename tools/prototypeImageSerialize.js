@@ -3,10 +3,9 @@ const axios = require('axios');
 const Database = require('better-sqlite3');
 const fs = require('fs');
 
-const url = 'https://www3.scottcountyiowa.gov/sheriff/images/inmates/215417.jpg';
+const url = 'https://www3.scottcountyiowa.gov/sheriff/images/inmates/215603.jpg';
 async function main() {
   const resp = await axios.get(url, { responseType: 'arraybuffer', responseEncoding: 'binary' });
-  console.log(resp);
 
   fs.writeFileSync('testPreSerialize.jpg', resp.data, 'binary');
   const db = new Database(':memory:', { verbose: console.log });

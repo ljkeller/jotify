@@ -8,6 +8,9 @@ import styles from '/styles/CompressedRecord.module.css';
 
 const MAX_SHOW_CHARGES = 3
 
+const bufferToBase64 = (buffer) =>
+  buffer ? `data:image/jpeg;base64,${buffer.toString('base64')}` : '/anon.png';
+
 export default function CompressedRecord({ data: compressedInmate, priority }) {
   // TODO? lowercase charge data
   const warningIcon = (chargeGrade) => {
@@ -29,19 +32,29 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
     consumerFormatBookingDate = "unknown";
   }
 
+  // TODO: use s3 instead of base64 image
+  const image =
+    <img
+      src={bufferToBase64(compressedInmate.img)}
+      width={150}
+      height={187}
+      alt={`${compressedInmate.fullName} mugshot`}
+      className={styles.mugshot}
+    />;
+  // <Image
+  //   // TODO: use s3 instead of precoded image
+  //   src={"/in1.jpg"}
+  //   width={150}
+  //   height={187}
+  //   alt={`${compressedInmate.fullName} mugshot`}
+  //   className={styles.mugshot}
+  //   priority={priority}
+  // />
   return (
-    <Link className={styles.hiddenLink} href={`/record?id=${compressedInmate.id}`} prefetch={false} >
+    <Link className={styles.hiddenLink} href={`/ record ? id = ${compressedInmate.id} `} prefetch={false} >
       <div className={styles.record}>
-        <Image
-          // TODO: use s3 instead of precoded image
-          src={"/in1.jpg"}
-          width={150}
-          height={187}
-          alt={`${compressedInmate.fullName} mugshot`}
-          className={styles.mugshot}
-          priority={priority}
-        />
-        <div className={styles.headerDetails}>
+        {image}
+        < div className={styles.headerDetails} >
           <div className={styles.textBox}>
             <div className={styles.nameBox}>
               <h3 className={`${styles.name}`}>
@@ -61,7 +74,7 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
               }
             </ul>
           </div>
-        </div>
+        </div >
       </div >
     </Link >
   );

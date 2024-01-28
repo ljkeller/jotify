@@ -51,7 +51,7 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
   //   priority={priority}
   // />
   return (
-    <Link className={styles.hiddenLink} href={`/ record ? id = ${compressedInmate.id} `} prefetch={false} >
+    <Link className={styles.hiddenLink} href={`/record?id=${compressedInmate.id}`} prefetch={false} >
       <div className={styles.record}>
         {image}
         < div className={styles.headerDetails} >

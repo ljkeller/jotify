@@ -25,6 +25,9 @@ function getRecommended() {
   ];
 }
 
+const bufferToBase64 = (buffer) =>
+  buffer ? `data:image/jpeg;base64,${buffer.toString('base64')}` : '/anon.png';
+
 export default function Record({ record, searchParams }) {
   const recommended = getRecommended();
 
@@ -61,17 +64,28 @@ export default function Record({ record, searchParams }) {
     consumerFormatBookingDate = "unknown";
   }
 
+  // TODO: use s3 instead of base64 image
+  const image =
+    <img
+      src={bufferToBase64(inmate.inmateProfile.imgBlob)}
+      width={300}
+      height={375}
+      alt={`${inmate.inmateProfile.getFullName()} mugshot`}
+      className={styles.mugshot}
+    />;
+  // Use below as reference for s3 impl
+  // <Image
+  //   src='/in1.jpg'
+  //   width={300}
+  //   height={375}
+  //   className={styles.profileImage}
+  //   alt='inmate image'
+  //   priority={true}
+  // ></Image>
   return (
     <div className={styles.recordOuter}>
       <div className={styles.profileSidebar}>
-        <Image
-          src='/in1.jpg'
-          width={300}
-          height={375}
-          className={styles.profileImage}
-          alt='inmate image'
-          priority={true}
-        ></Image>
+        {image}
         <div className={styles.profileContainer}>
 
           <h3 className={styles.primaryHeader}>Profile</h3>

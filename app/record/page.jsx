@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FaMask } from 'react-icons/fa';
 import { FiExternalLink } from "react-icons/fi";
 import Database from 'better-sqlite3';
-import { parseISO, format } from 'date-fns';
+import { formatISO, parseISO, format } from 'date-fns';
 
 import styles from '/styles/Record.module.css';
 import { config } from '/tools/config';
@@ -144,7 +144,7 @@ export default function Record({ record, searchParams }) {
       <div className={styles.inmateRecordColumn}>
         <div>
           <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
-          <h3 className={`${styles.secondaryHeader}`}>Booked: {consumerFormatBookingDate}</h3>
+          <h3 className={`${styles.secondaryHeader}`}>Booked: <Link className={`${styles.hiddenLink} ${styles.recommendedLink}`} href={`/date?date=${formatISO(inmate.inmateProfile.bookingDateIso8601, { representation: 'date' })}`}>{consumerFormatBookingDate}</Link></h3>
         </div>
         <div className={styles.aliasHeaderContainer}>
           <div className={styles.iconHeader}>

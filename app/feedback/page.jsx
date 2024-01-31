@@ -27,7 +27,7 @@ export default function Feedback() {
           <p className={`${styles.replaceMe} ${styles.padMe}`}>dot</p>
           <p>com</p>
         </div>
-        <h3 className={styles.header}>Thank you!</h3>
+        <h3 className={styles.footer}>Thank you!</h3>
       </div>
     </div >
   );

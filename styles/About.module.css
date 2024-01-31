@@ -1,0 +1,29 @@
+.container,
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.header {
+  color: var(--primary-color);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  margin-bottom: 20px;
+}
+
+.complementary {
+  color: var(--complementary-color);
+}
+
+.aboutText {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--text-light);
+}
+
+/* Media Query for Desktop */
+@media (min-width: 768px) {
+  .about {
+    max-width: 50%;
+  }
+}

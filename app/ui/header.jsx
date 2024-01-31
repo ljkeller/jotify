@@ -13,6 +13,9 @@ export default function Header() {
         </Link>
         <div className={styles.links}>
           <a href="/record" className={styles.logo}><GiPerspectiveDiceSixFacesRandom /></a>
+          <Link href="/about" className={styles.link}>
+            About
+          </Link>
           <Link href="/disclaimer" className={styles.link}>
             Disclaimer
           </Link>

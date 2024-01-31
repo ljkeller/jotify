@@ -1,17 +1,27 @@
 .container {
-    min-height: 100vh;
-    padding: 0 0.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--text-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-light);
 }
 
 .header {
-    color: var(--primary-color);
+  color: var(--primary-color);
+  font-size: clamp(1.5rem, 5vw, 2rem);
 }
 
 .disclaimer {
-    padding: 20px;
+  padding: 0 20px;
+}
+
+.disclaimerText {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--text-light);
+}
+
+@media (min-width: 768px) {
+  .disclaimer {
+    max-width: 50%;
+  }
 }

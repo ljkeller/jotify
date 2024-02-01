@@ -91,3 +91,37 @@
   /* remove the automatic link styling */
   text-decoration: none;
 }
+
+@media (max-width: 768px) {
+  .record {
+    min-width: 300px;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: var(--background-color-one);
+
+    margin: 0;
+
+    border-radius: 0;
+    border-bottom: 1px solid var(--background-color-two);
+  }
+
+  .hiddenLink {
+    width: 100%;
+  }
+
+  .headerDetails {
+    width: 300px;
+  }
+
+  .nameBox {
+    width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}

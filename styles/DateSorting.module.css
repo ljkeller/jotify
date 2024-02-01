@@ -32,14 +32,12 @@
   box-shadow: 0 0 4px var(--background-color-two);
 }
 
-.headerIcon {
-  color: var(--complementary-color);
-  padding: 0 1rem;
-  text-decoration: none;
-  font-size: 2.2rem;
-  font-weight: bold;
-}
+@media (max-width: 768px) {
+  .header {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
 
-.headerIcon:hover {
-  color: var(--primary-color);
+  .sortingLink {
+    font-size: 0.8rem;
+  }
 }

@@ -61,8 +61,8 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
                 {warningIcon(compressedInmate.chargeGrade)}
                 {compressedInmate.fullName}
               </h3>
+              <h4 className={styles.date}>{consumerFormatBookingDate}</h4>
             </div>
-            <h4 className={styles.date}>{consumerFormatBookingDate}</h4>
             <ul className={styles.charges}>
               {charges}
               {

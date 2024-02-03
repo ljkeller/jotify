@@ -224,6 +224,10 @@
   text-decoration: none;
 }
 
+.underlinedLink {
+  text-decoration: underline;
+}
+
 .recommendedContainer {
   display: flex;
   flex-direction: row;
@@ -236,7 +240,7 @@
 }
 
 .recommendedContainer:hover,
-.recommendedContainer .recommendedLink:hover {
+.recommendedLink:hover {
   color: var(--complementary-color);
   scale: 1.01;
 }

@@ -6,6 +6,7 @@ import Database from 'better-sqlite3';
 import { formatISO } from 'date-fns';
 
 import TrafficCalendar from './ui/trafficCalendar';
+import Search from '/app/ui/search';
 import Record from '/app/ui/compressedRecord';
 import { config } from '/tools/config';
 import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
@@ -45,13 +46,14 @@ export default function Home() {
           <span>jail.io</span>
         </h1>
 
-        <div className={styles.searchOptionsContainer}>
+        <Search />
+        {/* <div className={styles.searchOptionsContainer}>
           <FaMask className={`${styles.searchIcon} ${styles.complementary}`} />
           <div className={styles.search}>
             <RiUserSearchFill className={styles.searchIcon} />
             <input type="text" placeholder="Search by name..." />
           </div>
-        </div>
+        </div> */}
 
         <div className={styles.icons}></div>
         <div className={styles.grid7Days}>

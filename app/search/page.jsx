@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 
-import { getCompressedInmateDataForAlias } from '/tools/database/sqliteUtils';
+import { getCompressedInmateDataForSearchName } from '/tools/database/sqliteUtils';
 import { config } from '/tools/config';
 import DateSorting from '/app/date/dateSorting';
 
@@ -15,10 +15,13 @@ const defaultSort = { option: 'date', direction: 'desc' };
 
 export default function AliasScroller({ params, searchParams }) {
   console.log(`searchParams: ${JSON.stringify(searchParams)}`);
-  if (!searchParams?.alias) {
-    return <div>Invalid alias</div>;
+  if (!searchParams?.query) {
+    return <div>Invalid search argument!</div>;
   }
-  const alias = searchParams.alias;
+  const name = searchParams.query;
+  if (name.length < 3) {
+    return <div>Search query must be at least 3 characters</div>;
+  }
 
   let sortConfig = defaultSort;
   try {
@@ -31,8 +34,8 @@ export default function AliasScroller({ params, searchParams }) {
     console.log("Error parsing sort options: " + err);
   }
 
-  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const inmateData = getCompressedInmateDataForAlias(db, alias, sortConfig);
+  const db = new Database(config.appReadFile, { verbose: console.log, readonly: true });
+  const inmateData = getCompressedInmateDataForSearchName(db, name, sortConfig);
   db.close();
   // TODO: remove this priority heuristic that makes first 5 records priority?
   // TODO: sort records on client side (cause all should be here)
@@ -44,10 +47,10 @@ export default function AliasScroller({ params, searchParams }) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>
-          {alias}
+          {name}
         </h1>
       </div>
-      <DateSorting routePrefix={`alias?alias=${alias}`} serverSortConfig={sortConfig} />
+      <DateSorting routePrefix={`search?query=${encodeURIComponent(name)}`} serverSortConfig={sortConfig} />
       <div className={styles.recordsWrapper}>
         <h3 className={styles.miniHeader}>Showing {records.length} records</h3>
         <div className={styles.records}>

@@ -14,7 +14,7 @@ export default function SearchBar() {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    router.push(`/search?query=${encodeURIComponent(searchText)}}`);
+    router.push(`/search?query=${encodeURIComponent(searchText)}`);
   };
 
   return <form

@@ -311,6 +311,81 @@ function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
   return compressedInmates;
 }
 
+function getCompressedInmateDataForSearchName(db, name, sortConfig = null) {
+  // TODO! Sanitize alias & other functions
+  if (!name || name.length < 3) {
+    return [];
+  }
+
+  const sortMethod = sortConfig && INMATE_SORT_OPTIONS.has(sortConfig.option) && SORT_DIRECTIONS.has(sortConfig.direction) ? sortConfig : null;
+  console.log(`Getting compressed inmate data for name ${name}`);
+
+  let statement = null;
+  if (!sortMethod) {
+    statement = db.prepare(`
+    SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+    FROM inmate
+    WHERE LOWER((IFNULL(first_name, '') || ' ' || IFNULL(middle_name, '') || ' ' || IFNULL(last_name, '') || ' ' || IFNULL(affix, '')))
+    LIKE LOWER('%' || @name || '%')
+    LIMIT 20
+  `);
+  } else {
+    statement = db.prepare(`
+    SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+    FROM inmate
+    WHERE LOWER((IFNULL(first_name, '') || ' ' || IFNULL(middle_name, '') || ' ' || IFNULL(last_name, '') || ' ' || IFNULL(affix, '')))
+    LIKE LOWER('%' || @name || '%')
+    ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)} ${sortConfig.direction}
+    LIMIT 20
+  `);
+  }
+
+  const bulkInmates = statement.all({ name: name });
+  const compressedInmates = [];
+  for (const inmate of bulkInmates) {
+    try {
+      const charges = db.prepare(`
+        SELECT description, grade, offense_date
+        FROM charge
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
+      const chargeInformationArray = charges.map((charge) => {
+        return new ChargeInformation(charge.description, charge.grade, charge.offenseDate);
+      });
+
+      const bond = db.prepare(`
+        SELECT type, amount_pennies
+        FROM bond
+        WHERE inmate_id = @inmate_id
+      `).all({ inmate_id: inmate.id });
+      let bondPennies = bond.reduce((acc, curr) => acc + curr.amount_pennies, 0);
+      bondPennies = bond.some((bond) => bond.type.toLowerCase().includes('unbondable')) ? Infinity : bondPennies;
+
+      const img = db.prepare(`
+        SELECT img
+        FROM img
+        WHERE inmate_id = @inmate_id
+      `).get({ inmate_id: inmate.id });
+
+      const compressedInmate = new CompressedInmate(
+        inmate.id,
+        inmate.first_name,
+        inmate.middle_name,
+        inmate.last_name,
+        inmate.affix,
+        inmate.booking_date,
+        bondPennies,
+        inmate.dob,
+        img.img,
+        chargeInformationArray);
+      compressedInmates.push(compressedInmate);
+    } catch (err) {
+      console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
+    }
+  }
+  return compressedInmates;
+}
+
 /**
  * Get inmate aggregate data for a given inmate id, or random if null id
  * @param {*} db database to query
@@ -436,4 +511,14 @@ function getInmateAggregateData(db, id = null) {
   }
 }
 
-module.exports = { setupDbCloseConditions, createTables, serializeInmateAggregate, getInmateIdsWithNullImages, countInmatesOnDate, getCompressedInmateDataForDate, getCompressedInmateDataForAlias, getInmateAggregateData };
+module.exports = {
+  setupDbCloseConditions,
+  createTables,
+  serializeInmateAggregate,
+  getInmateIdsWithNullImages,
+  countInmatesOnDate,
+  getCompressedInmateDataForDate,
+  getCompressedInmateDataForAlias,
+  getCompressedInmateDataForSearchName,
+  getInmateAggregateData
+};

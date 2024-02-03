@@ -68,7 +68,7 @@ export default function DateScroller({ params, searchParams }) {
           <Link className={styles.headerIcon} href={getNextDayQuery(date)}><SlArrowRight /></Link>
         </h1>
       </div>
-      <DateSorting date={dateStrIso8601} serverSortConfig={sortConfig} />
+      <DateSorting routePrefix={`/date?date=${dateStrIso8601}`} serverSortConfig={sortConfig} />
       <div className={styles.recordsWrapper}>
         <h3 className={styles.miniHeader}>Showing {records.length} records</h3>
         <div className={styles.records}>

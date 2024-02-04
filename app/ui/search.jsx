@@ -33,14 +33,17 @@ export default function SearchBar() {
           onBlur={() => setIsFocused(false)}
           placeholder="Search by name..."
         />
+        {isFocused || searchText ?
+          (<div className={styles.floater}>
+            <p>John Smith</p>
+            <p>Jane Doe</p>
+            <p>Lor Knows</p>
+          </div>)
+          : null
+        }
       </div>
     </form>
-    {searchText.length < 3 ?
-      (<div className={styles.floater}>
-        <p>Search query must be at least 3 characters</p>
-      </div>)
-      : null
-    }
+
 
   </div>
 }

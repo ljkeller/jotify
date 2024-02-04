@@ -6,7 +6,7 @@
 }
 
 .searchContainer {
-  /* width: 100%; */
+  width: 100%;
 
   display: flex;
   flex-direction: column;
@@ -18,21 +18,24 @@
 }
 
 .floater {
-  /* width: 100%; */
   position: absolute;
-  z-index: 100;
-  top: 100%;
-  /* top: 0; */
-  /* left: 0; */
-  /* right: 0; */
+  text-align: left;
 
-  /* overflow: hidden; */
-  text-overflow: ellipsis;
+  top: 100%;
+  left: -2px;
+  right: -2px;
+  margin-top: 1px;
+
+  z-index: 100;
 
   background-color: var(--background-color-one);
-  box-shadow: 0 0 10px 0 var(--background-color-two);
-  border: 2px solid var(--background-color-two);
-  border-radius: 10px;
+
+  border-right: 2px solid var(--primary-color);
+  border-left: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+
+  border-end-end-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 .searchIcon {
@@ -48,7 +51,7 @@
 .search {
   display: flex;
   flex-direction: row;
-  background-color: var(--background-color-two);
+  background-color: var(--background-color-one);
   align-items: center;
 
   max-width: 550px;
@@ -57,10 +60,12 @@
 
   border-radius: 10px;
   border: 2px solid var(--background-color-two);
+  box-shadow: 0 0 10px 0 var(--background-color-two);
 }
 
 .searchFocused {
   background-color: var(--background-color-one);
+  position: relative;
 
   display: flex;
   flex-direction: row;
@@ -71,11 +76,12 @@
   min-width: 300px;
 
   background-color: var(--background-color-one);
-  /* border-radius: 10px; */
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  border: 2px solid var(--primary-color);
-  /* border-top: 2px solid var(--background-color-two); */
+  border-top: 2px solid var(--primary-color);
+  border-left: 2px solid var(--primary-color);
+  border-right: 2px solid var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
 }
 
 .searchFocused input[type="text"] {
@@ -105,11 +111,5 @@
 
   border: none;
   outline: none;
-  background-color: var(--background-color-two);
-}
-
-
-.search input:hover,
-.search input:focus {
-  /* background-color: var(--background-color-one); */
+  background-color: var(--background-color-one);
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { RiUserSearchFill } from "react-icons/ri";
 import { FaMask } from 'react-icons/fa';
@@ -31,8 +32,12 @@ export default function SearchBar() {
     router.push(`/search?query=${encodeURIComponent(searchText)}`);
   };
 
+  const debouncedQuery = useDebouncedCallback((query) => {
+    fetchQuerySuggestions(query).then((suggestions) => { setSuggestions(suggestions) });
+  }, 150);
+
   useEffect(() => {
-    fetchQuerySuggestions(searchText).then((suggestions) => { setSuggestions(suggestions) });
+    debouncedQuery(searchText);
   }, [searchText]);
 
   return <div className={`${styles.searchContainer} `}>

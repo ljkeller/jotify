@@ -76,8 +76,9 @@
   min-width: 300px;
 
   background-color: var(--background-color-one);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 10px;
+  /* border-top-left-radius: 10px; */
+  /* border-top-right-radius: 10px; */
   border-top: 2px solid var(--primary-color);
   border-left: 2px solid var(--primary-color);
   border-right: 2px solid var(--primary-color);
@@ -92,7 +93,7 @@
   border-radius: 10px;
   border: 2px solid var(--background-color-two);
 
-  font-size: 1rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
 
   border: none;
   outline: none;
@@ -107,7 +108,7 @@
   border-radius: 10px;
   border: 2px solid var(--background-color-two);
 
-  font-size: 1rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
 
   border: none;
   outline: none;
@@ -115,18 +116,22 @@
 }
 
 .suggestion {
-  color: (var(--text-light));
+  color: var(--primary-color);
   font-size: clamp(0.8rem, 3vw, 1rem);
-  font-weight: normal;
+  font-weight: 400;
 
   padding: 4px;
 
   text-overflow: ellipsis;
   overflow: hidden;
   border-radius: 10px;
+
+  text-decoration: none;
+  display: block;
 }
 
 .suggestion:hover {
   background-color: var(--background-color-two);
+  color: var(--complementary-color);
   cursor: pointer;
 }

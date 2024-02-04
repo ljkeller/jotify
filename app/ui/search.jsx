@@ -52,7 +52,7 @@ export default function SearchBar() {
         />
         {isFocused && suggestions?.length ?
           (<div className={styles.floater}>
-            {suggestions.map((suggestion, idx) => <div key={idx} className={styles.suggestion}>{suggestion}</div>)}
+            {suggestions.map((suggestion, idx) => <a href={`/search?query=${encodeURIComponent(suggestion)}`} key={idx} className={styles.suggestion}>{suggestion}</a>)}
           </div>)
           : null
         }

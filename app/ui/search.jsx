@@ -10,6 +10,7 @@ import styles from '../../styles/Search.module.css';
 
 export default function SearchBar() {
   const [searchText, setSearchText] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
 
   const handleSearch = (event) => {
@@ -17,18 +18,29 @@ export default function SearchBar() {
     router.push(`/search?query=${encodeURIComponent(searchText)}`);
   };
 
-  return <form
-    onSubmit={handleSearch}
-    className={styles.searchOptionsContainer}>
-    <FaMask className={`${styles.searchIcon} ${styles.complementary}`} />
-    <div className={styles.search}>
-      <RiUserSearchFill className={styles.searchIcon} />
-      <input
-        type="text"
-        value={searchText}
-        onChange={(event) => setSearchText(event.target.value)}
-        placeholder="Search by name..."
-      />
-    </div>
-  </form>
+  return <div className={`${styles.searchContainer} `}>
+    <form
+      onSubmit={handleSearch}
+      className={styles.searchOptionsContainer}>
+      <FaMask className={`${styles.searchIcon} ${styles.complementary}`} />
+      <div className={`${isFocused || searchText ? styles.searchFocused : styles.search}`}>
+        <RiUserSearchFill className={styles.searchIcon} />
+        <input
+          type="text"
+          value={searchText}
+          onChange={(event) => setSearchText(event.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder="Search by name..."
+        />
+      </div>
+    </form>
+    {searchText.length < 3 ?
+      (<div className={styles.floater}>
+        <p>Search query must be at least 3 characters</p>
+      </div>)
+      : null
+    }
+
+  </div>
 }

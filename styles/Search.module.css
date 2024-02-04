@@ -5,9 +5,40 @@
   margin-top: 2rem;
 }
 
+.searchContainer {
+  /* width: 100%; */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+
+  position: relative;
+}
+
+.floater {
+  /* width: 100%; */
+  position: absolute;
+  z-index: 100;
+  top: 100%;
+  /* top: 0; */
+  /* left: 0; */
+  /* right: 0; */
+
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+
+  background-color: var(--background-color-one);
+  box-shadow: 0 0 10px 0 var(--background-color-two);
+  border: 2px solid var(--background-color-two);
+  border-radius: 10px;
+}
+
 .searchIcon {
   margin: 0 10px;
   font-size: 1.5rem;
+  color: var(--text-light)
 }
 
 .complementary {
@@ -17,7 +48,7 @@
 .search {
   display: flex;
   flex-direction: row;
-  background-color: var(--background-color-one);
+  background-color: var(--background-color-two);
   align-items: center;
 
   max-width: 550px;
@@ -28,11 +59,33 @@
   border: 2px solid var(--background-color-two);
 }
 
-.search input[type="text"] {
+.searchFocused {
+  background-color: var(--background-color-one);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  max-width: 550px;
+  width: 100%;
+  min-width: 300px;
+
+  background-color: var(--background-color-one);
+  /* border-radius: 10px; */
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 2px solid var(--primary-color);
+  /* border-top: 2px solid var(--background-color-two); */
+}
+
+.searchFocused input[type="text"] {
   width: 100%;
   color: var(--text-light);
 
   padding: 10px;
+  border-radius: 10px;
+  border: 2px solid var(--background-color-two);
+
   font-size: 1rem;
 
   border: none;
@@ -40,8 +93,23 @@
   background-color: var(--background-color-one);
 }
 
+.search input[type="text"] {
+  width: 100%;
+  color: var(--text-light);
+
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid var(--background-color-two);
+
+  font-size: 1rem;
+
+  border: none;
+  outline: none;
+  background-color: var(--background-color-two);
+}
+
 
 .search input:hover,
 .search input:focus {
-  background-color: var(--background-color-two);
+  /* background-color: var(--background-color-one); */
 }

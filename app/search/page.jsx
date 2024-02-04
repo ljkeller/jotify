@@ -6,6 +6,7 @@ import DateSorting from '/app/date/dateSorting';
 
 import styles from '/styles/AliasScroller.module.css';
 import Record from '/app/ui/compressedRecord';
+import SearchBar from '../ui/search';
 
 // TODO: Introduce severity sorting
 const SORT_OPTIONS = new Set(['name', 'date', 'bond', 'age']);
@@ -45,6 +46,7 @@ export default function AliasScroller({ params, searchParams }) {
 
   return (
     <div className={styles.container}>
+      <SearchBar />
       <div className={styles.header}>
         <h1>
           {name}

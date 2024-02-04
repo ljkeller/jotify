@@ -511,6 +511,26 @@ function getInmateAggregateData(db, id = null) {
   }
 }
 
+function getRelatedInmateNames(db, name) {
+  if (!name || name.length < 3) {
+    return [];
+  }
+
+  let inmates = db.prepare(`
+    SELECT first_name, middle_name, last_name, affix
+    FROM inmate
+    WHERE LOWER((IFNULL(first_name, '') || ' ' || IFNULL(middle_name, '') || ' ' || IFNULL(last_name, '') || ' ' || IFNULL(affix, '')))
+    LIKE LOWER('%' || @name || '%')
+    LIMIT 10
+  `).all({ name });
+
+  inmates = inmates.map((inmate) =>
+    `${inmate.first_name} ${inmate.middle_name} ${inmate.last_name} ${inmate.affix}`.trim()
+  );
+
+  return inmates;
+}
+
 module.exports = {
   setupDbCloseConditions,
   createTables,
@@ -520,5 +540,6 @@ module.exports = {
   getCompressedInmateDataForDate,
   getCompressedInmateDataForAlias,
   getCompressedInmateDataForSearchName,
-  getInmateAggregateData
+  getInmateAggregateData,
+  getRelatedInmateNames
 };

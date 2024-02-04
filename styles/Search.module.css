@@ -24,7 +24,7 @@
   top: 100%;
   left: -2px;
   right: -2px;
-  margin-top: 1px;
+  margin-top: 2px;
 
   z-index: 100;
 
@@ -112,4 +112,21 @@
   border: none;
   outline: none;
   background-color: var(--background-color-one);
+}
+
+.suggestion {
+  color: (var(--text-light));
+  font-size: clamp(0.8rem, 3vw, 1rem);
+  font-weight: normal;
+
+  padding: 4px;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.suggestion:hover {
+  background-color: var(--background-color-two);
+  cursor: pointer;
 }

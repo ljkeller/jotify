@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { RiUserSearchFill } from "react-icons/ri";
@@ -8,8 +8,21 @@ import { FaMask } from 'react-icons/fa';
 
 import styles from '../../styles/Search.module.css';
 
+async function fetchQuerySuggestions(searchText) {
+  console.log(`Fetching query suggestions for: ${searchText}`);
+  if (!searchText || searchText.length < 3) {
+    return [];
+  }
+
+  const response = await fetch('/api/search?query=' + encodeURIComponent(searchText));
+  const suggestions = await response.json();
+  console.log(suggestions);
+  return response.ok ? suggestions : [];
+}
+
 export default function SearchBar() {
   const [searchText, setSearchText] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
 
@@ -17,6 +30,10 @@ export default function SearchBar() {
     event.preventDefault();
     router.push(`/search?query=${encodeURIComponent(searchText)}`);
   };
+
+  useEffect(() => {
+    fetchQuerySuggestions(searchText).then((suggestions) => { setSuggestions(suggestions) });
+  }, [searchText]);
 
   return <div className={`${styles.searchContainer} `}>
     <form
@@ -33,11 +50,9 @@ export default function SearchBar() {
           onBlur={() => setIsFocused(false)}
           placeholder="Search by name..."
         />
-        {isFocused || searchText ?
+        {isFocused && suggestions?.length ?
           (<div className={styles.floater}>
-            <p>John Smith</p>
-            <p>Jane Doe</p>
-            <p>Lor Knows</p>
+            {suggestions.map((suggestion, idx) => <div key={idx} className={styles.suggestion}>{suggestion}</div>)}
           </div>)
           : null
         }

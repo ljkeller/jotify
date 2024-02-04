@@ -55,7 +55,7 @@ export default function SearchBar() {
           onBlur={() => setIsFocused(false)}
           placeholder="Search by name..."
         />
-        {isFocused || suggestions?.length ?
+        {suggestions?.length ?
           (<div className={styles.floater}>
             {[... new Set(suggestions)].slice(0, 10).map((suggestion, idx) => <a href={`/search?query=${encodeURIComponent(suggestion)}`} key={idx} className={styles.suggestion}>{suggestion}</a>)}
           </div>)

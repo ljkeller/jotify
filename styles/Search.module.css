@@ -82,7 +82,7 @@
   border-top: 2px solid var(--primary-color);
   border-left: 2px solid var(--primary-color);
   border-right: 2px solid var(--primary-color);
-  border-bottom: 1px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
 }
 
 .searchFocused input[type="text"] {

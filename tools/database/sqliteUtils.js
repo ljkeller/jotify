@@ -521,7 +521,7 @@ function getRelatedInmateNames(db, name) {
     FROM inmate
     WHERE LOWER((IFNULL(first_name, '') || ' ' || IFNULL(middle_name, '') || ' ' || IFNULL(last_name, '') || ' ' || IFNULL(affix, '')))
     LIKE LOWER('%' || @name || '%')
-    LIMIT 10
+    LIMIT 20
   `).all({ name });
 
   inmates = inmates.map((inmate) =>

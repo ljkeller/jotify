@@ -25,6 +25,7 @@ export default function SearchBar() {
   const [searchText, setSearchText] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
+  const [isAliasSearch, setIsAliasSearch] = useState(false);
   const router = useRouter();
 
   const handleSearch = (event) => {
@@ -44,8 +45,8 @@ export default function SearchBar() {
     <form
       onSubmit={handleSearch}
       className={styles.searchOptionsContainer}>
-      <FaMask className={`${styles.searchIcon} ${styles.complementary}`} />
-      <div className={`${isFocused || searchText ? styles.searchFocused : styles.search}`}>
+      <FaMask onClick={() => setIsAliasSearch(!isAliasSearch)} className={`${isAliasSearch ? styles.aliasSearchActive : styles.aliasSearchInactive}`} />
+      <div className={`${isFocused || searchText ? styles.searchFocused : styles.search} ${isAliasSearch ? styles.aliasSearchAura : styles.nameSearchAura}`}>
         <RiUserSearchFill className={styles.searchIcon} />
         <input
           type="text"
@@ -53,7 +54,7 @@ export default function SearchBar() {
           onChange={(event) => setSearchText(event.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder="Search by name..."
+          placeholder={`Search by ${isAliasSearch ? 'alias' : 'name'}`}
         />
         {suggestions?.length ?
           (<div className={styles.floater}>

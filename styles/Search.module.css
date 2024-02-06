@@ -17,6 +17,32 @@
   position: relative;
 }
 
+.aliasSearchInactive {
+  margin: 0 10px;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.aliasSearchActive {
+  margin: 0 10px;
+  font-size: 1.5rem;
+  color: var(--complementary-color);
+}
+
+.aliasSearchInactive:hover,
+.aliasSearchActive:hover {
+  cursor: pointer;
+  scale: 1.1;
+}
+
+.aliasSearchAura {
+  box-shadow: 0 0 10px 0 var(--complementary-color);
+}
+
+.nameSearchAura {
+  box-shadow: 0 0 10px 0 var(--background-color-two);
+}
+
 .floater {
   position: absolute;
   text-align: left;
@@ -60,7 +86,7 @@
 
   border-radius: 10px;
   border: 2px solid var(--background-color-two);
-  box-shadow: 0 0 10px 0 var(--background-color-two);
+  /* box-shadow: 0 0 10px 0 var(--background-color-two); */
 }
 
 .searchFocused {

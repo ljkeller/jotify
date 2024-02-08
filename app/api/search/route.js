@@ -1,25 +1,26 @@
 import Database from 'better-sqlite3';
 
 import { config } from '/tools/config';
-import { getRelatedInmateNames } from "../../../tools/database/sqliteUtils";
+import { getRelatedAliases, getRelatedNames } from "../../../tools/database/sqliteUtils";
 
 export function GET(request) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const searchQuery = searchParams.get('query');
+    const searchType = searchParams.get('type');
 
-    if (!searchQuery) {
-      return new Response(JSON.stringify({ error: 'Missing query parameter' }),
+    if (!searchQuery || !searchType) {
+      return new Response(JSON.stringify({ error: `Missing query parameter: ${!searchQuery ? 'query' : 'type'}` }),
         {
           status: 400
         });
     }
     // TODO! sanitize searchQuery
-    const db = new Database(config.appReadFile, { verbose: console.log, readonly: true });
-    const inmateNames = getRelatedInmateNames(db, searchQuery);
+    const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
+    const relatedNames = searchType === 'name' ? getRelatedNames(db, searchQuery) : getRelatedAliases(db, searchQuery);
     db.close();
 
-    return new Response(JSON.stringify(inmateNames),
+    return new Response(JSON.stringify(relatedNames),
       {
         status: 200
       });

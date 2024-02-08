@@ -511,12 +511,13 @@ function getInmateAggregateData(db, id = null) {
   }
 }
 
-function getRelatedInmateNames(db, name) {
+function getRelatedNames(db, name) {
   if (!name || name.length < 3) {
     return [];
   }
 
-  let inmates = db.prepare(`
+  try {
+    let inmates = db.prepare(`
     SELECT first_name, middle_name, last_name, affix
     FROM inmate
     WHERE LOWER((IFNULL(first_name, '') || ' ' || IFNULL(middle_name, '') || ' ' || IFNULL(last_name, '') || ' ' || IFNULL(affix, '')))
@@ -524,11 +525,38 @@ function getRelatedInmateNames(db, name) {
     LIMIT 20
   `).all({ name });
 
-  inmates = inmates.map((inmate) =>
-    `${inmate.first_name} ${inmate.middle_name} ${inmate.last_name} ${inmate.affix}`.trim()
-  );
+    inmates = inmates.map((inmate) =>
+      `${inmate.first_name} ${inmate.middle_name} ${inmate.last_name} ${inmate.affix}`.trim()
+    );
 
-  return inmates;
+    return inmates;
+  } catch (err) {
+    console.error(`Error getting related names for name ${name}. Error: ${err}`);
+    return []
+  }
+
+}
+
+function getRelatedAliases(db, alias) {
+  if (!alias || alias.length < 3) {
+    return [];
+  }
+
+  console.log("Getting related aliases for alias", alias);
+
+  try {
+    let aliases = db.prepare(`
+      SELECT alias
+      FROM alias
+      WHERE LOWER(alias) LIKE LOWER('%' || @alias || '%')
+      LIMIT 20
+    `).all({ alias });
+    console.log(alias);
+    return aliases.map((alias) => alias.alias.trim());
+  } catch (err) {
+    console.error(`Error getting related aliases for name ${alias}. Error: ${err}`);
+    return []
+  }
 }
 
 module.exports = {
@@ -541,5 +569,6 @@ module.exports = {
   getCompressedInmateDataForAlias,
   getCompressedInmateDataForSearchName,
   getInmateAggregateData,
-  getRelatedInmateNames
+  getRelatedNames,
+  getRelatedAliases
 };

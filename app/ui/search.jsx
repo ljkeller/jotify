@@ -9,6 +9,9 @@ import { FaMask } from 'react-icons/fa';
 
 import styles from '../../styles/Search.module.css';
 
+const searchRoute = '/search?query=';
+const aliasRoute = '/alias?query=';
+
 async function fetchQuerySuggestions(searchText, isAliasSearch = false) {
   console.log(`Fetching query suggestions for: ${searchText}`);
   if (!searchText || searchText.length < 3) {
@@ -30,7 +33,7 @@ export default function SearchBar() {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    router.push(`/search?type=${isAliasSearch ? 'alias' : 'name'}&query=${encodeURIComponent(searchText)}`);
+    router.push(`${isAliasSearch ? aliasRoute : searchRoute}&query=${encodeURIComponent(searchText)}`);
   };
 
   const debouncedQuery = useDebouncedCallback((query) => {
@@ -58,7 +61,7 @@ export default function SearchBar() {
         />
         {suggestions?.length ?
           (<div className={styles.floater}>
-            {[... new Set(suggestions)].slice(0, 10).map((suggestion, idx) => <a href={`/search?type=${isAliasSearch ? 'alias' : 'name'}&query=${encodeURIComponent(suggestion)}`} key={idx} className={styles.suggestion}>{suggestion}</a>)}
+            {[... new Set(suggestions)].slice(0, 10).map((suggestion, idx) => <a href={`${isAliasSearch ? 'alias' : 'search'}?query=${encodeURIComponent(suggestion)}`} key={idx} className={styles.suggestion}>{suggestion}</a>)}
           </div>)
           : null
         }

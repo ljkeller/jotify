@@ -4,6 +4,7 @@ import { getCompressedInmateDataForAlias } from '/tools/database/sqliteUtils';
 import { config } from '/tools/config';
 import DateSorting from '/app/date/dateSorting';
 
+import SearchBar from '/app/ui/search';
 import styles from '/styles/AliasScroller.module.css';
 import Record from '/app/ui/compressedRecord';
 
@@ -15,10 +16,10 @@ const defaultSort = { option: 'date', direction: 'desc' };
 
 export default function AliasScroller({ params, searchParams }) {
   console.log(`searchParams: ${JSON.stringify(searchParams)}`);
-  if (!searchParams?.alias) {
+  if (!searchParams?.query) {
     return <div>Invalid alias</div>;
   }
-  const alias = searchParams.alias;
+  const alias = searchParams.query;
 
   let sortConfig = defaultSort;
   try {
@@ -42,12 +43,13 @@ export default function AliasScroller({ params, searchParams }) {
 
   return (
     <div className={styles.container}>
+      <SearchBar />
       <div className={styles.header}>
         <h1>
           {alias}
         </h1>
       </div>
-      <DateSorting routePrefix={`alias?alias=${alias}`} serverSortConfig={sortConfig} />
+      <DateSorting routePrefix={`alias?query=${alias}`} serverSortConfig={sortConfig} />
       <div className={styles.recordsWrapper}>
         <h3 className={styles.miniHeader}>Showing {records.length} records</h3>
         <div className={styles.records}>

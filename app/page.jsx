@@ -47,14 +47,6 @@ export default function Home() {
         </h1>
 
         <Search />
-        {/* <div className={styles.searchOptionsContainer}>
-          <FaMask className={`${styles.searchIcon} ${styles.complementary}`} />
-          <div className={styles.search}>
-            <RiUserSearchFill className={styles.searchIcon} />
-            <input type="text" placeholder="Search by name..." />
-          </div>
-        </div> */}
-
         <div className={styles.icons}></div>
         <div className={styles.grid7Days}>
           <TrafficCalendar inmateTraffic7Days={trafficLast7Days} />

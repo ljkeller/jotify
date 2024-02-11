@@ -17,16 +17,16 @@
   position: relative;
 }
 
-.aliasSearchInactive {
-  margin: 0 10px;
-  font-size: 1.5rem;
-  color: var(--primary-color);
-}
-
-.aliasSearchActive {
+.aliasSearchIcon {
   margin: 0 10px;
   font-size: 1.5rem;
   color: var(--complementary-color);
+}
+
+.nameSearchIcon {
+  margin: 0 10px;
+  font-size: 1.5rem;
+  color: var(--primary-color);
 }
 
 .nameHighlight {
@@ -43,18 +43,18 @@
   border-bottom: 2px solid var(--complementary-color);
 }
 
-.aliasSearchInactive:hover,
-.aliasSearchActive:hover {
+.aliasSearchIcon:hover,
+.nameSearchIcon:hover {
   cursor: pointer;
   scale: 1.1;
 }
 
 .aliasSearchAura {
-  box-shadow: 0 0 10px 0 var(--complementary-color);
+  /* box-shadow: 0 0 10px 0 var(--complementary-color); */
 }
 
 .nameSearchAura {
-  box-shadow: 0 0 10px 0 var(--primary-color);
+  /* box-shadow: 0 0 10px 0 var(--primary-color); */
 }
 
 .floater {

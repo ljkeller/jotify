@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { RiUserSearchFill } from "react-icons/ri";
+import { MdPersonSearch } from "react-icons/md";
 import { FaMask } from 'react-icons/fa';
 
 import styles from '../../styles/Search.module.css';
@@ -48,15 +49,26 @@ export default function SearchBar() {
     <form
       onSubmit={handleSearch}
       className={styles.searchOptionsContainer}>
-      <FaMask
-        onClick={() => {
-          const isAliasSearchSnapshot = isAliasSearch;
-          setIsAliasSearch(!isAliasSearchSnapshot);
-          console.log(`fetching suggestions for ${searchText} with isAliasSearch: ${!isAliasSearchSnapshot}`)
-          fetchQuerySuggestions(searchText, !isAliasSearchSnapshot).then((suggestions) => { setSuggestions(suggestions) });
-        }}
-        className={`${isAliasSearch ? styles.aliasSearchActive : styles.aliasSearchInactive} `}
-      />
+      {
+        isAliasSearch ?
+          <MdPersonSearch
+            onClick={() => {
+              const isAliasSearchSnapshot = isAliasSearch;
+              setIsAliasSearch(!isAliasSearchSnapshot);
+              fetchQuerySuggestions(searchText, !isAliasSearchSnapshot).then((suggestions) => { setSuggestions(suggestions) });
+            }}
+            className={styles.nameSearchIcon}
+          />
+          :
+          <FaMask
+            onClick={() => {
+              const isAliasSearchSnapshot = isAliasSearch;
+              setIsAliasSearch(!isAliasSearchSnapshot);
+              fetchQuerySuggestions(searchText, !isAliasSearchSnapshot).then((suggestions) => { setSuggestions(suggestions) });
+            }}
+            className={styles.aliasSearchIcon}
+          />
+      }
       <div className={`${isFocused || searchText ? `${styles.searchFocused} ${isAliasSearch ? styles.aliasHighlight : styles.nameHighlight}` : styles.search} ${isAliasSearch ? styles.aliasSearchAura : styles.nameSearchAura} `}>
         <RiUserSearchFill className={styles.searchIcon} />
         <input

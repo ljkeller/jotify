@@ -103,20 +103,18 @@
 .search {
   display: flex;
   flex-direction: row;
-  background-color: var(--background-color-one);
+  background-color: var(--background-color-two);
   align-items: center;
 
   max-width: 550px;
   width: 100%;
   min-width: 300px;
 
-  border-radius: 10px;
+  border-radius: 20px;
   border: 2px solid var(--background-color-two);
-  /* box-shadow: 0 0 10px 0 var(--background-color-two); */
 }
 
 .searchFocused {
-  background-color: var(--background-color-one);
   position: relative;
 
   display: flex;
@@ -128,7 +126,7 @@
   min-width: 300px;
 
   background-color: var(--background-color-one);
-  border-radius: 10px;
+  border-radius: 20px;
 }
 
 .searchFocused input[type="text"] {
@@ -136,8 +134,7 @@
   color: var(--text-light);
 
   padding: 10px;
-  border-radius: 10px;
-  border: 2px solid var(--background-color-two);
+  border-radius: 20px;
 
   font-size: clamp(1rem, 3vw, 1.2rem);
 
@@ -151,14 +148,14 @@
   color: var(--text-light);
 
   padding: 10px;
-  border-radius: 10px;
-  border: 2px solid var(--background-color-two);
+  border-radius: 20px;
+  /* border: 2px solid var(--background-color-two); */
 
   font-size: clamp(1rem, 3vw, 1.2rem);
 
   border: none;
   outline: none;
-  background-color: var(--background-color-one);
+  background-color: var(--background-color-two);
 }
 
 .suggestion {
@@ -169,7 +166,7 @@
 
   text-overflow: ellipsis;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 8px;
 
   text-decoration: none;
   display: block;

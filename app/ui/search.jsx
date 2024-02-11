@@ -76,6 +76,8 @@ export default function SearchBar() {
           value={searchText}
           onChange={(event) => setSearchText(event.target.value)}
           onFocus={() => setIsFocused(true)}
+          onMouseEnter={() => setIsFocused(true)}
+          onMouseLeave={() => setIsFocused(false)}
           onBlur={() => setIsFocused(false)}
           placeholder={`Search by ${isAliasSearch ? 'alias' : 'name'} `}
         />

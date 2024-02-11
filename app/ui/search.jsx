@@ -48,8 +48,16 @@ export default function SearchBar() {
     <form
       onSubmit={handleSearch}
       className={styles.searchOptionsContainer}>
-      <FaMask onClick={() => setIsAliasSearch(!isAliasSearch)} className={`${isAliasSearch ? styles.aliasSearchActive : styles.aliasSearchInactive} `} />
-      <div className={`${isFocused || searchText ? styles.searchFocused : styles.search} ${isAliasSearch ? styles.aliasSearchAura : styles.nameSearchAura} `}>
+      <FaMask
+        onClick={() => {
+          const isAliasSearchSnapshot = isAliasSearch;
+          setIsAliasSearch(!isAliasSearchSnapshot);
+          console.log(`fetching suggestions for ${searchText} with isAliasSearch: ${!isAliasSearchSnapshot}`)
+          fetchQuerySuggestions(searchText, !isAliasSearchSnapshot).then((suggestions) => { setSuggestions(suggestions) });
+        }}
+        className={`${isAliasSearch ? styles.aliasSearchActive : styles.aliasSearchInactive} `}
+      />
+      <div className={`${isFocused || searchText ? `${styles.searchFocused} ${isAliasSearch ? styles.aliasHighlight : styles.nameHighlight}` : styles.search} ${isAliasSearch ? styles.aliasSearchAura : styles.nameSearchAura} `}>
         <RiUserSearchFill className={styles.searchIcon} />
         <input
           type="text"
@@ -60,14 +68,17 @@ export default function SearchBar() {
           placeholder={`Search by ${isAliasSearch ? 'alias' : 'name'} `}
         />
         {suggestions?.length ?
-          (<div className={styles.floater}>
-            {[... new Set(suggestions)].slice(0, 10).map((suggestion, idx) => <a href={`${isAliasSearch ? 'alias' : 'search'}?query=${encodeURIComponent(suggestion)}`} key={idx} className={styles.suggestion}>{suggestion}</a>)}
+          (<div className={`${styles.floater} ${isAliasSearch ? styles.aliasFloater : styles.nameFloater}`}>
+            {[... new Set(suggestions)]
+              .slice(0, 10).map((suggestion, idx) =>
+                <a href={`${isAliasSearch ? 'alias' : 'search'}?query=${encodeURIComponent(suggestion)}`}
+                  key={idx}
+                  className={`${styles.suggestion} ${isAliasSearch ? styles.complementary : styles.primary}`}>{suggestion}
+                </a>)}
           </div>)
           : null
         }
       </div>
     </form>
-
-
   </div>
 }

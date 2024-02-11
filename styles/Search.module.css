@@ -29,6 +29,20 @@
   color: var(--complementary-color);
 }
 
+.nameHighlight {
+  border-top: 2px solid var(--primary-color);
+  border-left: 2px solid var(--primary-color);
+  border-right: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.aliasHighlight {
+  border-top: 2px solid var(--complementary-color);
+  border-left: 2px solid var(--complementary-color);
+  border-right: 2px solid var(--complementary-color);
+  border-bottom: 2px solid var(--complementary-color);
+}
+
 .aliasSearchInactive:hover,
 .aliasSearchActive:hover {
   cursor: pointer;
@@ -40,7 +54,7 @@
 }
 
 .nameSearchAura {
-  box-shadow: 0 0 10px 0 var(--background-color-two);
+  box-shadow: 0 0 10px 0 var(--primary-color);
 }
 
 .floater {
@@ -56,12 +70,20 @@
 
   background-color: var(--background-color-one);
 
+  border-end-end-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.nameFloater {
   border-right: 2px solid var(--primary-color);
   border-left: 2px solid var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
+}
 
-  border-end-end-radius: 10px;
-  border-bottom-left-radius: 10px;
+.aliasFloater {
+  border-right: 2px solid var(--complementary-color);
+  border-left: 2px solid var(--complementary-color);
+  border-bottom: 2px solid var(--complementary-color);
 }
 
 .searchIcon {
@@ -72,6 +94,10 @@
 
 .complementary {
   color: var(--complementary-color);
+}
+
+.primary {
+  color: var(--primary-color);
 }
 
 .search {
@@ -103,12 +129,6 @@
 
   background-color: var(--background-color-one);
   border-radius: 10px;
-  /* border-top-left-radius: 10px; */
-  /* border-top-right-radius: 10px; */
-  border-top: 2px solid var(--primary-color);
-  border-left: 2px solid var(--primary-color);
-  border-right: 2px solid var(--primary-color);
-  border-bottom: 2px solid var(--primary-color);
 }
 
 .searchFocused input[type="text"] {
@@ -142,7 +162,6 @@
 }
 
 .suggestion {
-  color: var(--primary-color);
   font-size: clamp(0.8rem, 3vw, 1rem);
   font-weight: 400;
 

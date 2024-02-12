@@ -58,6 +58,7 @@ export default function SearchBar() {
               fetchQuerySuggestions(searchText, !isAliasSearchSnapshot).then((suggestions) => { setSuggestions(suggestions) });
             }}
             className={styles.nameSearchIcon}
+            title="Search by name"
           />
           :
           <FaMask
@@ -67,6 +68,7 @@ export default function SearchBar() {
               fetchQuerySuggestions(searchText, !isAliasSearchSnapshot).then((suggestions) => { setSuggestions(suggestions) });
             }}
             className={styles.aliasSearchIcon}
+            title="Search by alias"
           />
       }
       <div className={`${isFocused || searchText ? `${styles.searchFocused} ${isAliasSearch ? styles.aliasHighlight : styles.nameHighlight}` : styles.search} ${isAliasSearch ? styles.aliasSearchAura : styles.nameSearchAura} `}>

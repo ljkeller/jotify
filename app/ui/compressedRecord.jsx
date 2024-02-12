@@ -14,7 +14,7 @@ const bufferToBase64 = (buffer) =>
 export default function CompressedRecord({ data: compressedInmate, priority }) {
   // TODO? lowercase charge data
   const warningIcon = (chargeGrade) => {
-    const severity = <PiSealWarningFill />;
+    const severity = <PiSealWarningFill title="Felony" />;
     return chargeGrade === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
   };
   const charges = [];

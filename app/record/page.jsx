@@ -139,7 +139,7 @@ export default function Record({ record, searchParams }) {
       <div className={styles.inmateRecordColumn}>
         <div>
           <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
-          <h3 className={`${styles.secondaryHeader}`}>Booked: <Link className={`${styles.hiddenLink} ${styles.recommendedLink}`} href={`/date?date=${formatISO(inmate.inmateProfile.bookingDateIso8601, { representation: 'date' })}`}>{consumerFormatBookingDate}</Link></h3>
+          <h3 className={`${styles.secondaryHeader}`}>Booked: <Link title="View inmates on date" className={`${styles.hiddenLink} ${styles.recommendedLink}`} href={`/date?date=${formatISO(inmate.inmateProfile.bookingDateIso8601, { representation: 'date' })}`}>{consumerFormatBookingDate}</Link></h3>
         </div>
         <div className={styles.aliasHeaderContainer}>
           <div className={styles.iconHeader}>

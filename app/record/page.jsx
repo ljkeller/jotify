@@ -31,17 +31,12 @@ const bufferToBase64 = (buffer) =>
 export default function Record({ record, searchParams }) {
   const recommended = getRecommended();
 
-  let inmate;
+  let inmate, id;
   try {
     const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
     try {
-      if (!searchParams.id) {
-        // Get random inmate because no id
-        inmate = getInmateAggregateData(db);
-      } else {
-        const queryId = parseInt(searchParams.id);
-        inmate = getInmateAggregateData(db, queryId);
-      }
+      const searchId = searchParams?.id ? parseInt(searchParams.id) : null;
+      ({ inmateAggregate: inmate, inmateId: id } = getInmateAggregateData(db, searchId));
     } catch (err) {
       console.log(err);
       // TODO: return error page / val

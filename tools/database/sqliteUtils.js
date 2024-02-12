@@ -500,11 +500,14 @@ function getInmateAggregateData(db, id = null) {
       `).get({ inmate_id: inmate.id });
     inmateProfile.imgBlob = img.img;
 
-    return new InmateAggregate(
-      inmateProfile,
-      bondInformationArray,
-      chargeInformationArray
-    );
+    return {
+      inmateAggregate: new InmateAggregate(
+        inmateProfile,
+        bondInformationArray,
+        chargeInformationArray
+      ),
+      inmateId: inmate.id
+    };
   } catch (err) {
     console.error(`Error getting inmate data for inmate id ${id}. Error: ${err}`);
     throw err;

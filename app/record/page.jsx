@@ -153,7 +153,7 @@ export default function Record({ record, searchParams }) {
           </div>
           <div className={styles.aliasDivider}>
             {inmate.inmateProfile.aliases.map((alias, idx) =>
-              <Link href={`/alias?alias=${alias}`} prefetch={false} key={idx} className={styles.aliasLink}>{alias}</Link>
+              <Link href={`/alias?query=${alias}`} prefetch={false} key={idx} className={styles.aliasLink}>{alias}</Link>
             )}
             {inmate.inmateProfile.aliases.length === 0 ? <div className={styles.noAliases}>No known aliases</div> : null}
           </div>

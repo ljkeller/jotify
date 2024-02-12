@@ -31,12 +31,12 @@ const bufferToBase64 = (buffer) =>
 export default function Record({ record, searchParams }) {
   const recommended = getRecommended();
 
-  let inmate, id;
+  let inmate, inmateId;
   try {
     const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
     try {
       const searchId = searchParams?.id ? parseInt(searchParams.id) : null;
-      ({ inmateAggregate: inmate, inmateId: id } = getInmateAggregateData(db, searchId));
+      ({ inmateAggregate: inmate, inmateId } = getInmateAggregateData(db, searchId));
     } catch (err) {
       console.log(err);
       // TODO: return error page / val
@@ -196,7 +196,7 @@ export default function Record({ record, searchParams }) {
         </div>
 
         <div className={styles.shareContainer}>
-          <Share />
+          <Share link={`record?id=${inmateId}`} />
         </div>
       </div>
 

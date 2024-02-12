@@ -13,8 +13,12 @@ export default function TrafficCalendar({ inmateTraffic7Days }) {
 
   return (
     <>
-      <a className={styles.trafficExplanation}>{`${inmateTraffic7Days.map((day) => day.inmateCount).reduce((a, b) => a + b)} inmates in the last week`}</a>
+      {/* <a className={styles.trafficExplanation}>{`${inmateTraffic7Days.map((day) => day.inmateCount).reduce((a, b) => a + b)} inmates in the last week`}</a> */}
       <div className={styles.outerDetails}>
+        <div className={styles.bookingHeaderContainer}>
+          <h3 className={styles.bookingHeader}>{`Booking frequency last 7 days`}</h3>
+          <a className={styles.bookingDetails} > {`${inmateTraffic7Days.map((day) => day.inmateCount).reduce((a, b) => a + b)} bookings`}</a>
+        </div>
         <div className={styles.innerDetails}>
           <a className={styles.date}>{`${inmateTraffic7Days[0].date}`}</a>
           <a className={styles.date}>{`${inmateTraffic7Days[inmateTraffic7Days.length - 1].date}`}</a>

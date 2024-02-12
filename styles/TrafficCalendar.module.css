@@ -1,92 +1,108 @@
 .table {
-    border-radius: 3px;
+  border-radius: 3px;
 }
 
 .row {
-    display: table-row;
-    border-spacing: 3px;
+  display: table-row;
+  border-spacing: 3px;
 }
 
 .dayCell {
-    padding: 1.5rem;
-    border: 1px solid var(--background-color-two);
-    border-radius: 3px;
+  padding: 1.5rem;
+  border: 1px solid var(--background-color-two);
+  border-radius: 3px;
 }
 
 .key {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
-    margin-top: 5px;
-    border-spacing: 3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-top: 5px;
+  border-spacing: 3px;
 }
 
 .keyCell {
-    width: 15px;
-    height: 15px;
-    border: 1px solid var(--background-color-two);
-    margin: 0 1px;
-    border-radius: 2px;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--background-color-two);
+  margin: 0 1px;
+  border-radius: 2px;
 }
 
 .keyLabel {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
 .lessLabel {
-    margin-right: 2px;
+  margin-right: 2px;
 }
 
 .moreLabel {
-    margin-left: 2px;
+  margin-left: 2px;
 }
 
 .dayCell:hover {
-    border: 1px solid var(--text-light);
+  border: 1px solid var(--text-light);
 }
 
 .none {
-    background-color: var(--background-color-two);
+  background-color: #000000;
 }
 
 .low {
-    background-color: #3f3c6b;
+  background-color: #004600;
 }
 
 .medium {
-    background-color: #5a3c6b;
+  background-color: #008002;
 }
 
 .high {
-    background-color: #7b3c6b;
+  background-color: #00be46;
 }
 
 .veryHigh {
-    background-color: #9c3c6b;
+  background-color: #57ff81;
 }
 
 .trafficExplanation {
-    font-size: 1rem;
+  font-size: 1rem;
+}
+
+.bookingHeaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bookingHeader {
+  margin: 0;
+  color: var(--complementary-color);
+}
+
+.bookingDetails {
+  font-size: clamp(0.8rem, 3vw, 1rem);
+  font-weight: 500;
 }
 
 .outerDetails {
-    margin-top: 5px;
-    padding: 12px 10px 5px 10px;
-    border: 2px solid var(--background-color-two);
-    border-radius: 3px;
-    font-size: 1.2rem;
+  margin-top: 5px;
+  padding: 12px 10px 5px 10px;
+  border: 2px solid var(--background-color-two);
+  border-radius: 3px;
+  font-size: 1.2rem;
 }
 
 .innerDetails {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.9rem;
 }
 
 .date {
-    margin: 0 8px;
+  margin: 0 8px;
 }

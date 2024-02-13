@@ -256,7 +256,7 @@ function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
   inmateIds = inmateIds.map((inmateId) => inmateId.inmate_id);
 
   let statement = null;
-  if (!sortMethod) {
+  if (!sortMethod || sortMethod.option === 'bond') {
     statement = db.prepare(`
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
     FROM inmate
@@ -317,6 +317,17 @@ function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
       console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
     }
   }
+
+  if (sortMethod?.option === 'bond') {
+    compressedInmates.sort((a, b) => {
+      if (sortConfig.direction === 'asc') {
+        return a.bondPennies - b.bondPennies;
+      } else {
+        return b.bondPennies - a.bondPennies;
+      }
+    })
+  }
+
   return compressedInmates;
 }
 

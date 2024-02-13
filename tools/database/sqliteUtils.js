@@ -226,7 +226,6 @@ function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
       }
     })
   }
-  console.log(JSON.stringify(compressedInmates.map((i) => [i.bondPennies, i.fullName]), null, 2));
   return compressedInmates;
 }
 

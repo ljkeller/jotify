@@ -13,6 +13,7 @@ import styles from '../../styles/Search.module.css';
 const searchRoute = '/search?query=';
 const aliasRoute = '/alias?query=';
 
+// TODO: fix search such that 'john doe' works
 async function fetchQuerySuggestions(searchText, isAliasSearch = false) {
   console.log(`Fetching query suggestions for: ${searchText}`);
   if (!searchText || searchText.length < 3) {
@@ -34,7 +35,7 @@ export default function SearchBar() {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    router.push(`${isAliasSearch ? aliasRoute : searchRoute}&query=${encodeURIComponent(searchText)}`);
+    router.push(`${isAliasSearch ? aliasRoute : searchRoute}${encodeURIComponent(searchText)}`);
   };
 
   const debouncedQuery = useDebouncedCallback((query) => {

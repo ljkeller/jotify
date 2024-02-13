@@ -9,7 +9,7 @@ const InmateAggregate = require("../models/inmateAggregate");
 
 // TODO: We'll need to introduce a translational layer for sorting
 // inmates by other tables, like bond, charge, etc.
-const INMATE_SORT_OPTIONS = new Map([['name', 'last_name'], ['date', 'booking_date'], ['popularity', 'record_visits'], ['age', 'dob']]);
+const INMATE_SORT_OPTIONS = new Map([['name', 'last_name'], ['date', 'booking_date'], ['bond', 'bond'], ['age', 'dob']]);
 const SORT_DIRECTIONS = new Set(['asc', 'desc']);
 
 function setupDbCloseConditions(db) {
@@ -159,14 +159,13 @@ function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
 
   console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
   let inData = null;
-  if (!sortMethod) {
+  if (!sortMethod || sortMethod.option === 'bond') {
     inData = db.prepare(`
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
     FROM inmate
     WHERE date(booking_date) = date(@iso8601DateStr)
   `).all({ iso8601DateStr });
   } else {
-
     inData = db.prepare(`
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
     FROM inmate
@@ -193,7 +192,7 @@ function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
         WHERE inmate_id = @inmate_id
       `).all({ inmate_id: inmate.id });
       let bondPennies = bond.reduce((acc, curr) => acc + curr.amount_pennies, 0);
-      bondPennies = bond.some((bond) => bond.type.toLowerCase().includes('unbondable')) ? Infinity : bondPennies;
+      bondPennies = bond.some((bond) => bond.type.toLowerCase().includes('unbondable')) ? Number.MAX_SAFE_INTEGER : bondPennies;
 
       const img = db.prepare(`
         SELECT img
@@ -217,6 +216,17 @@ function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
       console.error(`Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`);
     }
   }
+
+  if (sortMethod?.option === 'bond') {
+    compressedInmates.sort((a, b) => {
+      if (sortConfig.direction === 'asc') {
+        return a.bondPennies - b.bondPennies;
+      } else {
+        return b.bondPennies - a.bondPennies;
+      }
+    })
+  }
+  console.log(JSON.stringify(compressedInmates.map((i) => [i.bondPennies, i.fullName]), null, 2));
   return compressedInmates;
 }
 

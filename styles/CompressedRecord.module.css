@@ -1,20 +1,54 @@
 .record {
   display: flex;
-  /* align-items: center; */
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   min-width: 500px;
   max-width: 680px;
 
-  background-color: var(--background-color-two);
+  background-color: var(--background-color-one);
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--background-color-two);
+}
+
+.mugshotDetailsContainer {
+  display: flex;
+  width: 100%;
+}
+
+.footerAnalytics {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  margin-top: 5px;
+  padding-top: 5px;
+}
+
+.analyticsIcon {
+  color: var(--text-shadow);
+  font-size: 1.5rem;
+  margin-left: 5px;
+}
+
+.analytics {
+  color: var(--text-shadow);
+  font-weight: 500;
+  font-size: clamp(0.8rem, 3vw, 1rem);
+}
+
+.iconPair {
+  display: flex;
+  align-items: center;
 }
 
 .record:hover {
   transform: scale(1.02);
   cursor: pointer;
+  background-color: var(--background-color-two);
 }
 
 .mugshot {
@@ -27,11 +61,6 @@
   align-items: center;
 
   width: 400px;
-}
-
-.viewMoreIcon {
-  color: var(--text-light);
-  font-size: 1.5rem;
 }
 
 .alertStyle {

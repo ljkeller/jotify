@@ -2,9 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { PiSealWarningFill, PiSubtitlesDuotone } from 'react-icons/pi';
+import { MdIosShare } from "react-icons/md";
+import { BiBarChart } from "react-icons/bi";
+import { MdAttachMoney } from "react-icons/md";
 import { TbFlag } from "react-icons/tb";
 
 import styles from '/styles/CompressedRecord.module.css';
+import { centsToDollars } from '/tools/scraping/currency';
 
 const MAX_SHOW_CHARGES = 3
 
@@ -32,6 +36,10 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
     consumerFormatBookingDate = "unknown";
   }
 
+  let bond = compressedInmate.bondPennies;
+  bond = bond ? bond : 0;
+  bond = bond === Number.MAX_SAFE_INTEGER ? 'UNBONDABLE' : centsToDollars(bond).substr(1);
+
   // TODO: use s3 instead of base64 image
   const image =
     <img
@@ -50,31 +58,46 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
   //   className={styles.mugshot}
   //   priority={priority}
   // />
+
+  // TODO! Implement sharing
   return (
     <Link className={styles.hiddenLink} href={`/record?id=${compressedInmate.id}`} prefetch={false} >
       <div className={styles.record}>
-        {image}
-        < div className={styles.headerDetails} >
-          <div className={styles.textBox}>
-            <div className={styles.nameBox}>
-              <h3 className={`${styles.name}`}>
-                {warningIcon(compressedInmate.chargeGrade)}
-                {compressedInmate.fullName}
-              </h3>
-              <h4 className={styles.date}>{consumerFormatBookingDate}</h4>
+        <div className={styles.mugshotDetailsContainer}>
+          {image}
+          < div className={styles.headerDetails} >
+            <div className={styles.textBox}>
+              <div className={styles.nameBox}>
+                <h3 className={`${styles.name}`}>
+                  {warningIcon(compressedInmate.chargeGrade)}
+                  {compressedInmate.fullName}
+                </h3>
+                <h4 className={styles.date}>{consumerFormatBookingDate}</h4>
+              </div>
+              <ul className={styles.charges}>
+                {charges}
+                {
+                  compressedInmate.chargeInformationArray.length > MAX_SHOW_CHARGES ? <div className={`${styles.compressedNameBox} ${styles.alertStyle}`}>
+                    <TbFlag />
+                    {compressedInmate.chargeInformationArray.length > MAX_SHOW_CHARGES ? <span>{numHiddenCharges} more {numHiddenCharges > 1 ? "charges" : "charge"}</span> : null}
+                  </div>
+                    : null
+                }
+              </ul>
             </div>
-            <ul className={styles.charges}>
-              {charges}
-              {
-                compressedInmate.chargeInformationArray.length > MAX_SHOW_CHARGES ? <div className={`${styles.compressedNameBox} ${styles.alertStyle}`}>
-                  <TbFlag />
-                  {compressedInmate.chargeInformationArray.length > MAX_SHOW_CHARGES ? <span>{numHiddenCharges} more {numHiddenCharges > 1 ? "charges" : "charge"}</span> : null}
-                </div>
-                  : null
-              }
-            </ul>
+          </div >
+        </div>
+        <div className={styles.footerAnalytics}>
+          <div className={styles.iconPair}>
+            <MdAttachMoney title='Bond total' className={styles.analyticsIcon} />
+            <span className={styles.analytics}> {bond}</span>
           </div>
-        </div >
+          <div className={styles.iconPair}>
+            <BiBarChart title='views' className={styles.analyticsIcon} />
+            <span className={styles.analytics}> {Math.floor(Math.random() * 1000)} views, {Math.floor(Math.random() * 140)} shares</span>
+          </div>
+          <MdIosShare title='share' className={styles.analyticsIcon} />
+        </div>
       </div >
     </Link >
   );

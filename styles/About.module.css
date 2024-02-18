@@ -5,8 +5,8 @@
   align-items: center;
 }
 
-.about {
-  padding: 20px;
+.container {
+  padding-top: 20px;
 }
 
 .header {
@@ -27,6 +27,7 @@
 /* Media Query for Desktop */
 @media (min-width: 768px) {
   .about {
-    max-width: 50%;
+    width: 75%;
+    max-width: 800px;
   }
 }

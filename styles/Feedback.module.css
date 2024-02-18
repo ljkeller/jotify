@@ -1,6 +1,6 @@
 .container {
+  padding-top: 20px;
   min-height: 100vh;
-  padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -21,8 +21,12 @@
 }
 
 .feedback {
-  padding: 20px;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+.feedbackText {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--text-light);
 }
 
 .inbox {
@@ -50,6 +54,7 @@
 
 @media (min-width: 768px) {
   .feedback {
-    max-width: 50%;
+    width: 75%;
+    max-width: 800px
   }
 }

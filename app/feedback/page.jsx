@@ -10,12 +10,12 @@ export default function Feedback() {
     <div className={styles.container}>
       <div className={styles.feedback}>
         <h2 className={styles.header}>Have feedback or feature requests?</h2>
-        <p>Feel free to send in feedback and/or feature requests. Or, if you're interested in helping, let me know!</p>
-        <p>Note:</p>
+        <p className={styles.feedbackText}>Feel free to send in feedback and/or feature requests. Or, if you're interested in helping, let me know!</p>
+        <p className={styles.feedbackText}>Note:</p>
         <ul>
-          <li>ignore the text in <span className={styles.filterColor}>this color</span></li>
-          <li>update the text in <span className={styles.replaceMe}>this color</span></li>
-          <li>remove spaces</li>
+          <li className={styles.feedbackText}>ignore the text in <span className={styles.filterColor}>this color</span></li>
+          <li className={styles.feedbackText}>update the text in <span className={styles.replaceMe}>this color</span></li>
+          <li className={styles.feedbackText}>remove spaces</li>
         </ul>
         <div className={styles.inbox}>
           <p className={styles.reverseMe}>cs</p>

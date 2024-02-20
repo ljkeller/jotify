@@ -38,7 +38,7 @@ class InmateProfile {
   }
 
   getFullName() {
-    return `${this.first} ${this.middle} ${this.last} ${this.affix}`;
+    return this.first + (this.middle ? ` ${this.middle} ` : ' ') + this.last + (this.affix ? ` ${this.affix}` : '');
   }
 
   getCoreAttributes() {

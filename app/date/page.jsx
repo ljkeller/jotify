@@ -18,7 +18,6 @@ function getPrevDayQuery(date) {
   return "/date?date=" + formatISO(addDays(date, -1), { representation: 'date' });
 }
 
-// TODO: Introduce severity sorting
 const SORT_OPTIONS = new Set(['name', 'date', 'bond', 'age']);
 const SORT_DIRECTIONS = new Set(['asc', 'desc']);
 // most recent date first
@@ -53,7 +52,6 @@ export default function DateScroller({ params, searchParams }) {
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
   const inmateData = getCompressedInmateDataForDate(db, dateStrIso8601, sortConfig);
   db.close();
-  // TODO: remove this priority heuristic that makes first 5 records priority?
   // TODO: sort records on client side (cause all should be here)
   const records = inmateData.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />

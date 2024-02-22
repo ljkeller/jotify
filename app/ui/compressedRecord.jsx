@@ -19,7 +19,7 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
   // TODO? lowercase charge data
   const warningIcon = (chargeGrade) => {
     const severity = <PiSealWarningFill title="Felony" />;
-    return chargeGrade === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
+    return chargeGrade.toLowerCase() === 'felony' ? <span className={`${styles.felony} ${styles.severity}`}>{severity}</span> : null;
   };
   const charges = [];
   for (let idx = 0; idx < compressedInmate.chargeInformationArray.length && idx < MAX_SHOW_CHARGES; idx++) {

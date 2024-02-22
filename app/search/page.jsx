@@ -38,7 +38,6 @@ export default function AliasScroller({ params, searchParams }) {
   const db = new Database(config.appReadFile, { verbose: console.log, readonly: true });
   const inmateData = getCompressedInmateDataForSearchName(db, name, sortConfig);
   db.close();
-  // TODO: remove this priority heuristic that makes first 5 records priority?
   // TODO: sort records on client side (cause all should be here)
   const records = inmateData.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />

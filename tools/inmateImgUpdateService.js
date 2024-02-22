@@ -9,7 +9,7 @@ const { NetworkUtils } = require('./scraping/networkUtils');
 
 async function findAndRepairNullImgInmates() {
   const db = new Database(config.databaseFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  // TODO: Don't define close conditions when used as a service?
+  // TODO: Define dev vs prod db close conditions
   setupDbCloseConditions(db);
 
   const curDate = new Date();
@@ -30,7 +30,7 @@ async function findAndRepairNullImgInmates() {
     const imgBlob = await getImgBlobWithFallback($);
 
     console.log("imgblob: ", imgBlob != null);
-    // TODO: update img blob
+    // TODO: update img blob in db
   }
   db.close();
   console.log("Finished repairing null images where possible.")

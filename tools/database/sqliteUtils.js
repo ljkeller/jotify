@@ -7,8 +7,6 @@ const BondInformation = require("../models/bondInformation");
 const InmateProfile = require("../models/inmateProfile");
 const InmateAggregate = require("../models/inmateAggregate");
 
-// TODO: We'll need to introduce a translational layer for sorting
-// inmates by other tables, like bond, charge, etc.
 const INMATE_SORT_OPTIONS = new Map([['name', 'last_name'], ['date', 'booking_date'], ['bond', 'bond'], ['age', 'dob']]);
 const SORT_DIRECTIONS = new Set(['asc', 'desc']);
 
@@ -230,7 +228,6 @@ function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
 }
 
 function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
-  // TODO! Sanitize alias & other functions
   if (!alias) {
     return [];
   }
@@ -332,7 +329,6 @@ function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
 }
 
 function getCompressedInmateDataForSearchName(db, name, sortConfig = null) {
-  // TODO! Sanitize alias & other functions
   if (!name || name.length < 3) {
     return [];
   }
@@ -414,7 +410,6 @@ function getCompressedInmateDataForSearchName(db, name, sortConfig = null) {
  */
 function getInmateAggregateData(db, id = null) {
   try {
-    // TODO: make use of scil_sysid
     const inmate = id ? db.prepare(`
       SELECT id,
       first_name,

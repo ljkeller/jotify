@@ -1,11 +1,16 @@
 const Database = require('better-sqlite3');
+const OpenAI = require('openai');
 const { format } = require('date-fns');
 
 const { config } = require('./config');
+const { openAIConfig } = require('./secrets');
 const { getInmateAggregateData } = require('./database/sqliteUtils');
 
 async function main() {
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
+  console.log(openAIConfig);
+  const openai = new OpenAI({ apiKey: openAIConfig.secret });
+
   try {
     const inmate = getInmateAggregateData(db).inmateAggregate;
     // inmate.inmateProfile.imgBlob = 0;
@@ -22,6 +27,13 @@ async function main() {
 
     const story = `${intro} ${chargeDescription} ${description} ${ids}`;
     console.log(story);
+
+    const embedding = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: story,
+      encoding_format: "float",
+    });
+    console.log(JSON.stringify(embedding, null, 2));
 
   } catch (err) {
     console.error(err);

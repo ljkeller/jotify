@@ -30,7 +30,6 @@ export default function DateScroller({ params, searchParams }) {
   try {
     date = parse(searchParams?.date, 'yyyy-MM-dd', new Date());
   } catch (err) {
-    // TODO: specify errors for client here
     // TODO: use central time zone, not just local time zone
     date = new Date();
     date.setHours(0, 0, 0, 0);

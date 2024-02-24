@@ -15,7 +15,6 @@ export function GET(request) {
           status: 400
         });
     }
-    // TODO! sanitize searchQuery
     const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
     const relatedNames = searchType === 'name' ? getRelatedNames(db, searchQuery) : getRelatedAliases(db, searchQuery);
     db.close();

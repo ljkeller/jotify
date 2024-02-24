@@ -34,7 +34,6 @@ export default function AliasScroller({ params, searchParams }) {
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
   const inmateData = getCompressedInmateDataForAlias(db, alias, sortConfig);
   db.close();
-  // TODO: sort records on client side? (cause all should be here)
   const records = inmateData.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />
   );

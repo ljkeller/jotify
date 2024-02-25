@@ -1,45 +1,24 @@
 const postgres = require('postgres');
 
-const { postgresConfig } = require('../secrets.js');
-const { postgresSchemas } = require('../config.js');
+const { getClient: getSqlClient, setupDbCloseConditions, createTables, serializeInmateAggregate } = require('../database/postgreSqlUtils');
+const { getListingsForDates } = require('../scraping/inmateScraper');
 
-const sql = postgres(`postgres://${postgresConfig.username}:${postgresConfig.password}@${postgresConfig.ip}:${postgresConfig.port}`);
+const sql = getSqlClient();
 
 async function main() {
-  const setupResult = await sql.begin(sql => [
-    sql.unsafe(postgresSchemas.inmate),
-    sql.unsafe(postgresSchemas.alias),
-    sql.unsafe(postgresSchemas.inmateAliasJunction),
-    sql.unsafe(postgresSchemas.img),
-    sql.unsafe(postgresSchemas.bondInformation),
-    sql.unsafe(postgresSchemas.chargeInformation),
-  ]);
-
-  // Create a tmp table
-  await sql`
-    CREATE TABLE IF NOT EXISTS fake_table (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(255),
-      age INT
-    )
-  `;
-
-  // Add some data to the table
-  await sql`
-    INSERT INTO fake_table (name, age)
-    VALUES ('John', 25), ('Jane', 30), ('Bob', 35)
-  `;
-
-  // Query and print the data
-  const data = await sql`
-    SELECT * FROM fake_table
-  `;
-  console.log(data);
-
-  sql.end();
+  try {
+    await createTables(sql);
+    setupDbCloseConditions(sql);
+    const inmates = await getListingsForDates(['today']);
+    for (const inmate of inmateListings) {
+      serializeInmateAggregate(sql, inmate);
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    sql.end();
+  }
   return;
 }
 
 main();
-
-// console.log(sql);

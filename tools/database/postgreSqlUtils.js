@@ -1,7 +1,7 @@
-const postgres = require('postgres');
+const postgres = require("postgres");
 
-const { postgresSchemas } = require('../config');
-const { postgresConfig } = require('../secrets');
+const { postgresSchemas } = require("../config");
+const { postgresConfig } = require("../secrets");
 
 const CompressedInmate = require("../models/compressedInmate");
 const ChargeInformation = require("../models/chargeInformation");
@@ -9,8 +9,12 @@ const BondInformation = require("../models/bondInformation");
 const InmateProfile = require("../models/inmateProfile");
 const InmateAggregate = require("../models/inmateAggregate");
 
+const psql = postgres(
+  `postgres://${postgresConfig.username}:${postgresConfig.password}@${postgresConfig.ip}:${postgresConfig.port}`
+);
+
 function getClient() {
-  return postgres(`postgres://${postgresConfig.username}:${postgresConfig.password}@${postgresConfig.ip}:${postgresConfig.port}`);
+  return psql;
 }
 
 function setupDbCloseConditions(db) {
@@ -27,7 +31,7 @@ function setupDbCloseConditions(db) {
 }
 
 async function createTables(db) {
-  const setupResult = await db.begin(sql => [
+  const setupResult = await db.begin((sql) => [
     sql.unsafe(postgresSchemas.inmate),
     sql.unsafe(postgresSchemas.alias),
     sql.unsafe(postgresSchemas.inmateAliasJunction),
@@ -35,11 +39,37 @@ async function createTables(db) {
     sql.unsafe(postgresSchemas.bondInformation),
     sql.unsafe(postgresSchemas.chargeInformation),
   ]);
-  console.log('Initialized postgreSQL tables');
+  console.log("Initialized postgreSQL tables");
 }
 
-function serializeInmateAggregate(db, inmate) {
+async function serializeInmateAggregate(db, inmate) {
   try {
+    const [insertedInmate] = await db.begin(async (sql) => {
+      const profile = inmate.inmateProfile;
+      console.log(`Inserting inmate: ${JSON.stringify(profile.getCoreAttributes(), null, 2)}`);
+
+      const user = await sql`
+        INSERT INTO inmate
+          (
+           id, first_name, middle_name, last_name, affix, permanent_id,
+           sex, dob, arresting_agency, booking_date, booking_number, 
+           height, weight, race, eye_color, img_url, scil_sysid,
+           record_visits, shared
+          )
+        values
+          (
+           DEFAULT, ${profile.first}, ${profile.middle}, ${profile.last},
+           ${profile.affix}, ${profile.permanentId}, ${profile.sex},
+           ${profile.dob}, ${profile.arrestingAgency}, ${profile.bookingDateIso8601},
+           ${profile.bookingNumber}, ${profile.height}, ${profile.weight},
+           ${profile.race}, ${profile.eyeColor}, NULL, ${profile.scilSysId}, 0, 0
+          )
+        returning id, first_name
+      `;
+      return user;
+    });
+    console.log(`Inserted inmate: ${JSON.stringify(insertedInmate, null, 2)}`);
+
     // const addAggregate = db.transaction((inmate) => {
     //   const profile = inmate.inmateProfile;
 
@@ -135,10 +165,22 @@ function serializeInmateAggregate(db, inmate) {
     //   }
     // });
     // addAggregate(inmate);
-    console.log(inmate);
+    // console.log(inmate);
   } catch (error) {
-    console.error(`Error serializing inmate: ${JSON.stringify(inmate.inmateProfile.getCoreAttributes(), null, 2)}. Error -> ${error}`);
+    console.error(
+      `Error serializing inmate: ${JSON.stringify(
+        inmate.inmateProfile.getCoreAttributes(),
+        null,
+        2
+      )}. Error -> ${error}`
+    );
   }
 }
 
-module.exports = { getClient, setupDbCloseConditions, createTables, serializeInmateAggregate }
+module.exports = {
+  getClient,
+  setupDbCloseConditions,
+  createTables,
+  serializeInmateAggregate,
+  psql,
+};

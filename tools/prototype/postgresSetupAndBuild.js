@@ -9,9 +9,9 @@ async function main() {
   try {
     await createTables(sql);
     setupDbCloseConditions(sql);
-    const inmates = await getListingsForDates(['today']);
+    const inmateListings = await getListingsForDates(['today']);
     for (const inmate of inmateListings) {
-      serializeInmateAggregate(sql, inmate);
+      await serializeInmateAggregate(sql, inmate);
     }
   } catch (err) {
     console.log(err);

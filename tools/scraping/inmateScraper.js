@@ -107,7 +107,7 @@ function getCoreProfileData($) {
 
 function getIncarcerationInformation($) {
   return {
-    arrestingAgency: $("dt:contains('Arresting Agency')").next('dd').text().trim(),
+    arrestingAgency: $("dt:contains('Committing Agency')").next('dd').text().trim(),
     bookingDate: scilDateTimeToIso8601($("dt:contains('Booking Date Time')").next('dd').text().trim()),
     bookingNum: $("dt:contains('Booking Number')").next('dd').text().trim()
   }

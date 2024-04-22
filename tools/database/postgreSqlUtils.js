@@ -42,13 +42,26 @@ async function createTables(db) {
   console.log("Initialized postgreSQL tables");
 }
 
+async function insertAliasAndGetId(db, alias) {
+  const [aliasObj] = await db`
+    INSERT INTO alias
+      (id, alias)
+    VALUES
+      (DEFAULT, ${alias})
+    ON CONFLICT (alias) DO UPDATE
+      SET alias = EXCLUDED.alias
+    RETURNING id;
+  `
+  return aliasObj.id;
+}
+
 async function serializeInmateAggregate(db, inmate) {
   try {
-    const [insertedInmate] = await db.begin(async (sql) => {
+    await db.begin(async (sql) => {
       const profile = inmate.inmateProfile;
       console.log(`Inserting inmate: ${JSON.stringify(profile.getCoreAttributes(), null, 2)}`);
 
-      const user = await sql`
+      const [insertedInmate] = await sql`
         INSERT INTO inmate
           (
            id, first_name, middle_name, last_name, affix, permanent_id,
@@ -65,106 +78,55 @@ async function serializeInmateAggregate(db, inmate) {
            ${profile.race}, ${profile.eyeColor}, NULL, ${profile.scilSysId}, 0, 0
           )
         returning id, first_name
-      `;
-      return user;
+      `
+      console.log(`Inserted inmate: ${JSON.stringify(insertedInmate, null, 2)}`);
+      let inmateId = insertedInmate.id;
+
+      for (const alias of profile.aliases) {
+        if (!alias) {
+          continue;
+        }
+
+        // TODO: validate this heavily
+        // Make this a prepared statement?
+        const aliasId = await insertAliasAndGetId(db, alias);
+        console.log(`Inserted alias: ${alias} and got id: ${aliasId}`);
+        await db`
+          INSERT INTO inmate_alias
+            (inmate_id, alias_id)
+          VALUES
+            (${inmateId}, ${aliasId})
+        `;
+        console.log(`Inserted inmate_alias: ${inmateId}, ${aliasId}`);
+      }
+
+      await db`
+        INSERT INTO img
+          (id, inmate_id, img)
+        VALUES
+          (DEFAULT, ${inmateId}, ${profile.imgBlob})
+      `
+
+      // TODO: optimize looping insert
+      for (const bond of inmate.bondInformation) {
+        await db`
+          INSERT INTO bond
+            (id, inmate_id, type, amount_pennies)
+          VALUES
+            (DEFAULT, ${inmateId}, ${bond.type}, ${bond.amountPennies})
+        `
+      }
+      
+      // TODO: optimize looping insert
+      for (const charge of inmate.chargeInformation) {
+        await db`
+        INSERT INTO charge
+          (id, inmate_id, description, grade, offense_date)
+        VALUES
+          (DEFAULT, ${inmateId}, ${charge.description}, ${charge.grade}, ${charge.offenseDate})
+        `
+      }
     });
-    console.log(`Inserted inmate: ${JSON.stringify(insertedInmate, null, 2)}`);
-
-    // const addAggregate = db.transaction((inmate) => {
-    //   const profile = inmate.inmateProfile;
-
-    //   // The reason we can always insert all inmates is because the current
-    //   // schema has a unique constraint across several columns. Thus,
-    //   // duplicates will error out.
-    //   let info = db.prepare(`
-    //     INSERT INTO inmate
-    //     VALUES
-    //     (NULL, @first_name, @middle_name, @last_name, @affix, @permanent_id, @sex, @dob, @arresting_agency, @booking_date, @booking_number, @height, @weight, @race, @eye_color, NULL, @scil_sysid, 0)
-    //   `).run(
-    //     {
-    //       first_name: profile.first,
-    //       middle_name: profile.middle,
-    //       last_name: profile.last,
-    //       affix: profile.affix,
-    //       permanent_id: profile.permanentId,
-    //       sex: profile.sex,
-    //       dob: profile.dob,
-    //       arresting_agency: profile.arrestingAgency,
-    //       booking_date: profile.bookingDateIso8601,
-    //       booking_number: profile.bookingNumber,
-    //       height: profile.height,
-    //       weight: profile.weight,
-    //       race: profile.race,
-    //       eye_color: profile.eyeColor,
-    //       scil_sysid: profile.scilSysId
-    //     });
-    //   const inmateId = info.lastInsertRowid;
-    //   // TODO: insert image url once we're storing images in S3
-
-    //   const aliasGetStmt = db.prepare(`
-    //     SELECT id
-    //     FROM alias
-    //     WHERE alias = @alias
-    //   `);
-    //   const aliasInsertStmt = db.prepare(`
-    //     INSERT INTO alias
-    //     VALUES
-    //     (NULL, @alias)
-    //   `);
-    //   const inmateAliasInsertStmt = db.prepare(`
-    //     INSERT INTO inmate_alias
-    //     VALUES
-    //     (@inmate_id, @alias_id)
-    //   `);
-
-    //   // TODO: Investigate if make this a transaction
-    //   for (const alias of profile.aliases) {
-    //     if (!alias) {
-    //       continue;
-    //     }
-    //     let info = null;
-    //     let aliasQueryResp = aliasGetStmt.get({ alias });
-    //     if (!aliasQueryResp) {
-    //       info = aliasInsertStmt.run({ alias: alias });
-    //     }
-    //     inmateAliasInsertStmt.run({ inmate_id: inmateId, alias_id: aliasQueryResp ? aliasQueryResp.id : info.lastInsertRowid });
-    //   }
-
-    //   db.prepare(`
-    //     INSERT INTO img
-    //     VALUES
-    //     (NULL, @inmate_id, @img_blob)
-    //   `).run({
-    //     inmate_id: inmateId,
-    //     img_blob: profile.imgBlob
-    //   });
-
-    //   for (const bond of inmate.bondInformation) {
-    //     db.prepare(`
-    //       INSERT INTO bond
-    //       VALUES
-    //       (NULL, @inmate_id, @type, @amount_pennies)
-    //     `).run({
-    //       inmate_id: inmateId,
-    //       type: bond.type,
-    //       amount_pennies: bond.amountPennies
-    //     });
-    //   }
-
-    //   for (const charge of inmate.chargeInformation) {
-    //     db.prepare(`
-    //       INSERT INTO charge
-    //       VALUES
-    //       (NULL, @inmate_id, @description, @grade, @offense_date)
-    //     `).run({
-    //       inmate_id: inmateId,
-    //       description: charge.description,
-    //       grade: charge.grade,
-    //       offense_date: charge.offenseDate
-    //     });
-    //   }
-    // });
-    // addAggregate(inmate);
     // console.log(inmate);
   } catch (error) {
     console.error(

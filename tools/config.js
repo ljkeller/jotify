@@ -7,7 +7,7 @@ const config = {
   // Requires appending inmate id (sysid=XX...)
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
-  sleepBetweenRequests: 10000, // ms
+  sleepBetweenRequests: 100, // ms
   databaseFile: "scjailio-1-20-24.db",
   prototypeFile: "scjailio-prototype.db",
   printDbQueries: false,
@@ -61,7 +61,7 @@ const postgresSchemas = {
       id SERIAL PRIMARY KEY,
       inmate_id INTEGER NOT NULL,
       img BYTEA,
-      FOREIGN KEY (inmate_id) REFERENCES inmate(id)
+      FOREIGN KEY (inmate_id) REFERENCES inmate(id) 
     )
   `,
   bondInformation: `
@@ -70,7 +70,7 @@ const postgresSchemas = {
       inmate_id INTEGER NOT NULL,
       type TEXT NOT NULL,
       amount_pennies INTEGER NOT NULL DEFAULT 0,
-      FOREIGN KEY (inmate_id) REFERENCES inmate(id)
+      FOREIGN KEY (inmate_id) REFERENCES inmate(id) 
     )
   `,
   chargeInformation: `

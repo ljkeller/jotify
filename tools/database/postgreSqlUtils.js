@@ -54,38 +54,35 @@ async function insertAliasAndGetId(db, alias) {
       (DEFAULT, ${alias})
     ON CONFLICT (alias) DO UPDATE
       SET alias = EXCLUDED.alias
-    RETURNING id;
+    RETURNING id
   `
   return aliasObj.id;
 }
 
 async function serializeInmateAggregate(db, inmate) {
   try {
-    await db.begin(async (sql) => {
+    await db.begin(async db => {
       const profile = inmate.inmateProfile;
-      console.log(`Inserting inmate: ${JSON.stringify(profile.getCoreAttributes(), null, 2)}`);
 
-      const [insertedInmate] = await sql`
+      const [insertedInmate] = await db`
         INSERT INTO inmate
           (
-           id, first_name, middle_name, last_name, affix, permanent_id,
+           first_name, middle_name, last_name, affix, permanent_id,
            sex, dob, arresting_agency, booking_date, booking_number, 
            height, weight, race, eye_color, img_url, scil_sysid,
            record_visits, shared
           )
-        values
+        VALUES
           (
-           DEFAULT, ${profile.first}, ${profile.middle}, ${profile.last},
+           ${profile.first}, ${profile.middle}, ${profile.last},
            ${profile.affix}, ${profile.permanentId}, ${profile.sex},
            ${profile.dob}, ${profile.arrestingAgency}, ${profile.bookingDateIso8601},
            ${profile.bookingNumber}, ${profile.height}, ${profile.weight},
            ${profile.race}, ${profile.eyeColor}, NULL, ${profile.scilSysId}, 0, 0
           )
-        returning id, first_name
+        RETURNING id, first_name
       `
-      let inmateId = insertedInmate.id;
-      console.log(`Inserted inmate: ${JSON.stringify(insertedInmate, null, 2)} at id: ${inmateId}`);
-
+      const inmateId = insertedInmate.id;
       for (const alias of profile.aliases) {
         if (!alias) {
           continue;
@@ -94,30 +91,28 @@ async function serializeInmateAggregate(db, inmate) {
         // TODO: validate this heavily
         // Make this a prepared statement?
         const aliasId = await insertAliasAndGetId(db, alias);
-        console.log(`Inserted alias: ${alias} and got id: ${aliasId}`);
         await db`
           INSERT INTO inmate_alias
             (inmate_id, alias_id)
           VALUES
             (${inmateId}, ${aliasId})
         `;
-        console.log(`Inserted inmate_alias: ${inmateId}, ${aliasId}`);
       }
 
       await db`
         INSERT INTO img
-          (id, inmate_id, img)
+          (inmate_id, img)
         VALUES
-          (DEFAULT, ${inmateId}, ${profile.imgBlob})
+          (${inmateId}, ${profile.imgBlob})
       `
 
       // TODO: optimize looping insert
       for (const bond of inmate.bondInformation) {
         await db`
           INSERT INTO bond
-            (id, inmate_id, type, amount_pennies)
+            (inmate_id, type, amount_pennies)
           VALUES
-            (DEFAULT, ${inmateId}, ${bond.type}, ${bond.amountPennies})
+            (${inmateId}, ${bond.type}, ${bond.amountPennies})
         `
       }
       
@@ -125,9 +120,9 @@ async function serializeInmateAggregate(db, inmate) {
       for (const charge of inmate.chargeInformation) {
         await db`
         INSERT INTO charge
-          (id, inmate_id, description, grade, offense_date)
+          (inmate_id, description, grade, offense_date)
         VALUES
-          (DEFAULT, ${inmateId}, ${charge.description}, ${charge.grade}, ${charge.offenseDate})
+          (${inmateId}, ${charge.description}, ${charge.grade}, ${charge.offenseDate})
         `
       }
     });

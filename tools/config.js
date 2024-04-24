@@ -9,6 +9,7 @@ const config = {
 
   sleepBetweenRequests: 10000, // ms
   databaseFile: "scjailio-1-20-24.db",
+  prototypeFile: "scjailio-prototype.db",
   printDbQueries: false,
   lastNDays: 2,
 

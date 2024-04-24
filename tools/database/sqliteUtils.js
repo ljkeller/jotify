@@ -1,4 +1,4 @@
-const { scJailIoTableCreate } = require("../config");
+const { scJailIoTableCreate, config } = require("../config");
 
 const CompressedInmate = require("../models/compressedInmate");
 
@@ -6,9 +6,18 @@ const ChargeInformation = require("../models/chargeInformation");
 const BondInformation = require("../models/bondInformation");
 const InmateProfile = require("../models/inmateProfile");
 const InmateAggregate = require("../models/inmateAggregate");
+const Database = require("better-sqlite3");
 
 const INMATE_SORT_OPTIONS = new Map([['name', 'last_name'], ['date', 'booking_date'], ['bond', 'bond'], ['age', 'dob']]);
 const SORT_DIRECTIONS = new Set(['asc', 'desc']);
+
+function getClient(filepath) {
+  return new Database(filepath, { verbose: config.printDbQueries ? console.log : null });
+}
+
+function end(sql) {
+  sql.close();
+}
 
 function setupDbCloseConditions(db) {
   process.on("exit", () => db.close());
@@ -588,5 +597,7 @@ module.exports = {
   getCompressedInmateDataForSearchName,
   getInmateAggregateData,
   getRelatedNames,
-  getRelatedAliases
+  getRelatedAliases,
+  getClient,
+  end
 };

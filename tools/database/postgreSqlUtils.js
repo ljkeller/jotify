@@ -17,6 +17,10 @@ function getClient() {
   return psql;
 }
 
+function end(sql) {
+  sql.end();
+}
+
 function setupDbCloseConditions(db) {
   // teardown is async so needs to happen before process.exit -> this is different from the sqlite version
   async function gracefulTeardown(exitCode) {
@@ -79,8 +83,8 @@ async function serializeInmateAggregate(db, inmate) {
           )
         returning id, first_name
       `
-      console.log(`Inserted inmate: ${JSON.stringify(insertedInmate, null, 2)}`);
       let inmateId = insertedInmate.id;
+      console.log(`Inserted inmate: ${JSON.stringify(insertedInmate, null, 2)} at id: ${inmateId}`);
 
       for (const alias of profile.aliases) {
         if (!alias) {
@@ -145,4 +149,5 @@ module.exports = {
   createTables,
   serializeInmateAggregate,
   psql,
+  end
 };

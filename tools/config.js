@@ -7,7 +7,7 @@ const config = {
   // Requires appending inmate id (sysid=XX...)
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
-  sleepBetweenRequests: 100, // ms
+  sleepBetweenRequests: 10000, // ms
   databaseFile: "scjailio-1-20-24.db",
   prototypeFile: "scjailio-prototype.db",
   printDbQueries: false,

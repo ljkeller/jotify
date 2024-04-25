@@ -88,7 +88,6 @@ async function serializeInmateAggregate(db, inmate) {
           continue;
         }
 
-        // TODO: validate this heavily
         // Make this a prepared statement?
         const aliasId = await insertAliasAndGetId(db, alias);
         await db`

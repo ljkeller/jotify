@@ -9,6 +9,9 @@ import TrafficCalendar from './ui/trafficCalendar';
 import Search from '/app/ui/search';
 import Record from '/app/ui/compressedRecord';
 import { config } from '/tools/config';
+
+// TODO: use strategy pattern/ambigious interface for these functions, and others like it
+// In other words, time to make a /tools/database/abstract.js or similar
 import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
 
 function getLast7DaysInmateTraffic(db) {

@@ -16,7 +16,7 @@ async function main() {
 
     setupPostgresDbCloseConditions(psql);
     setupSqliteDbCloseConditions(sqlite);
-    const inmateListings = await getListingsForDates(getLastNDaysLocal(1));
+    const inmateListings = await getListingsForDates(getLastNDaysLocal(3));
     for (const inmate of inmateListings) {
       await serializePostgresInmateAggregate(psql, inmate);
       serializeSqliteInmateAggregate(sqlite, inmate);

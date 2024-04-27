@@ -7,11 +7,11 @@ const config = {
   // Requires appending inmate id (sysid=XX...)
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
-  sleepBetweenRequests: 10000, // ms
+  sleepBetweenRequests: 100, // ms
   databaseFile: "scjailio-1-20-24.db",
   prototypeFile: "scjailio-prototype.db",
   printDbQueries: false,
-  lastNDays: 2,
+  lastNDays: 3,
 
   appReadFile: "scjailio-1-20-24.db",
 };
@@ -82,8 +82,8 @@ const postgresSchemas = {
       offense_date TEXT,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id)
     )
-  `
-}
+  `,
+};
 
 const scJailIoTableCreate = {
   inmate: `
@@ -150,7 +150,7 @@ const scJailIoTableCreate = {
       offense_date TEXT,
       FOREIGN KEY (inmate_id) REFERENCES inmate(id)
     )
-  `
+  `,
 };
 
 module.exports = { config, scJailIoTableCreate, postgresSchemas };

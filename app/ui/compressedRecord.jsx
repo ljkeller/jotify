@@ -29,8 +29,7 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
 
   let consumerFormatBookingDate;
   try {
-    const bookingDate = parseISO(compressedInmate.bookingDate);
-    consumerFormatBookingDate = format(bookingDate, "MMMM d, yyyy 'at' h:mm a");
+    consumerFormatBookingDate = format(compressedInmate.bookingDate, "MMMM d, yyyy 'at' h:mm a");
   } catch (err) {
     console.log("Error parsing booking date: " + err);
     consumerFormatBookingDate = "unknown";

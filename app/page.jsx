@@ -10,18 +10,16 @@ import Search from '/app/ui/search';
 import Record from '/app/ui/compressedRecord';
 import { config } from '/tools/config';
 
-// TODO: use strategy pattern/ambigious interface for these functions, and others like it
-// In other words, time to make a /tools/database/abstract.js or similar
-// import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
-import { countInmatesOnDate, getCompressedInmateDataForDate, psql } from "/tools/database/postgreSqlUtils";
+import SqlController from '/tools/database/sqlController';
+import SqlFactory from '/tools/database/sqlFactory';
 
-async function getLast7DaysInmateTraffic(db) {
+async function getLast7DaysInmateTraffic(sqlController) {
   const traffic = [];
   for (let i = 6; i >= 0; i--) {
     let date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = formatISO(date, { representation: 'date' });
-    const count = await countInmatesOnDate(db, dateStr);
+    const count = await sqlController.countInmatesOnDate(dateStr);
     traffic.push({ date: dateStr, inmateCount: count});
   }
   return traffic;
@@ -33,15 +31,17 @@ export const metadata = {
 }
 
 export default async function Home() {
-  // const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const db = psql;
-  const trafficLast7Days = await getLast7DaysInmateTraffic(db);
+  // TODO: create config file for factory constructor
+  // TODO: create a factory for the sqlController?
+  // TODO: Create singletons for writable sqlite, readonly sqlite, and postgres? Then return the singleton from the factory?
+  const db = new SqlFactory();
+  const sqlController = new SqlController(db.getSqlConnection('postgres'));
+  const trafficLast7Days = await getLast7DaysInmateTraffic(sqlController);
 
-  const compressedRecordInfo = await getCompressedInmateDataForDate(db, formatISO(new Date(), { representation: 'date' }));
+  const compressedRecordInfo = await sqlController.getCompressedInmateDataForDate(formatISO(new Date(), { representation: 'date' }));
   const compressedRecords = compressedRecordInfo.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />
   );
-  // db.close();
 
   return (
     <div className={styles.container}>

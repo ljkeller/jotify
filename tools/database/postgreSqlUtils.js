@@ -25,7 +25,8 @@ function setupDbCloseConditions(db) {
   // teardown is async so needs to happen before process.exit -> this is different from the sqlite version
   async function gracefulTeardown(exitCode) {
     console.log("Tearing down postgreSQL connection");
-    await db.end({ timeout: 5 }).then(() => console.log("Teardown complete"));
+    await db.end({ timeout: 5 });
+    console.log("Teardown complete");
     process.exit(exitCode);
   }
 
@@ -139,11 +140,11 @@ async function serializeInmateAggregate(db, inmate) {
 
 async function countInmatesOnDate(db, iso8601DateStr) {
   try {
-    const [result] = await db`
+    const [{ count }] = await db`
       SELECT COUNT(*) FROM inmate
       WHERE DATE(booking_date) = date(${iso8601DateStr});
     `;
-    return parseInt(result.count, 10);
+    return parseInt(count, 10);
   } catch (error) {
     console.error(`Error counting inmates on date ${iso8601DateStr}: ${error}`);
     return 0;

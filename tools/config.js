@@ -13,6 +13,8 @@ const config = {
   printDbQueries: false,
   lastNDays: 3,
 
+  database: "postgres",
+
   appReadFile: "scjailio-1-20-24.db",
 };
 

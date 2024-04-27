@@ -12,15 +12,17 @@ import { config } from '/tools/config';
 
 // TODO: use strategy pattern/ambigious interface for these functions, and others like it
 // In other words, time to make a /tools/database/abstract.js or similar
-import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
+// import { countInmatesOnDate, getCompressedInmateDataForDate } from "/tools/database/sqliteUtils";
+import { countInmatesOnDate, getCompressedInmateDataForDate, psql } from "/tools/database/postgreSqlUtils";
 
-function getLast7DaysInmateTraffic(db) {
+async function getLast7DaysInmateTraffic(db) {
   const traffic = [];
   for (let i = 6; i >= 0; i--) {
     let date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = formatISO(date, { representation: 'date' });
-    traffic.push({ date: dateStr, inmateCount: countInmatesOnDate(db, dateStr) });
+    const count = await countInmatesOnDate(db, dateStr);
+    traffic.push({ date: dateStr, inmateCount: count});
   }
   return traffic;
 }
@@ -30,15 +32,16 @@ export const metadata = {
   description: 'Scott county inmate listing- but better',
 }
 
-export default function Home() {
-  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const trafficLast7Days = getLast7DaysInmateTraffic(db);
+export default async function Home() {
+  // const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
+  const db = psql;
+  const trafficLast7Days = await getLast7DaysInmateTraffic(db);
 
-  const compressedRecordInfo = getCompressedInmateDataForDate(db, formatISO(new Date(), { representation: 'date' }));
+  const compressedRecordInfo = await getCompressedInmateDataForDate(db, formatISO(new Date(), { representation: 'date' }));
   const compressedRecords = compressedRecordInfo.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />
   );
-  db.close();
+  // db.close();
 
   return (
     <div className={styles.container}>

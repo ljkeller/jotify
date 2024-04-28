@@ -1,3 +1,5 @@
+const { postgresDevConfig } = require("./secrets");
+
 const config = {
   todayInmatesUrl:
     "https://www.scottcountyiowa.us/sheriff/inmates.php?comdate=today",
@@ -16,6 +18,36 @@ const config = {
   database: "postgres",
 
   appReadFile: "scjailio-1-20-24.db",
+};
+
+const DBConfig = {
+  sqliteWritable: {
+    type: "sqlite",
+    file: "scjailio-1-20-24.db",
+    config: {
+      verbose: config.printDbQueries ? console.log : null,
+    },
+  },
+  sqliteReadOnly: {
+    type: "sqlite",
+    file: "scjailio-1-20-24.db",
+    config: {
+      verbose: config.printDbQueries ? console.log : null,
+      readonly: true,
+    },
+  },
+  sqliteMemory: {
+    // Prefered testing config
+    type: "sqlite",
+    file: ":memory:",
+    config: {
+      verbose: config.printDbQueries ? console.log : null,
+    },
+  },
+  postgresDev: {
+    type: "postgres",
+    config: postgresDevConfig,
+  },
 };
 
 const postgresSchemas = {
@@ -155,4 +187,4 @@ const scJailIoTableCreate = {
   `,
 };
 
-module.exports = { config, scJailIoTableCreate, postgresSchemas };
+module.exports = { config, scJailIoTableCreate, postgresSchemas, DBConfig };

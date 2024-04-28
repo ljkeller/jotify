@@ -16,8 +16,8 @@ const config = {
   lastNDays: 3,
 
   database: "postgres",
-
   appReadFile: "scjailio-1-20-24.db",
+  isDev: true,
 };
 
 const DBConfig = {
@@ -49,6 +49,8 @@ const DBConfig = {
     config: postgresDevConfig,
   },
 };
+
+const runtimeDbConfig = DBConfig.sqliteReadOnly;
 
 const postgresSchemas = {
   inmate: `
@@ -187,4 +189,10 @@ const scJailIoTableCreate = {
   `,
 };
 
-module.exports = { config, scJailIoTableCreate, postgresSchemas, DBConfig };
+module.exports = {
+  config,
+  scJailIoTableCreate,
+  postgresSchemas,
+  DBConfig,
+  runtimeDbConfig,
+};

@@ -8,10 +8,9 @@ import { formatISO } from 'date-fns';
 import TrafficCalendar from './ui/trafficCalendar';
 import Search from '/app/ui/search';
 import Record from '/app/ui/compressedRecord';
-import { config } from '/tools/config';
+import { runtimeDbConfig, DBConfig } from '/tools/config';
 
-import SqlController from '/tools/database/sqlController';
-import SqlFactory from '/tools/database/sqlFactory';
+import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 
 async function getLast7DaysInmateTraffic(sqlController) {
   const traffic = [];
@@ -31,11 +30,10 @@ export const metadata = {
 }
 
 export default async function Home() {
-  // TODO: create config file for factory constructor
-  // TODO: create a factory for the sqlController?
   // TODO: Create singletons for writable sqlite, readonly sqlite, and postgres? Then return the singleton from the factory?
-  const db = new SqlFactory();
-  const sqlController = new SqlController(db.getSqlConnection('postgres'));
+  const db = new SqlControllerFactory();
+  const sqlController = db.getSqlConnection(runtimeDbConfig);
+
   const trafficLast7Days = await getLast7DaysInmateTraffic(sqlController);
 
   const compressedRecordInfo = await sqlController.getCompressedInmateDataForDate(formatISO(new Date(), { representation: 'date' }));

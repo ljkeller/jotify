@@ -1,10 +1,13 @@
 const {
   countInmatesOnDate,
   getCompressedInmateDataForDate,
-} = require("./postgreSqlUtils");
+  setupDbCloseConditions,
+  createTables,
+  serializeInmateAggregate,
+} = require("./sqliteUtils");
 
 // This class offers a strategy pattern abstraction over the SQL interface
-class SqlController {
+class SqliteController {
   #db;
   constructor(db) {
     this.#db = db;
@@ -34,15 +37,5 @@ class SqlController {
     );
   }
 }
-
-// TODO:
-//   getInmateIdsWithNullImages,
-//   getCompressedInmateDataForAlias,
-//   getCompressedInmateDataForSearchName,
-//   getInmateAggregateData,
-//   getRelatedNames,
-//   getRelatedAliases,
-//   getClient,
-//   end,
-
-module.exports = SqlController;
+// TODO: Finish adding methods
+module.exports = SqliteController;

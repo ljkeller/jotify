@@ -1,7 +1,7 @@
 const postgres = require("postgres");
 
 const { postgresSchemas } = require("../config");
-const { postgresConfig } = require("../secrets");
+const { config, DBConfig } = require("../config");
 
 const CompressedInmate = require("../models/compressedInmate");
 const ChargeInformation = require("../models/chargeInformation");
@@ -10,8 +10,10 @@ const InmateProfile = require("../models/inmateProfile");
 const InmateAggregate = require("../models/inmateAggregate");
 
 const psql = postgres(
-  `postgres://${postgresConfig.username}:${postgresConfig.password}@${postgresConfig.ip}:${postgresConfig.port}`
-);
+  config.isDev
+    ? `postgres://${DBConfig.postgresDev.config.username}:${DBConfig.postgresDev.config.password}@${DBConfig.postgresDev.config.ip}:${DBConfig.postgresDev.config.port}`
+    : ``
+); // todo: prod version
 
 function getClient() {
   return psql;

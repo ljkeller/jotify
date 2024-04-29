@@ -1,6 +1,7 @@
 const {
   countInmatesOnDate,
   getCompressedInmateDataForDate,
+  getCompressedInmateDataForSearchName,
   setupDbCloseConditions,
   createTables,
   serializeInmateAggregate,
@@ -35,6 +36,10 @@ class SqliteController {
       iso8601DateStr,
       sortConfig
     );
+  }
+
+  async getCompressedInmateDataForSearchName(name, sortConfig = null) {
+    return getCompressedInmateDataForSearchName(this.#db, name, sortConfig);
   }
 }
 // TODO: Finish adding methods

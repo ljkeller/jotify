@@ -1,6 +1,7 @@
 const {
   countInmatesOnDate,
   getCompressedInmateDataForDate,
+  getCompressedInmateDataForSearchName,
 } = require("./postgreSqlUtils");
 
 // This class offers a strategy pattern abstraction over the SQL interface
@@ -33,12 +34,19 @@ class PostgreSqlController {
       sortConfig
     );
   }
+
+  async getCompressedInmateDataForSearchName(db, name, sortConfig = null) {
+    return await getCompressedInmateDataForSearchName(
+      this.#db,
+      name,
+      sortConfig
+    );
+  }
 }
 
 // TODO:
 //   getInmateIdsWithNullImages,
 //   getCompressedInmateDataForAlias,
-//   getCompressedInmateDataForSearchName,
 //   getInmateAggregateData,
 //   getRelatedNames,
 //   getRelatedAliases,

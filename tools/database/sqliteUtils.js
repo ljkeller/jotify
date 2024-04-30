@@ -567,7 +567,7 @@ function getCompressedInmateDataForSearchName(db, name, sortConfig = null) {
  * Get inmate aggregate data for a given inmate id, or random if null id
  * @param {*} db database to query
  * @param {*} id target ID (or null for random)
- * @returns InmateAggregate
+ * @returns InmateAggregate, inmate ID
  */
 function getInmateAggregateData(db, id = null) {
   try {

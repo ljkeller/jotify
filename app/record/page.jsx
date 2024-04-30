@@ -6,10 +6,9 @@ import Share from "/app/ui/share";
 import { FaMask } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 
-import Database from "better-sqlite3";
-import { getInmateAggregateData } from "/tools/database/sqliteUtils";
 import { centsToDollars } from "/tools/scraping/currency";
-import { config } from "/tools/config";
+import { config, runtimeDbConfig } from "/tools/config";
+import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 import { formatISO, parseISO, format } from "date-fns";
 
 function getRecommended() {
@@ -28,27 +27,21 @@ function getRecommended() {
 const bufferToBase64 = (buffer) =>
   buffer ? `data:image/jpeg;base64,${buffer.toString("base64")}` : "/anon.png";
 
-export default function Record({ record, searchParams }) {
+export default async function Record({ record, searchParams }) {
   const recommended = getRecommended();
 
   let inmate, inmateId;
   try {
-    const db = new Database(config.appReadFile, {
-      verbose: config.printDbQueries ? console.log : null,
-      readonly: true,
-    });
+    const factory = new SqlControllerFactory();
+    const sqlController = factory.getSqlConnection(runtimeDbConfig);
     try {
       const searchId = searchParams?.id ? parseInt(searchParams.id) : null;
-      ({ inmateAggregate: inmate, inmateId } = getInmateAggregateData(
-        db,
-        searchId
-      ));
+      ({ inmateAggregate: inmate, inmateId } =
+        await sqlController.getInmateAggregateData(searchId));
     } catch (err) {
       console.log(err);
       // TODO: return error page / val
       return <div>Oops, something went wrong</div>;
-    } finally {
-      db.close();
     }
   } catch (err) {
     // TODO: error handling (code around 500) + styling

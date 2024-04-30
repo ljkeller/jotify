@@ -1,5 +1,6 @@
 const {
   countInmatesOnDate,
+  getInmateAggregateData,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
   setupDbCloseConditions,
@@ -19,27 +20,27 @@ class SqliteController {
   }
 
   async createTables() {
-    await createTables(this.#db);
+    createTables(this.#db);
   }
 
   async serializeInmateAggregate(inmate) {
-    await serializeInmateAggregate(this.#db, inmate);
+    serializeInmateAggregate(this.#db, inmate);
   }
 
   async countInmatesOnDate(iso8601DateStr) {
-    return await countInmatesOnDate(this.#db, iso8601DateStr);
+    return countInmatesOnDate(this.#db, iso8601DateStr);
   }
 
   async getCompressedInmateDataForDate(iso8601DateStr, sortConfig = null) {
-    return await getCompressedInmateDataForDate(
-      this.#db,
-      iso8601DateStr,
-      sortConfig
-    );
+    return getCompressedInmateDataForDate(this.#db, iso8601DateStr, sortConfig);
   }
 
   async getCompressedInmateDataForSearchName(name, sortConfig = null) {
     return getCompressedInmateDataForSearchName(this.#db, name, sortConfig);
+  }
+
+  async getInmateAggregateData(id = null) {
+    return getInmateAggregateData(this.#db, id);
   }
 }
 // TODO: Finish adding methods

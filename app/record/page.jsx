@@ -1,42 +1,48 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { FaMask } from 'react-icons/fa';
+import Image from "next/image";
+import Link from "next/link";
+
+import styles from "/styles/Record.module.css";
+import Share from "/app/ui/share";
+import { FaMask } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
-import Database from 'better-sqlite3';
-import { formatISO, parseISO, format } from 'date-fns';
 
-import styles from '/styles/Record.module.css';
-import { config } from '/tools/config';
-import { centsToDollars } from '/tools/scraping/currency';
-import Share from '/app/ui/share';
-
-import { getInmateAggregateData } from '/tools/database/sqliteUtils';
+import Database from "better-sqlite3";
+import { getInmateAggregateData } from "/tools/database/sqliteUtils";
+import { centsToDollars } from "/tools/scraping/currency";
+import { config } from "/tools/config";
+import { formatISO, parseISO, format } from "date-fns";
 
 function getRecommended() {
   return [
     {
       firstLast: "DERRICK GULLEY",
-      imgPath: "/in2.jpg"
+      imgPath: "/in2.jpg",
     },
     {
       firstLast: "GUADALUPE PADAVICH",
-      imgPath: "/in3.jpg"
-    }
+      imgPath: "/in3.jpg",
+    },
   ];
 }
 
 const bufferToBase64 = (buffer) =>
-  buffer ? `data:image/jpeg;base64,${buffer.toString('base64')}` : '/anon.png';
+  buffer ? `data:image/jpeg;base64,${buffer.toString("base64")}` : "/anon.png";
 
 export default function Record({ record, searchParams }) {
   const recommended = getRecommended();
 
   let inmate, inmateId;
   try {
-    const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
+    const db = new Database(config.appReadFile, {
+      verbose: config.printDbQueries ? console.log : null,
+      readonly: true,
+    });
     try {
       const searchId = searchParams?.id ? parseInt(searchParams.id) : null;
-      ({ inmateAggregate: inmate, inmateId } = getInmateAggregateData(db, searchId));
+      ({ inmateAggregate: inmate, inmateId } = getInmateAggregateData(
+        db,
+        searchId
+      ));
     } catch (err) {
       console.log(err);
       // TODO: return error page / val
@@ -60,14 +66,15 @@ export default function Record({ record, searchParams }) {
   }
 
   // TODO: use s3 instead of base64 image
-  const image =
+  const image = (
     <img
       src={bufferToBase64(inmate.inmateProfile.imgBlob)}
       width={300}
       height={375}
       alt={`${inmate.inmateProfile.getFullName()} mugshot`}
       className={styles.mugshot}
-    />;
+    />
+  );
   // Use below as reference for s3 impl
   // <Image
   //   src='/in1.jpg'
@@ -82,13 +89,13 @@ export default function Record({ record, searchParams }) {
       <div className={styles.profileSidebar}>
         {image}
         <div className={styles.profileContainer}>
-
           <h3 className={styles.primaryHeader}>Profile</h3>
           <div className={styles.kvProfile}>
             <div className={styles.kvContainer}>
               <div className={styles.key}>First: </div>
               <div className={styles.value}>{inmate.inmateProfile.first}</div>
-            </div><div className={styles.kvContainer}>
+            </div>
+            <div className={styles.kvContainer}>
               <div className={styles.key}>Middle: </div>
               <div className={styles.value}>{inmate.inmateProfile.middle}</div>
             </div>
@@ -102,7 +109,9 @@ export default function Record({ record, searchParams }) {
             </div>
             <div className={styles.kvContainer}>
               <div className={styles.key}>Permanent ID: </div>
-              <div className={styles.value}>{inmate.inmateProfile.permanentId}</div>
+              <div className={styles.value}>
+                {inmate.inmateProfile.permanentId}
+              </div>
             </div>
             <div className={styles.kvContainer}>
               <div className={styles.key}>Sex: </div>
@@ -126,11 +135,19 @@ export default function Record({ record, searchParams }) {
             </div>
             <div className={styles.kvContainer}>
               <div className={styles.key}>Eye Color: </div>
-              <div className={styles.value}>{inmate.inmateProfile.eyeColor}</div>
+              <div className={styles.value}>
+                {inmate.inmateProfile.eyeColor}
+              </div>
             </div>
             <div className={styles.kvContainer}>
               <div className={styles.key}>Scott County link: </div>
-              <a href={config.baseInmateLink + inmate.inmateProfile.scilSysId} target="_blank" className={`${styles.hiddenLink} ${styles.outLink}`}><FiExternalLink /> Go</a>
+              <a
+                href={config.baseInmateLink + inmate.inmateProfile.scilSysId}
+                target="_blank"
+                className={`${styles.hiddenLink} ${styles.outLink}`}
+              >
+                <FiExternalLink /> Go
+              </a>
             </div>
           </div>
         </div>
@@ -138,8 +155,22 @@ export default function Record({ record, searchParams }) {
 
       <div className={styles.inmateRecordColumn}>
         <div>
-          <h1 className={`${styles.inmateName}`}>{inmate.inmateProfile.getFullName()}</h1>
-          <h3 className={`${styles.secondaryHeader}`}>Booked: <Link title="View inmates on date" className={`${styles.hiddenLink} ${styles.recommendedLink}`} href={`/date?date=${formatISO(inmate.inmateProfile.bookingDateIso8601, { representation: 'date' })}`}>{consumerFormatBookingDate}</Link></h3>
+          <h1 className={`${styles.inmateName}`}>
+            {inmate.inmateProfile.getFullName()}
+          </h1>
+          <h3 className={`${styles.secondaryHeader}`}>
+            Booked:{" "}
+            <Link
+              title="View inmates on date"
+              className={`${styles.hiddenLink} ${styles.recommendedLink}`}
+              href={`/date?date=${formatISO(
+                inmate.inmateProfile.bookingDateIso8601,
+                { representation: "date" }
+              )}`}
+            >
+              {consumerFormatBookingDate}
+            </Link>
+          </h3>
         </div>
         <div className={styles.aliasHeaderContainer}>
           <div className={styles.iconHeader}>
@@ -147,10 +178,19 @@ export default function Record({ record, searchParams }) {
             <h3 className={styles.secondaryHeader}>Aliases</h3>
           </div>
           <div className={styles.aliasDivider}>
-            {inmate.inmateProfile.aliases.map((alias, idx) =>
-              <Link href={`/alias?query=${alias}`} prefetch={false} key={idx} className={styles.aliasLink}>{alias}</Link>
-            )}
-            {inmate.inmateProfile.aliases.length === 0 ? <div className={styles.noAliases}>No known aliases</div> : null}
+            {inmate.inmateProfile.aliases.map((alias, idx) => (
+              <Link
+                href={`/alias?query=${alias}`}
+                prefetch={false}
+                key={idx}
+                className={styles.aliasLink}
+              >
+                {alias}
+              </Link>
+            ))}
+            {inmate.inmateProfile.aliases.length === 0 ? (
+              <div className={styles.noAliases}>No known aliases</div>
+            ) : null}
           </div>
         </div>
         <div className={styles.chargeInformation}>
@@ -188,7 +228,9 @@ export default function Record({ record, searchParams }) {
               {inmate.bondInformation.map((bond, index) => (
                 <tr className={styles.tableRow} key={index}>
                   <td className={styles.tableData}>{bond.type}</td>
-                  <td className={styles.tableData}>{centsToDollars(bond.amountPennies)}</td>
+                  <td className={styles.tableData}>
+                    {centsToDollars(bond.amountPennies)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -200,16 +242,26 @@ export default function Record({ record, searchParams }) {
         </div>
       </div>
 
-
       <div className={styles.recommendedSidebar}>
         <h2 className={styles.primaryHeader}>Related</h2>
-        {recommended.map((inmate, idx) =>
+        {recommended.map((inmate, idx) => (
           <div key={idx} className={styles.recommendedContainer}>
-            <Image className={styles.recommendedImg} src={inmate.imgPath} width={40} height={40} alt={`${styles.firstLast} img`} />
-            <Link className={`${styles.hiddenLink} ${styles.recommendedLink}`} href="/record" >{inmate.firstLast}</Link>
+            <Image
+              className={styles.recommendedImg}
+              src={inmate.imgPath}
+              width={40}
+              height={40}
+              alt={`${styles.firstLast} img`}
+            />
+            <Link
+              className={`${styles.hiddenLink} ${styles.recommendedLink}`}
+              href="/record"
+            >
+              {inmate.firstLast}
+            </Link>
           </div>
-        )}
+        ))}
       </div>
-    </ div >
+    </div>
   );
 }

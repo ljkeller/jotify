@@ -1,5 +1,6 @@
 const {
   countInmatesOnDate,
+  getInmateAggregateData,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
 } = require("./postgreSqlUtils");
@@ -42,12 +43,15 @@ class PostgreSqlController {
       sortConfig
     );
   }
+
+  async getInmateAggregateData(id = null) {
+    return await getInmateAggregateData(this.#db, id);
+  }
 }
 
 // TODO:
 //   getInmateIdsWithNullImages,
 //   getCompressedInmateDataForAlias,
-//   getInmateAggregateData,
 //   getRelatedNames,
 //   getRelatedAliases,
 //   getClient,

@@ -356,6 +356,150 @@ async function getCompressedInmateDataForSearchName(
   return compressedInmates;
 }
 
+/**
+ * Get inmate aggregate data for a given inmate id, or random if null id
+ * @param {*} db database to query
+ * @param {*} id target ID (or null for random)
+ * @returns InmateAggregate, inmate ID
+ */
+async function getInmateAggregateData(db, id = null) {
+  try {
+    const [inmate] = id
+      ? await db`
+          SELECT id,
+          first_name,
+          middle_name,
+          last_name,
+          affix,
+          permanent_id,
+          sex,
+          dob,
+          arresting_agency,
+          booking_date,
+          booking_number,
+          height,
+          weight,
+          race,
+          eye_color,
+          img_url,
+          scil_sysid
+          FROM inmate
+          WHERE id = ${id}
+        `
+      : await db`
+          SELECT id,
+          first_name,
+          middle_name,
+          last_name,
+          affix,
+          permanent_id,
+          sex,
+          dob,
+          arresting_agency,
+          booking_date,
+          booking_number,
+          height,
+          weight,
+          race,
+          eye_color,
+          img_url,
+          scil_sysid
+          FROM inmate
+          ORDER BY RANDOM()
+          LIMIT 1
+        `;
+    const inmateProfile = new InmateProfile(
+      inmate.first_name,
+      inmate.middle_name,
+      inmate.last_name,
+      inmate.affix,
+      inmate.permanent_id,
+      inmate.sex,
+      inmate.dob,
+      inmate.arresting_agency,
+      inmate.booking_date,
+      inmate.booking_number,
+      inmate.height,
+      inmate.weight,
+      inmate.race,
+      inmate.eye_color,
+      [],
+      [],
+      inmate.scil_sysid
+    );
+
+    console.log(`Inmate profile: ${JSON.stringify(inmateProfile, null, 2)}`);
+
+    const charges = await db`
+        SELECT description, grade, offense_date
+        FROM charge
+        WHERE inmate_id = ${inmate.id}
+      `;
+    const chargeInformationArray = charges.map((charge) => {
+      return new ChargeInformation(
+        charge.description,
+        charge.grade,
+        charge.offense_date
+      );
+    });
+
+    console.log(
+      `Charge information: ${JSON.stringify(chargeInformationArray)}`
+    );
+
+    const aliasIds = await db`
+        SELECT alias_id
+        FROM inmate_alias
+        WHERE inmate_id = ${inmate.id}
+      `;
+    console.log(`Alias IDs: ${JSON.stringify(aliasIds)}`);
+    const aliases = await Promise.all(
+      aliasIds.map(async (aliasId) => {
+        const [alias] = await db`
+          SELECT alias
+          FROM alias
+          WHERE id = ${aliasId.alias_id}
+        `;
+        console.log(`Alias: ${JSON.stringify(alias)}`);
+        return alias ? alias.alias : null;
+      })
+    );
+    inmateProfile.aliases = aliases ? aliases : [];
+    console.log(`Aliases: ${JSON.stringify(aliases)}`);
+
+    const bond = await db`
+        SELECT type, amount_pennies
+        FROM bond
+        WHERE inmate_id = ${inmate.id}
+      `;
+    const bondInformationArray = bond.map(
+      (bond) => new BondInformation(bond.type, bond.amount_pennies)
+    );
+
+    // TODO! Replace with s3
+    const [img] = await db`
+        SELECT img
+        FROM img
+        WHERE inmate_id = ${inmate.id}
+      `;
+    inmateProfile.imgBlob = img.img;
+
+    return {
+      inmateAggregate: new InmateAggregate(
+        inmateProfile,
+        bondInformationArray,
+        chargeInformationArray
+      ),
+      inmateId: inmate.id,
+    };
+  } catch (err) {
+    console.error(
+      `Error getting inmate data for inmate id ${id}. Error: ${err}`
+    );
+    throw err;
+  }
+}
+
 module.exports = {
   getClient,
   setupDbCloseConditions,
@@ -366,4 +510,5 @@ module.exports = {
   countInmatesOnDate,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
+  getInmateAggregateData,
 };

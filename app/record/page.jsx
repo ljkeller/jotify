@@ -9,7 +9,7 @@ import { FiExternalLink } from "react-icons/fi";
 import { centsToDollars } from "/tools/scraping/currency";
 import { config, runtimeDbConfig } from "/tools/config";
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
-import { formatISO, parseISO, format } from "date-fns";
+import { formatISO, format } from "date-fns";
 
 function getRecommended() {
   return [
@@ -51,8 +51,11 @@ export default async function Record({ record, searchParams }) {
 
   let consumerFormatBookingDate;
   try {
-    const bookingDate = parseISO(inmate.inmateProfile.bookingDateIso8601);
-    consumerFormatBookingDate = format(bookingDate, "MMMM d, yyyy 'at' h:mm a");
+    // const bookingDate = parseISO(inmate.inmateProfile.bookingDateIso8601);
+    consumerFormatBookingDate = format(
+      inmate.inmateProfile.bookingDateIso8601,
+      "MMMM d, yyyy 'at' h:mm a"
+    );
   } catch (err) {
     console.log("Error parsing booking date: " + err);
     consumerFormatBookingDate = "unknown";

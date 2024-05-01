@@ -3,6 +3,7 @@ const {
   getInmateAggregateData,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
+  getCompressedInmateDataForAlias,
   setupDbCloseConditions,
   createTables,
   serializeInmateAggregate,
@@ -37,6 +38,10 @@ class SqliteController {
 
   async getCompressedInmateDataForSearchName(name, sortConfig = null) {
     return getCompressedInmateDataForSearchName(this.#db, name, sortConfig);
+  }
+
+  async getCompressedInmateDataForAlias(alias, sortConfig = null) {
+    return getCompressedInmateDataForAlias(this.#db, alias, sortConfig);
   }
 
   async getInmateAggregateData(id = null) {

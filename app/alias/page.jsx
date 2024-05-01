@@ -1,19 +1,17 @@
-import Database from 'better-sqlite3';
+import SearchBar from "/app/ui/search";
+import styles from "/styles/AliasScroller.module.css";
+import Record from "/app/ui/compressedRecord";
 
-import { getCompressedInmateDataForAlias } from '/tools/database/sqliteUtils';
-import { config } from '/tools/config';
-import DateSorting from '/app/date/dateSorting';
+import { runtimeDbConfig } from "/tools/config";
+import DateSorting from "/app/date/dateSorting";
+import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 
-import SearchBar from '/app/ui/search';
-import styles from '/styles/AliasScroller.module.css';
-import Record from '/app/ui/compressedRecord';
-
-const SORT_OPTIONS = new Set(['name', 'date', 'bond', 'age']);
-const SORT_DIRECTIONS = new Set(['asc', 'desc']);
+const SORT_OPTIONS = new Set(["name", "date", "bond", "age"]);
+const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 // most recent date first
-const defaultSort = { option: 'date', direction: 'desc' };
+const defaultSort = { option: "date", direction: "desc" };
 
-export default function AliasScroller({ params, searchParams }) {
+export default async function AliasScroller({ params, searchParams }) {
   console.log(`searchParams: ${JSON.stringify(searchParams)}`);
   if (!searchParams?.query) {
     return <div>Invalid alias</div>;
@@ -31,28 +29,30 @@ export default function AliasScroller({ params, searchParams }) {
     console.log("Error parsing sort options: " + err);
   }
 
-  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const inmateData = getCompressedInmateDataForAlias(db, alias, sortConfig);
-  db.close();
-  const records = inmateData.map((inmate, idx) =>
-    <Record key={idx} data={inmate} priority={idx < 5} />
+  const factory = new SqlControllerFactory();
+  const sqlController = factory.getSqlConnection(runtimeDbConfig);
+  const inmateData = await sqlController.getCompressedInmateDataForAlias(
+    alias,
+    sortConfig
   );
+  const records = inmateData.map((inmate, idx) => (
+    <Record key={idx} data={inmate} priority={idx < 5} />
+  ));
 
   return (
     <div className={styles.container}>
       <SearchBar />
       <div className={styles.header}>
-        <h1>
-          {alias}
-        </h1>
+        <h1>{alias}</h1>
       </div>
-      <DateSorting routePrefix={`alias?query=${alias}`} serverSortConfig={sortConfig} />
+      <DateSorting
+        routePrefix={`alias?query=${alias}`}
+        serverSortConfig={sortConfig}
+      />
       <div className={styles.recordsWrapper}>
         <h3 className={styles.miniHeader}>Showing {records.length} records</h3>
-        <div className={styles.records}>
-          {records}
-        </div>
+        <div className={styles.records}>{records}</div>
       </div>
-    </div >
+    </div>
   );
 }

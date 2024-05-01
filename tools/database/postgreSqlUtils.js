@@ -2,6 +2,7 @@ const postgres = require("postgres");
 
 const { postgresSchemas } = require("../config");
 const { config, DBConfig } = require("../config");
+const { INMATE_SORT_OPTIONS, SORT_DIRECTIONS } = require("./sqliteUtils");
 
 const CompressedInmate = require("../models/compressedInmate");
 const ChargeInformation = require("../models/chargeInformation");
@@ -356,6 +357,136 @@ async function getCompressedInmateDataForSearchName(
   return compressedInmates;
 }
 
+async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
+  if (!alias) {
+    return [];
+  }
+
+  const sortMethod =
+    sortConfig &&
+    INMATE_SORT_OPTIONS.has(sortConfig.option) &&
+    SORT_DIRECTIONS.has(sortConfig.direction)
+      ? sortConfig
+      : null;
+  console.log(
+    `Getting compressed inmate data for alias ${alias}. Sort method: ${JSON.stringify(
+      sortMethod
+    )}`
+  );
+
+  const [{ id: aliasId }] = await db`
+    SELECT id
+    FROM alias
+    where alias = ${alias}
+  `;
+
+  if (!aliasId) {
+    return [];
+  }
+
+  let inmateIds = await db`
+    SELECT inmate_id
+    FROM inmate_alias
+    WHERE alias_id = ${aliasId}
+  `;
+  // inmateIds = inmateIds.map((inmateId) => inmateId.inmate_id);
+
+  async function getInmateData(id, sortMethod) {
+    let inmateData = null;
+    if (!sortMethod || sortMethod.option === "bond") {
+      [inmateData] = await db`
+        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+        FROM inmate
+        WHERE id = ${id}
+      `;
+    } else {
+      [inmateData] = await db`
+        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+        FROM inmate
+        WHERE id = ${id}
+        ORDER BY ${
+          INMATE_SORT_OPTIONS.get(sortMethod.option) + sortMethod.direction
+        }
+      `;
+    }
+    return inmateData;
+  }
+
+  let bulkInmates = inmateIds.map(async (inmateId) =>
+    getInmateData(inmateId.inmate_id, sortMethod)
+  );
+  bulkInmates = await Promise.all(bulkInmates);
+
+  const compressedInmates = [];
+  for (const inmate of bulkInmates) {
+    try {
+      const charges = await db`
+        SELECT description, grade, offense_date
+        FROM charge
+        WHERE inmate_id = ${inmate.id}
+      `;
+      const chargeInformationArray = charges.map((charge) => {
+        return new ChargeInformation(
+          charge.description,
+          charge.grade,
+          charge.offenseDate
+        );
+      });
+
+      const bond = await db`
+        SELECT type, amount_pennies
+        FROM bond
+        WHERE inmate_id = ${inmate.id}
+      `;
+      let bondPennies = bond.reduce(
+        (acc, curr) => acc + curr.amount_pennies,
+        0
+      );
+      bondPennies = bond.some((bond) =>
+        bond.type.toLowerCase().includes("unbondable")
+      )
+        ? Infinity
+        : bondPennies;
+
+      const [img] = await db`
+        SELECT img
+        FROM img
+        WHERE inmate_id = ${inmate.id}
+      `;
+
+      const compressedInmate = new CompressedInmate(
+        inmate.id,
+        inmate.first_name,
+        inmate.middle_name,
+        inmate.last_name,
+        inmate.affix,
+        inmate.booking_date,
+        bondPennies,
+        inmate.dob,
+        img.img,
+        chargeInformationArray
+      );
+      compressedInmates.push(compressedInmate);
+    } catch (err) {
+      console.error(
+        `Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`
+      );
+    }
+  }
+
+  if (sortMethod?.option === "bond") {
+    compressedInmates.sort((a, b) => {
+      if (sortConfig.direction === "asc") {
+        return a.bondPennies - b.bondPennies;
+      } else {
+        return b.bondPennies - a.bondPennies;
+      }
+    });
+  }
+
+  return compressedInmates;
+}
+
 /**
  * Get inmate aggregate data for a given inmate id, or random if null id
  * @param {*} db database to query
@@ -428,8 +559,6 @@ async function getInmateAggregateData(db, id = null) {
       inmate.scil_sysid
     );
 
-    console.log(`Inmate profile: ${JSON.stringify(inmateProfile, null, 2)}`);
-
     const charges = await db`
         SELECT description, grade, offense_date
         FROM charge
@@ -443,16 +572,11 @@ async function getInmateAggregateData(db, id = null) {
       );
     });
 
-    console.log(
-      `Charge information: ${JSON.stringify(chargeInformationArray)}`
-    );
-
     const aliasIds = await db`
         SELECT alias_id
         FROM inmate_alias
         WHERE inmate_id = ${inmate.id}
       `;
-    console.log(`Alias IDs: ${JSON.stringify(aliasIds)}`);
     const aliases = await Promise.all(
       aliasIds.map(async (aliasId) => {
         const [alias] = await db`
@@ -460,12 +584,10 @@ async function getInmateAggregateData(db, id = null) {
           FROM alias
           WHERE id = ${aliasId.alias_id}
         `;
-        console.log(`Alias: ${JSON.stringify(alias)}`);
         return alias ? alias.alias : null;
       })
     );
     inmateProfile.aliases = aliases ? aliases : [];
-    console.log(`Aliases: ${JSON.stringify(aliases)}`);
 
     const bond = await db`
         SELECT type, amount_pennies
@@ -510,5 +632,6 @@ module.exports = {
   countInmatesOnDate,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
+  getCompressedInmateDataForAlias,
   getInmateAggregateData,
 };

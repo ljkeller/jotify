@@ -225,8 +225,8 @@ function getCompressedInmateDataForDate(db, iso8601DateStr, sortConfig = null) {
     SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
     FROM inmate
     WHERE date(booking_date) = date(@iso8601DateStr)
-    ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)} ${
-          sortConfig.direction
+    ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option)} ${
+          sortMethod.direction
         }
   `
       )
@@ -798,4 +798,6 @@ module.exports = {
   getRelatedAliases,
   getClient,
   end,
+  INMATE_SORT_OPTIONS,
+  SORT_DIRECTIONS,
 };

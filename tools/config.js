@@ -50,7 +50,7 @@ const DBConfig = {
   },
 };
 
-const runtimeDbConfig = DBConfig.sqliteReadOnly;
+const runtimeDbConfig = DBConfig.postgresDev;
 
 const postgresSchemas = {
   inmate: `

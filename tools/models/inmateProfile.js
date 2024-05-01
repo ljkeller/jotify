@@ -18,15 +18,26 @@ class InmateProfile {
     imgBlob,
     scilSysId
   ) {
+    // Most instance variables should be strings or numbers (except imgBlob)
     this.first = first;
     this.middle = middle;
     this.last = last;
     this.affix = affix;
     this.permanentId = permanentId;
     this.sex = sex;
-    this.dob = dob;
+
+    if (dob instanceof Date) {
+      this.dob = dob.toISOString().split("T")[0];
+    } else {
+      this.dob = dob;
+    }
     this.arrestingAgency = arrestingAgency;
-    this.bookingDateIso8601 = bookingDateIso8601;
+
+    if (bookingDateIso8601 instanceof Date) {
+      this.bookingDateIso8601 = bookingDateIso8601.toISOString();
+    } else {
+      this.bookingDateIso8601 = bookingDateIso8601;
+    }
     this.bookingNumber = bookingNumber;
     this.height = height;
     this.weight = weight;

@@ -47,6 +47,11 @@ class SqliteController {
   async getInmateAggregateData(id = null) {
     return getInmateAggregateData(this.#db, id);
   }
+
+  // Don't plan to support embeddings on sqlite
+  async getRecommendedRelatedInmates(_id) {
+    return [];
+  }
 }
 // TODO: Finish adding methods
 module.exports = SqliteController;

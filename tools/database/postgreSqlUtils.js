@@ -622,6 +622,43 @@ async function getInmateAggregateData(db, id = null) {
   }
 }
 
+
+async function getRecommendedRelatedInmates(db, id) {
+  let recommended = [];
+  try {
+    recommended = await db`
+      SELECT inmate.id, first_name, middle_name, last_name, affix, img
+      FROM inmate
+      LEFT JOIN img ON inmate.id = img.inmate_id
+      WHERE inmate.id != ${id}
+      ORDER BY embedding <-> (SELECT embedding FROM inmate WHERE id = ${id})
+      LIMIT 10
+    `;
+
+    recommended = recommended.map((inmate) => {
+      const fullname = (inmate.first_name +
+        (inmate.middle_name ? ` ${inmate.middle_name} ` : " ") +
+        inmate.last_name +
+        (inmate.affix ? ` ${inmate.affix}` : "")
+      );
+
+      console.log(`Recommended inmate: ${fullname}`);
+      console.log(`Recommended inmate id: ${inmate.id}`);
+      console.log(`Recommended inmate img ?: ${inmate.img !== null}`)
+
+      return {
+        id: inmate.id,
+        full_name: fullname,
+        img_data: inmate.img
+      };
+    });
+
+  } catch (err) {
+    console.error(`Error getting recommended related inmates for inmate id ${id}.Error: ${err} `);
+  }
+  return recommended;
+}
+
 module.exports = {
   getClient,
   setupDbCloseConditions,
@@ -634,4 +671,5 @@ module.exports = {
   getCompressedInmateDataForSearchName,
   getCompressedInmateDataForAlias,
   getInmateAggregateData,
+  getRecommendedRelatedInmates
 };

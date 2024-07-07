@@ -11,6 +11,7 @@ import { config, runtimeDbConfig } from "/tools/config";
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 import { formatISO, format } from "date-fns";
 
+//TODO! Put this in the sqlite controller (dont plan to support embeddings in sqlite)
 function getRecommended() {
   return [
     {
@@ -28,12 +29,16 @@ const bufferToBase64 = (buffer) =>
   buffer ? `data:image/jpeg;base64,${buffer.toString("base64")}` : "/anon.png";
 
 export default async function Record({ record, searchParams }) {
-  const recommended = getRecommended();
+  let recommended = [];
 
   let inmate, inmateId;
   try {
     const factory = new SqlControllerFactory();
     const sqlController = factory.getSqlConnection(runtimeDbConfig);
+    recommended.push(await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : null));
+    console.log(`recommended: ${JSON.stringify(recommended)}`);
+    recommended = await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : null);
+
     try {
       const searchId = searchParams?.id ? parseInt(searchParams.id) : null;
       ({ inmateAggregate: inmate, inmateId } =
@@ -244,20 +249,20 @@ export default async function Record({ record, searchParams }) {
           <div key={idx} className={styles.recommendedContainer}>
             <Image
               className={styles.recommendedImg}
-              src={inmate.imgPath}
+              src={bufferToBase64(inmate.img_data)}
               width={40}
               height={40}
               alt={`${styles.firstLast} img`}
             />
             <Link
               className={`${styles.hiddenLink} ${styles.recommendedLink}`}
-              href="/record"
+              href={`/record?id=${inmate.id}`}
             >
-              {inmate.firstLast}
+              {inmate.full_name}
             </Link>
           </div>
         ))}
       </div>
-    </div>
+    </div >
   );
 }

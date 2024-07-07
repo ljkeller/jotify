@@ -82,6 +82,12 @@ export default function SearchBar() {
           onMouseEnter={() => setIsFocused(true)}
           onMouseLeave={() => setIsFocused(false)}
           onBlur={() => setIsFocused(false)}
+          onKeyDown={(event) => {
+            // clear search text (and drop hoverbox) on escape
+            if (event.key === 'Escape') {
+              setSearchText("")
+            }
+          }}
           placeholder={`Search by ${isAliasSearch ? 'alias' : 'name'} `}
         />
         {suggestions?.length ?

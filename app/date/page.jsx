@@ -1,14 +1,13 @@
 import Link from 'next/link';
 import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
-import Database from 'better-sqlite3';
 
 import { addDays, parse, formatISO } from 'date-fns';
-import { getCompressedInmateDataForDate } from '/tools/database/sqliteUtils';
-import { config } from '/tools/config';
+import { runtimeDbConfig } from '/tools/config';
 import DateSorting from '/app/date/dateSorting';
 
 import styles from '/styles/DateScroller.module.css';
 import Record from '/app/ui/compressedRecord';
+import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 
 function getNextDayQuery(date) {
   return "/date?date=" + formatISO(addDays(date, 1), { representation: 'date' });
@@ -23,7 +22,10 @@ const SORT_DIRECTIONS = new Set(['asc', 'desc']);
 // most recent date first
 const defaultSort = { option: 'date', direction: 'desc' };
 
-export default function DateScroller({ params, searchParams }) {
+export default async function DateScroller({ searchParams }) {
+  const db = new SqlControllerFactory();
+  const sqlController = db.getSqlConnection(runtimeDbConfig);
+
   let date = null;
   let dateStrIso8601 = null;
   console.log(`searchParams: ${JSON.stringify(searchParams)}`);
@@ -48,9 +50,7 @@ export default function DateScroller({ params, searchParams }) {
     console.log("Error parsing sort options: " + err);
   }
 
-  const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
-  const inmateData = getCompressedInmateDataForDate(db, dateStrIso8601, sortConfig);
-  db.close();
+  const inmateData = await sqlController.getCompressedInmateDataForDate(dateStrIso8601, sortConfig);
   // TODO: sort records on client side (cause all should be here)
   const records = inmateData.map((inmate, idx) =>
     <Record key={idx} data={inmate} priority={idx < 5} />

@@ -162,8 +162,8 @@ async function getCompressedInmateDataForDate(
   try {
     const sortMethod =
       sortConfig &&
-      INMATE_SORT_OPTIONS.has(sortConfig.option) &&
-      SORT_DIRECTIONS.has(sortConfig.direction)
+        INMATE_SORT_OPTIONS.has(sortConfig.option) &&
+        SORT_DIRECTIONS.has(sortConfig.direction)
         ? sortConfig
         : null;
 
@@ -176,12 +176,13 @@ async function getCompressedInmateDataForDate(
         WHERE date(booking_date) = date(${iso8601DateStr})
       `;
     } else {
+      const order_by_clause = INMATE_SORT_OPTIONS.get(sortMethod.option) + " " + sortMethod.direction;
+      console.log(`order_by_clause: ${order_by_clause}`);
       inData = await db`
         SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
         FROM inmate
         WHERE date(booking_date) = date(${iso8601DateStr})
-        ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)}
-        ${sortConfig.direction}
+        ORDER BY ${order_by_clause}
       `;
     }
 
@@ -192,7 +193,7 @@ async function getCompressedInmateDataForDate(
           SELECT description, grade, offense_date
           FROM charge
           WHERE inmate_id = ${inmate.id}
-        `;
+      `;
         const chargeInformationArray = charges.map((charge) => {
           return new ChargeInformation(
             charge.description,
@@ -205,7 +206,7 @@ async function getCompressedInmateDataForDate(
           SELECT type, amount_pennies
           FROM bond
           WHERE inmate_id = ${inmate.id}
-        `;
+      `;
         let bondPennies = bond.reduce(
           (acc, curr) => acc + curr.amount_pennies,
           0
@@ -220,7 +221,7 @@ async function getCompressedInmateDataForDate(
           SELECT img
           FROM img
           WHERE inmate_id = ${inmate.id}
-        `;
+      `;
 
         const compressedInmate = new CompressedInmate(
           inmate.id,
@@ -237,7 +238,7 @@ async function getCompressedInmateDataForDate(
         compressedInmates.push(compressedInmate);
       } catch (err) {
         console.error(
-          `Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`
+          `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
         );
       }
     }
@@ -254,7 +255,7 @@ async function getCompressedInmateDataForDate(
     return compressedInmates;
   } catch (error) {
     console.error(
-      `Error querying for compressed inmate data for date ${iso8601DateStr}: ${error}`
+      `Error querying for compressed inmate data for date ${iso8601DateStr}: ${error} `
     );
     return [];
   }
@@ -271,8 +272,8 @@ async function getCompressedInmateDataForSearchName(
 
   const sortMethod =
     sortConfig &&
-    INMATE_SORT_OPTIONS.has(sortConfig.option) &&
-    SORT_DIRECTIONS.has(sortConfig.direction)
+      INMATE_SORT_OPTIONS.has(sortConfig.option) &&
+      SORT_DIRECTIONS.has(sortConfig.direction)
       ? sortConfig
       : null;
   console.log(`Getting compressed inmate data for name ${name}`);
@@ -285,18 +286,17 @@ async function getCompressedInmateDataForSearchName(
       WHERE LOWER((COALESCE(first_name, '') || ' ' || COALESCE(middle_name, '') || ' ' || COALESCE(last_name, '') || ' ' || COALESCE(affix, '')))
       LIKE LOWER('%' || ${name} || '%')
       LIMIT 20
-    `;
+        `;
   } else {
     bulkInmates = await db`
       SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
       FROM inmate
       WHERE LOWER((COALESCE(first_name, '') || ' ' || COALESCE(middle_name, '') || ' ' || COALESCE(last_name, '') || ' ' || COALESCE(affix, '')))
       LIKE LOWER('%' || ${name} || '%')
-      ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)} ${
-      sortConfig.direction
-    }
+      ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)} ${sortConfig.direction
+      }
       LIMIT 20
-    `;
+        `;
   }
 
   const compressedInmates = [];
@@ -350,7 +350,7 @@ async function getCompressedInmateDataForSearchName(
       compressedInmates.push(compressedInmate);
     } catch (err) {
       console.error(
-        `Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`
+        `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
       );
     }
   }
@@ -364,21 +364,22 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
 
   const sortMethod =
     sortConfig &&
-    INMATE_SORT_OPTIONS.has(sortConfig.option) &&
-    SORT_DIRECTIONS.has(sortConfig.direction)
+      INMATE_SORT_OPTIONS.has(sortConfig.option) &&
+      SORT_DIRECTIONS.has(sortConfig.direction)
       ? sortConfig
       : null;
   console.log(
-    `Getting compressed inmate data for alias ${alias}. Sort method: ${JSON.stringify(
+    `Getting compressed inmate data for alias ${alias}.Sort method: ${JSON.stringify(
       sortMethod
-    )}`
+    )
+    } `
   );
 
   const [{ id: aliasId }] = await db`
     SELECT id
     FROM alias
     where alias = ${alias}
-  `;
+      `;
 
   if (!aliasId) {
     return [];
@@ -388,7 +389,7 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
     SELECT inmate_id
     FROM inmate_alias
     WHERE alias_id = ${aliasId}
-  `;
+      `;
   // inmateIds = inmateIds.map((inmateId) => inmateId.inmate_id);
 
   async function getInmateData(id, sortMethod) {
@@ -404,8 +405,7 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
         SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
         FROM inmate
         WHERE id = ${id}
-        ORDER BY ${
-          INMATE_SORT_OPTIONS.get(sortMethod.option) + sortMethod.direction
+        ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option) + sortMethod.direction
         }
       `;
     }
@@ -469,7 +469,7 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
       compressedInmates.push(compressedInmate);
     } catch (err) {
       console.error(
-        `Error getting compressed inmate data for inmate id ${inmate.id}. Error: ${err}`
+        `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
       );
     }
   }
@@ -498,43 +498,43 @@ async function getInmateAggregateData(db, id = null) {
     const [inmate] = id
       ? await db`
           SELECT id,
-          first_name,
-          middle_name,
-          last_name,
-          affix,
-          permanent_id,
-          sex,
-          dob,
-          arresting_agency,
-          booking_date,
-          booking_number,
-          height,
-          weight,
-          race,
-          eye_color,
-          img_url,
-          scil_sysid
+        first_name,
+        middle_name,
+        last_name,
+        affix,
+        permanent_id,
+        sex,
+        dob,
+        arresting_agency,
+        booking_date,
+        booking_number,
+        height,
+        weight,
+        race,
+        eye_color,
+        img_url,
+        scil_sysid
           FROM inmate
           WHERE id = ${id}
-        `
+      `
       : await db`
           SELECT id,
-          first_name,
-          middle_name,
-          last_name,
-          affix,
-          permanent_id,
-          sex,
-          dob,
-          arresting_agency,
-          booking_date,
-          booking_number,
-          height,
-          weight,
-          race,
-          eye_color,
-          img_url,
-          scil_sysid
+        first_name,
+        middle_name,
+        last_name,
+        affix,
+        permanent_id,
+        sex,
+        dob,
+        arresting_agency,
+        booking_date,
+        booking_number,
+        height,
+        weight,
+        race,
+        eye_color,
+        img_url,
+        scil_sysid
           FROM inmate
           ORDER BY RANDOM()
           LIMIT 1
@@ -583,7 +583,7 @@ async function getInmateAggregateData(db, id = null) {
           SELECT alias
           FROM alias
           WHERE id = ${aliasId.alias_id}
-        `;
+      `;
         return alias ? alias.alias : null;
       })
     );
@@ -616,7 +616,7 @@ async function getInmateAggregateData(db, id = null) {
     };
   } catch (err) {
     console.error(
-      `Error getting inmate data for inmate id ${id}. Error: ${err}`
+      `Error getting inmate data for inmate id ${id}.Error: ${err} `
     );
     throw err;
   }

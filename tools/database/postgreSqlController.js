@@ -38,7 +38,7 @@ class PostgreSqlController {
     );
   }
 
-  async getCompressedInmateDataForSearchName(db, name, sortConfig = null) {
+  async getCompressedInmateDataForSearchName(name, sortConfig = null) {
     return await getCompressedInmateDataForSearchName(
       this.#db,
       name,

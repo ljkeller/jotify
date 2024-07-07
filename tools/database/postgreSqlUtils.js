@@ -283,9 +283,15 @@ async function getCompressedInmateDataForSearchName(
     bulkInmates = await db`
       SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
       FROM inmate
-      WHERE LOWER((COALESCE(first_name, '') || ' ' || COALESCE(middle_name, '') || ' ' || COALESCE(last_name, '') || ' ' || COALESCE(affix, '')))
-      LIKE LOWER('%' || ${name} || '%')
-      LIMIT 20
+      WHERE LOWER(
+      TRIM(BOTH FROM (
+        COALESCE(first_name, '') || ' ' || 
+        COALESCE(middle_name, '') || ' ' || 
+        COALESCE(last_name, '') || ' ' || 
+        COALESCE(affix, '')
+      ))
+      ) LIKE LOWER('%' || ${name} || '%')
+      LIMIT 20;
         `;
   } else {
     bulkInmates = await db`
@@ -293,8 +299,7 @@ async function getCompressedInmateDataForSearchName(
       FROM inmate
       WHERE LOWER((COALESCE(first_name, '') || ' ' || COALESCE(middle_name, '') || ' ' || COALESCE(last_name, '') || ' ' || COALESCE(affix, '')))
       LIKE LOWER('%' || ${name} || '%')
-      ORDER BY ${INMATE_SORT_OPTIONS.get(sortConfig.option)} ${sortConfig.direction
-      }
+      ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option) + " " + sortMethod.direction}
       LIMIT 20
         `;
   }

@@ -12,7 +12,7 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 // most recent date first
 const defaultSort = { option: "date", direction: "desc" };
 
-export default async function AliasScroller({ params, searchParams }) {
+export default async function AliasScroller({ searchParams }) {
   console.log(`searchParams: ${JSON.stringify(searchParams)}`);
   if (!searchParams?.query) {
     return <div>Invalid search argument!</div>;

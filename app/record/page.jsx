@@ -39,7 +39,6 @@ export default async function Record({ record, searchParams }) {
 
     // WARN: This implementation will not work with the current implementation of "random" inmate generation (need id)
     recommended.push(await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : null));
-    console.log(`recommended: ${JSON.stringify(recommended)}`);
     recommended = await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : null);
 
     try {

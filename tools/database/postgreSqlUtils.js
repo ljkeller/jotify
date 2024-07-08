@@ -186,7 +186,6 @@ async function getCompressedInmateDataForDate(
         ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option)} ${sortMethod.direction}
       `);
     }
-    console.log(`inData: ${JSON.stringify(inData.map((inmate) => inmate.last_name + ", " + inmate.first_name))}`);
 
     const compressedInmates = [];
     for (const inmate of inData) {
@@ -605,7 +604,7 @@ async function getInmateAggregateData(db, id = null) {
       (bond) => new BondInformation(bond.type, bond.amount_pennies)
     );
 
-    // TODO! Replace with s3
+    //TODO: Replace with s3
     const [img] = await db`
         SELECT img
         FROM img
@@ -638,7 +637,7 @@ async function getRecommendedRelatedInmates(db, id) {
       FROM inmate
       LEFT JOIN img ON inmate.id = img.inmate_id
       WHERE inmate.id != ${id}
-      ORDER BY embedding < -> (SELECT embedding FROM inmate WHERE id = ${id})
+      ORDER BY embedding <-> (SELECT embedding FROM inmate WHERE id = ${id})
       LIMIT 10
     `;
 
@@ -648,10 +647,6 @@ async function getRecommendedRelatedInmates(db, id) {
         inmate.last_name +
         (inmate.affix ? ` ${inmate.affix} ` : "")
       );
-
-      console.log(`Recommended inmate: ${fullname} `);
-      console.log(`Recommended inmate id: ${inmate.id} `);
-      console.log(`Recommended inmate img ?: ${inmate.img !== null} `)
 
       return {
         id: inmate.id,

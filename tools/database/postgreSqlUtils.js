@@ -177,14 +177,16 @@ async function getCompressedInmateDataForDate(
       `;
     } else {
       const order_by_clause = INMATE_SORT_OPTIONS.get(sortMethod.option) + " " + sortMethod.direction;
-      console.log(`order_by_clause: ${order_by_clause}`);
-      inData = await db`
+      // Postgres driver really strugging to interpolate the dynamic order by clause
+      // WARN: be VERY careful to modify this unsafe query.
+      inData = await db.unsafe(`
         SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
         FROM inmate
-        WHERE date(booking_date) = date(${iso8601DateStr})
-        ORDER BY ${order_by_clause}
-      `;
+        WHERE date(booking_date) = date('${iso8601DateStr}')
+        ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option)} ${sortMethod.direction}
+      `);
     }
+    console.log(`inData: ${JSON.stringify(inData.map((inmate) => inmate.last_name + ", " + inmate.first_name))}`);
 
     const compressedInmates = [];
     for (const inmate of inData) {
@@ -193,7 +195,7 @@ async function getCompressedInmateDataForDate(
           SELECT description, grade, offense_date
           FROM charge
           WHERE inmate_id = ${inmate.id}
-      `;
+        `;
         const chargeInformationArray = charges.map((charge) => {
           return new ChargeInformation(
             charge.description,
@@ -206,7 +208,7 @@ async function getCompressedInmateDataForDate(
           SELECT type, amount_pennies
           FROM bond
           WHERE inmate_id = ${inmate.id}
-      `;
+        `;
         let bondPennies = bond.reduce(
           (acc, curr) => acc + curr.amount_pennies,
           0
@@ -221,7 +223,7 @@ async function getCompressedInmateDataForDate(
           SELECT img
           FROM img
           WHERE inmate_id = ${inmate.id}
-      `;
+        `;
 
         const compressedInmate = new CompressedInmate(
           inmate.id,
@@ -284,15 +286,15 @@ async function getCompressedInmateDataForSearchName(
       SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
       FROM inmate
       WHERE LOWER(
-      TRIM(BOTH FROM (
-        COALESCE(first_name, '') || ' ' || 
-        COALESCE(middle_name, '') || ' ' || 
-        COALESCE(last_name, '') || ' ' || 
-        COALESCE(affix, '')
-      ))
-      ) LIKE LOWER('%' || ${name} || '%')
+          TRIM(BOTH FROM(
+            COALESCE(first_name, '') || ' ' ||
+            COALESCE(middle_name, '') || ' ' ||
+            COALESCE(last_name, '') || ' ' ||
+            COALESCE(affix, '')
+          ))
+        ) LIKE LOWER('%' || ${name} || '%')
       LIMIT 20;
-        `;
+      `;
   } else {
     bulkInmates = await db`
       SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
@@ -636,7 +638,7 @@ async function getRecommendedRelatedInmates(db, id) {
       FROM inmate
       LEFT JOIN img ON inmate.id = img.inmate_id
       WHERE inmate.id != ${id}
-      ORDER BY embedding <-> (SELECT embedding FROM inmate WHERE id = ${id})
+      ORDER BY embedding < -> (SELECT embedding FROM inmate WHERE id = ${id})
       LIMIT 10
     `;
 
@@ -644,12 +646,12 @@ async function getRecommendedRelatedInmates(db, id) {
       const fullname = (inmate.first_name +
         (inmate.middle_name ? ` ${inmate.middle_name} ` : " ") +
         inmate.last_name +
-        (inmate.affix ? ` ${inmate.affix}` : "")
+        (inmate.affix ? ` ${inmate.affix} ` : "")
       );
 
-      console.log(`Recommended inmate: ${fullname}`);
-      console.log(`Recommended inmate id: ${inmate.id}`);
-      console.log(`Recommended inmate img ?: ${inmate.img !== null}`)
+      console.log(`Recommended inmate: ${fullname} `);
+      console.log(`Recommended inmate id: ${inmate.id} `);
+      console.log(`Recommended inmate img ?: ${inmate.img !== null} `)
 
       return {
         id: inmate.id,

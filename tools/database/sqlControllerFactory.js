@@ -5,14 +5,14 @@ const SqliteController = require("./sqliteController");
  * Factory for creating sql controllers handling different backends
  * @constructor
  */
-var SqlControllerFactory = function () {
+var SqlControllerFactory = function() {
   /**
    * Returns a SQL connection based on the provided database configuration.
    * @param {*} dbconfig - The database configuration.
    * @returns {*} sqlController - The polymorphic SQL connection.
    */
-  this.getSqlConnection = function (dbconfig) {
-    db = null;
+  this.getSqlConnection = function(dbconfig) {
+    let db = null;
     if (dbconfig.type === "sqlite") {
       const Database = require("better-sqlite3");
       // TODO: Return a singleton for sqlite connections

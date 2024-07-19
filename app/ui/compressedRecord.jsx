@@ -40,6 +40,7 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
   bond = bond === Number.MAX_SAFE_INTEGER ? 'UNBONDABLE' : centsToDollars(bond).substr(1);
 
   // TODO: use s3 instead of base64 image
+  // Consider using Image component if performance is an issue
   const image =
     <img
       src={bufferToBase64(compressedInmate.img)}
@@ -47,16 +48,10 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
       height={187}
       alt={`${compressedInmate.fullName} mugshot`}
       className={styles.mugshot}
+      fetchPriority={priority ? 'eager' : 'lazy'}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding='async'
     />;
-  // <Image
-  //   // TODO: use s3 instead of precoded image
-  //   src={"/in1.jpg"}
-  //   width={150}
-  //   height={187}
-  //   alt={`${compressedInmate.fullName} mugshot`}
-  //   className={styles.mugshot}
-  //   priority={priority}
-  // />
 
   // TODO! Implement sharing
   return (

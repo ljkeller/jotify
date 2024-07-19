@@ -1,4 +1,5 @@
 const postgres = require("postgres");
+const AWS = require("aws-sdk");
 
 const { postgresSchemas } = require("../config");
 const { config, DBConfig } = require("../config");
@@ -167,11 +168,13 @@ async function getCompressedInmateDataForDate(
         ? sortConfig
         : null;
 
+    let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+
     console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
     let inData = null;
     if (!sortMethod || sortMethod.option === "bond") {
       inData = await db`
-        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
         FROM inmate
         WHERE date(booking_date) = date(${iso8601DateStr})
       `;
@@ -180,7 +183,7 @@ async function getCompressedInmateDataForDate(
       // Postgres driver really strugging to interpolate the dynamic order by clause
       // WARN: be VERY careful to modify this unsafe query.
       inData = await db.unsafe(`
-        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
         FROM inmate
         WHERE date(booking_date) = date('${iso8601DateStr}')
         ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option)} ${sortMethod.direction}
@@ -218,11 +221,30 @@ async function getCompressedInmateDataForDate(
           ? Number.MAX_SAFE_INTEGER
           : bondPennies;
 
+        //Consider using psql data as backup? Shouldn't really be worth
+        /*
         const [img] = await db`
           SELECT img
           FROM img
           WHERE inmate_id = ${inmate.id}
         `;
+        */
+
+        //TODO: optimize this
+        // Reduce compressed image image sizes, or,
+        // make the s3 requests in parallel
+        let img = null;
+        if (inmate.img_url) {
+          try {
+            const imgReq = await s3.getObject({
+              Bucket: 'scjailio-dev',
+              Key: inmate.img_url,
+            }).promise();
+            img = imgReq.Body;
+          } catch (err) {
+            console.error(`Error getting s3 image for inmate id ${inmate.id}.Error: ${err} `);
+          }
+        }
 
         const compressedInmate = new CompressedInmate(
           inmate.id,
@@ -233,7 +255,7 @@ async function getCompressedInmateDataForDate(
           inmate.booking_date.toString(), // PostgreSQL automatically converts timestampz to Date(). This will be uniform with SQLite
           bondPennies,
           inmate.dob,
-          img.img,
+          img,
           chargeInformationArray
         );
         compressedInmates.push(compressedInmate);

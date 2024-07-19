@@ -18,7 +18,7 @@ class CompressedInmate {
     chargeInformationArray
   ) {
     this.id = id;
-    this.fullName = (first + " " + middle + " " + last + " " + affix).trim();
+    this.fullName = [first, middle, last, affix].join(" ").trim();
     this.bookingDate = bookingDate;
     this.bondPennies = bondPennies;
     if (dob instanceof Date) {

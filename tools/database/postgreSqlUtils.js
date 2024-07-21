@@ -190,81 +190,7 @@ async function getCompressedInmateDataForDate(
       `);
     }
 
-    const compressedInmates = [];
-    for (const inmate of inData) {
-      try {
-        const charges = await db`
-          SELECT description, grade, offense_date
-          FROM charge
-          WHERE inmate_id = ${inmate.id}
-        `;
-        const chargeInformationArray = charges.map((charge) => {
-          return new ChargeInformation(
-            charge.description,
-            charge.grade,
-            charge.offenseDate
-          );
-        });
-
-        const bond = await db`
-          SELECT type, amount_pennies
-          FROM bond
-          WHERE inmate_id = ${inmate.id}
-        `;
-        let bondPennies = bond.reduce(
-          (acc, curr) => acc + curr.amount_pennies,
-          0
-        );
-        bondPennies = bond.some((bond) =>
-          bond.type.toLowerCase().includes("unbondable")
-        )
-          ? Number.MAX_SAFE_INTEGER
-          : bondPennies;
-
-        //Consider using psql data as backup? Shouldn't really be worth
-        /*
-        const [img] = await db`
-          SELECT img
-          FROM img
-          WHERE inmate_id = ${inmate.id}
-        `;
-        */
-
-        //TODO: optimize this
-        // Reduce compressed image image sizes, or,
-        // make the s3 requests in parallel
-        let img = null;
-        if (inmate.img_url) {
-          try {
-            const imgReq = await s3.getObject({
-              Bucket: 'scjailio-dev',
-              Key: inmate.img_url,
-            }).promise();
-            img = imgReq.Body;
-          } catch (err) {
-            console.error(`Error getting s3 image for inmate id ${inmate.id}.Error: ${err} `);
-          }
-        }
-
-        const compressedInmate = new CompressedInmate(
-          inmate.id,
-          inmate.first_name,
-          inmate.middle_name,
-          inmate.last_name,
-          inmate.affix,
-          inmate.booking_date.toString(), // PostgreSQL automatically converts timestampz to Date(). This will be uniform with SQLite
-          bondPennies,
-          inmate.dob,
-          img,
-          chargeInformationArray
-        );
-        compressedInmates.push(compressedInmate);
-      } catch (err) {
-        console.error(
-          `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
-        );
-      }
-    }
+    const compressedInmates = (await Promise.all(inData.map(inmate => fetchInmateDetailsInParallel(db, s3, inmate)))).filter(inmate => inmate !== null);
 
     if (sortMethod?.option === "bond") {
       compressedInmates.sort((a, b) => {
@@ -281,6 +207,68 @@ async function getCompressedInmateDataForDate(
       `Error querying for compressed inmate data for date ${iso8601DateStr}: ${error} `
     );
     return [];
+  }
+}
+
+async function fetchInmateDetailsInParallel(db, s3, inmate) {
+  try {
+    const chargesPromise = db`
+          SELECT description, grade, offense_date
+          FROM charge
+          WHERE inmate_id = ${inmate.id}
+        `;
+
+    const bondPromise = db`
+          SELECT type, amount_pennies
+          FROM bond
+          WHERE inmate_id = ${inmate.id}
+        `;
+
+    const imgPromise = inmate.img_url ? s3.getObject({
+      Bucket: 'scjailio-dev',
+      Key: inmate.img_url,
+    }).promise().then(response => response.Body).catch(err => {
+      console.error(`Error getting s3 image for inmate id ${inmate.id}.Error: ${err} `);
+      return null;
+    }) : Promise.resolve(null);
+
+    const [charges, bond, img] = await Promise.all([chargesPromise, bondPromise, imgPromise]);
+
+    const chargeInformationArray = charges.map((charge) => {
+      return new ChargeInformation(
+        charge.description,
+        charge.grade,
+        charge.offenseDate
+      );
+    });
+
+    let bondPennies = bond.reduce(
+      (acc, curr) => acc + curr.amount_pennies,
+      0
+    );
+    bondPennies = bond.some((bond) =>
+      bond.type.toLowerCase().includes("unbondable")
+    )
+      ? Number.MAX_SAFE_INTEGER
+      : bondPennies;
+
+    return new CompressedInmate(
+      inmate.id,
+      inmate.first_name,
+      inmate.middle_name,
+      inmate.last_name,
+      inmate.affix,
+      inmate.booking_date.toString(), // PostgreSQL automatically converts timestampz to Date(). This will be uniform with SQLite
+      bondPennies,
+      inmate.dob,
+      img,
+      chargeInformationArray
+    );
+  } catch (err) {
+    console.error(
+      `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
+    );
+    return null;
   }
 }
 

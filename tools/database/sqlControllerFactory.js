@@ -16,12 +16,14 @@ var SqlControllerFactory = function() {
     if (dbconfig.type === "sqlite") {
       const Database = require("better-sqlite3");
       // TODO: Return a singleton for sqlite connections
+      console.log("Returning sqlite handle");
       db = new Database(dbconfig.file, dbconfig.config);
 
       return new SqliteController(db);
     } else if (dbconfig.type === "postgres") {
       // Which postgres config we use is determined by config.js
       const { psql } = require("./postgreSqlUtils");
+      console.log("Returning postgres handle");
       db = psql;
 
       return new PostgreSqlController(db);

@@ -9,15 +9,15 @@ const config = {
   // Requires appending inmate id (sysid=XX...)
   baseInmateLink: "https://www.scottcountyiowa.us/sheriff/inmates.php?",
 
-  sleepBetweenRequests: 100, // ms
+  sleepBetweenRequests: 1000, // ms
   databaseFile: "scjailio-1-20-24.db",
   prototypeFile: "scjailio-prototype.db",
   printDbQueries: false,
-  lastNDays: 3,
+  lastNDays: 2,
 
   database: "postgres",
   appReadFile: "scjailio-1-20-24.db",
-  isDev: true,
+  isDev: false,
 };
 
 const DBConfig = {
@@ -48,9 +48,14 @@ const DBConfig = {
     type: "postgres",
     config: postgresDevConfig,
   },
+  postgresProd: {
+    type: "postgres",
+    config: null
+  }
 };
 
-const runtimeDbConfig = DBConfig.postgresDev;
+// When using postgresProd, the config config / db url is set in the environment
+const runtimeDbConfig = DBConfig.postgresProd;
 
 const postgresSchemas = {
   inmate: `

@@ -36,15 +36,12 @@ export default async function Record({ record, searchParams }) {
     const factory = new SqlControllerFactory();
     const sqlController = factory.getSqlConnection(runtimeDbConfig);
 
-
-    // WARN: This implementation will not work with the current implementation of "random" inmate generation (need id)
-    recommended.push(await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : null));
-    recommended = await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : null);
-
     try {
       const searchId = searchParams?.id ? parseInt(searchParams.id) : null;
+
       ({ inmateAggregate: inmate, inmateId } =
         await sqlController.getInmateAggregateData(searchId));
+      recommended = await sqlController.getRecommendedRelatedInmates(searchParams?.id ? parseInt(searchParams.id) : inmateId);
     } catch (err) {
       console.log(err);
       // TODO: return error page / val
@@ -77,15 +74,6 @@ export default async function Record({ record, searchParams }) {
       className={styles.mugshot}
     />
   );
-  // Use below as reference for s3 impl
-  // <Image
-  //   src='/in1.jpg'
-  //   width={300}
-  //   height={375}
-  //   className={styles.profileImage}
-  //   alt='inmate image'
-  //   priority={true}
-  // ></Image>
   return (
     <div className={styles.recordOuter}>
       <div className={styles.profileSidebar}>

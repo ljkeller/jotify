@@ -1,5 +1,6 @@
 import styles from "../styles/Home.module.css";
 import { formatISO } from "date-fns";
+import { toZonedTime, format } from "date-fns-tz";
 
 import TrafficCalendar from "./ui/trafficCalendar";
 import Search from "/app/ui/search";
@@ -9,15 +10,23 @@ import { runtimeDbConfig } from "/tools/config";
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 
 async function getLast7DaysInmateTraffic(sqlController) {
-  const traffic = [];
+  const timeZone = "America/Chicago";
+  const dateQueries = [];
+  const dates = [];
+
   for (let i = 6; i >= 0; i--) {
-    let date = new Date();
-    date.setDate(date.getDate() - i);
-    const dateStr = formatISO(date, { representation: "date" });
-    const count = await sqlController.countInmatesOnDate(dateStr);
-    traffic.push({ date: dateStr, inmateCount: count });
+    let utcDate = new Date();
+    utcDate.setDate(utcDate.getDate() - i);
+
+    const zonedDate = toZonedTime(utcDate, timeZone);
+    const tzDateStr = format(zonedDate, "yyyy-MM-dd", { timeZone });
+
+    const count = await sqlController.countInmatesOnDate(tzDateStr);
+    dateQueries.push(count);
+    dates.push(tzDateStr);
   }
-  return traffic;
+  const counts = await Promise.all(dateQueries);
+  return dates.map((date, idx) => ({ date, inmateCount: counts[idx] }));
 }
 
 export const metadata = {
@@ -26,16 +35,17 @@ export const metadata = {
 };
 
 export default async function Home() {
-  // TODO: Create singletons for writable sqlite, readonly sqlite, and postgres? Then return the singleton from the factory?
   const db = new SqlControllerFactory();
   const sqlController = db.getSqlConnection(runtimeDbConfig);
 
-  const trafficLast7Days = await getLast7DaysInmateTraffic(sqlController);
-
-  const compressedRecordInfo =
-    await sqlController.getCompressedInmateDataForDate(
+  const [trafficLast7Days, compressedRecordInfo] = await Promise.all([
+    getLast7DaysInmateTraffic(sqlController),
+    //TODO: swap out formatISO date
+    sqlController.getCompressedInmateDataForDate(
       formatISO(new Date(), { representation: "date" })
-    );
+    ),
+  ]);
+
   const compressedRecords = compressedRecordInfo.map((inmate, idx) => (
     <Record key={idx} data={inmate} priority={idx < 5} />
   ));

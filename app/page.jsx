@@ -38,7 +38,6 @@ export default async function Home() {
 
   const [trafficLast7Days, compressedRecordInfo] = await Promise.all([
     getLast7DaysInmateTraffic(sqlController),
-    //TODO: swap out formatISO date
     sqlController.getCompressedInmateDataForDate(
       formatInTimeZone(new Date(), TIMEZONE, "yyyy-MM-dd")
     ),

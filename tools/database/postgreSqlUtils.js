@@ -673,6 +673,62 @@ async function getRecommendedRelatedInmates(db, id) {
   return recommended;
 }
 
+async function getRelatedNames(db, name) {
+  if (!name || name.length < 3) {
+    return [];
+  }
+
+  try {
+    let inmates = await db
+      `
+        SELECT first_name, middle_name, last_name, affix
+        FROM inmate
+        WHERE LOWER(
+            TRIM(BOTH FROM(
+              COALESCE(first_name, '') || ' ' ||
+              COALESCE(middle_name, '') || ' ' ||
+              COALESCE(last_name, '') || ' ' ||
+              COALESCE(affix, '')
+            ))
+          ) LIKE LOWER('%' || ${name} || '%')
+        LIMIT 20;
+      `;
+
+    inmates = inmates.map((inmate) =>
+      `${inmate.first_name} ${inmate.middle_name} ${inmate.last_name} ${inmate.affix}`.trim()
+    );
+
+    return inmates;
+  } catch (err) {
+    console.error(
+      `Error getting related names for name ${name}. Error: ${err}`
+    );
+    return [];
+  }
+}
+
+async function getRelatedAliases(db, alias) {
+  if (!alias || alias.length < 3) {
+    return [];
+  }
+
+  try {
+    let aliases = await db
+      `
+        SELECT alias
+        FROM alias
+        WHERE LOWER(alias) LIKE LOWER('%' || ${alias} || '%')
+        LIMIT 20
+      `;
+    return aliases.map((alias) => alias.alias.trim());
+  } catch (err) {
+    console.error(
+      `Error getting related aliases for name ${alias}. Error: ${err}`
+    );
+    return [];
+  }
+}
+
 module.exports = {
   getClient,
   setupDbCloseConditions,
@@ -685,5 +741,7 @@ module.exports = {
   getCompressedInmateDataForSearchName,
   getCompressedInmateDataForAlias,
   getInmateAggregateData,
-  getRecommendedRelatedInmates
+  getRecommendedRelatedInmates,
+  getRelatedNames,
+  getRelatedAliases,
 };

@@ -1,4 +1,4 @@
-const { postgresDevConfig } = require("./secrets");
+// const { postgresDevConfig } = require("./secrets");
 
 const config = {
   todayInmatesUrl:
@@ -46,7 +46,7 @@ const DBConfig = {
   },
   postgresDev: {
     type: "postgres",
-    config: postgresDevConfig,
+    config: null,
   },
   postgresProd: {
     type: "postgres",
@@ -54,7 +54,7 @@ const DBConfig = {
   }
 };
 
-// When using postgresProd, the config config / db url is set in the environment
+// When using postgres, the config config / db url is set in the environment
 const runtimeDbConfig = DBConfig.postgresProd;
 
 const postgresSchemas = {

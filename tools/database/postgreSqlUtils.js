@@ -2,7 +2,6 @@ const postgres = require("postgres");
 const AWS = require("aws-sdk");
 
 const { postgresSchemas } = require("../config");
-const { config, DBConfig } = require("../config");
 const { INMATE_SORT_OPTIONS, SORT_DIRECTIONS } = require("./sqliteUtils");
 
 const CompressedInmate = require("../models/compressedInmate");
@@ -13,9 +12,7 @@ const InmateAggregate = require("../models/inmateAggregate");
 
 // timeout & lifetime are in seconds
 const psql = postgres(
-  config.isDev
-    ? `postgres://${DBConfig.postgresDev.config.username}:${DBConfig.postgresDev.config.password}@${DBConfig.postgresDev.config.ip}:${DBConfig.postgresDev.config.port}`
-    : process.env.DATABASE_URL
+  process.env.DATABASE_URL
   , {
     idle_timeout: 20,
     max_lifetime: 60 * 10,

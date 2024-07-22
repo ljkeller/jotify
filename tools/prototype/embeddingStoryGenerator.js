@@ -3,13 +3,12 @@ const OpenAI = require('openai');
 const { format } = require('date-fns');
 
 const { config } = require('./config');
-const { openAIConfig } = require('./secrets');
 const { getInmateAggregateData } = require('./database/sqliteUtils');
 
 async function main() {
   const db = new Database(config.appReadFile, { verbose: config.printDbQueries ? console.log : null, readonly: true });
   console.log(openAIConfig);
-  const openai = new OpenAI({ apiKey: openAIConfig.secret });
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
     const inmate = getInmateAggregateData(db).inmateAggregate;

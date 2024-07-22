@@ -1,6 +1,5 @@
 import styles from "../styles/Home.module.css";
-import { formatISO } from "date-fns";
-import { toZonedTime, format } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 import TrafficCalendar from "./ui/trafficCalendar";
 import Search from "/app/ui/search";
@@ -9,17 +8,16 @@ import { runtimeDbConfig } from "/tools/config";
 
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 
+const TIMEZONE = "America/Chicago";
+
 async function getLast7DaysInmateTraffic(sqlController) {
-  const timeZone = "America/Chicago";
   const dateQueries = [];
   const dates = [];
 
   for (let i = 6; i >= 0; i--) {
-    let utcDate = new Date();
-    utcDate.setDate(utcDate.getDate() - i);
-
-    const zonedDate = toZonedTime(utcDate, timeZone);
-    const tzDateStr = format(zonedDate, "yyyy-MM-dd", { timeZone });
+    let localDate = new Date();
+    localDate.setDate(localDate.getDate() - i);
+    const tzDateStr = formatInTimeZone(localDate, TIMEZONE, "yyyy-MM-dd");
 
     const count = await sqlController.countInmatesOnDate(tzDateStr);
     dateQueries.push(count);
@@ -42,7 +40,7 @@ export default async function Home() {
     getLast7DaysInmateTraffic(sqlController),
     //TODO: swap out formatISO date
     sqlController.getCompressedInmateDataForDate(
-      formatISO(new Date(), { representation: "date" })
+      formatInTimeZone(new Date(), TIMEZONE, "yyyy-MM-dd")
     ),
   ]);
 

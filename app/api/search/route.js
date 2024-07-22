@@ -2,7 +2,7 @@ import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 
 import { runtimeDbConfig } from '/tools/config';
 
-export function GET(request) {
+export async function GET(request) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const searchQuery = searchParams.get('query');
@@ -17,8 +17,8 @@ export function GET(request) {
     //TODO: Verify sqlite logic (low prio)
     const db = new SqlControllerFactory().getSqlConnection(runtimeDbConfig);
     const relatedNames = searchType === 'name' ?
-      db.getRelatedNames(searchQuery) :
-      db.getRelatedAliases(searchQuery);
+      await db.getRelatedNames(searchQuery) :
+      await db.getRelatedAliases(searchQuery);
 
     return new Response(JSON.stringify(relatedNames),
       {

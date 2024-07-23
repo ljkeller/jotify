@@ -131,8 +131,13 @@ export default async function Record({ record, searchParams }) {
             </div>
             <div className={styles.kvContainer}>
               <div className={styles.key}>Scott County link: </div>
+              {/* TODO: Legacy urls start with ?, new urls dont. Need to update DB before removing this workaround */}
               <a
-                href={config.baseInmateLink + inmate.inmateProfile.scilSysId}
+                href={config.baseInmateLink +
+                  (inmate.inmateProfile.scilSysId.startsWith("?")
+                    ? inmate.inmateProfile.scilSysId.slice(1)
+                    : inmate.inmateProfile.scilSysId)
+                }
                 target="_blank"
                 className={`${styles.hiddenLink} ${styles.outLink}`}
               >

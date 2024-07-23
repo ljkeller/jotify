@@ -172,7 +172,7 @@ async function getCompressedInmateDataForDate(
 
     let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 
-    console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
+    //console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
     let inData = null;
     if (!sortMethod || sortMethod.option === "bond") {
       inData = await db`
@@ -289,12 +289,12 @@ async function getCompressedInmateDataForSearchName(
       SORT_DIRECTIONS.has(sortConfig.direction)
       ? sortConfig
       : null;
-  console.log(`Getting compressed inmate data for name ${name}`);
+  //console.log(`Getting compressed inmate data for name ${name}`);
 
   let bulkInmates = null;
   if (!sortMethod) {
     bulkInmates = await db`
-      SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+      SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
       FROM inmate
       WHERE LOWER(
           TRIM(BOTH FROM(
@@ -308,7 +308,7 @@ async function getCompressedInmateDataForSearchName(
       `;
   } else {
     bulkInmates = await db`
-      SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+      SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
       FROM inmate
       WHERE LOWER((COALESCE(first_name, '') || ' ' || COALESCE(middle_name, '') || ' ' || COALESCE(last_name, '') || ' ' || COALESCE(affix, '')))
       LIKE LOWER('%' || ${name} || '%')
@@ -317,61 +317,8 @@ async function getCompressedInmateDataForSearchName(
         `;
   }
 
-  const compressedInmates = [];
-  for (const inmate of bulkInmates) {
-    try {
-      const charges = await db`
-        SELECT description, grade, offense_date
-        FROM charge
-        WHERE inmate_id = ${inmate.id}
-      `;
-      const chargeInformationArray = charges.map((charge) => {
-        return new ChargeInformation(
-          charge.description,
-          charge.grade,
-          charge.offenseDate
-        );
-      });
-
-      const bond = await db`
-        SELECT type, amount_pennies
-        FROM bond
-        WHERE inmate_id = ${inmate.id}
-      `;
-      let bondPennies = bond.reduce(
-        (acc, curr) => acc + curr.amount_pennies,
-        0
-      );
-      bondPennies = bond.some((bond) =>
-        bond.type.toLowerCase().includes("unbondable")
-      )
-        ? Infinity
-        : bondPennies;
-
-      const [{ img }] = await db`
-        SELECT img
-        FROM img
-        WHERE inmate_id = ${inmate.id}
-      `;
-      const compressedInmate = new CompressedInmate(
-        inmate.id,
-        inmate.first_name,
-        inmate.middle_name,
-        inmate.last_name,
-        inmate.affix,
-        inmate.booking_date,
-        bondPennies,
-        inmate.dob,
-        img,
-        chargeInformationArray
-      );
-      compressedInmates.push(compressedInmate);
-    } catch (err) {
-      console.error(
-        `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
-      );
-    }
-  }
+  const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+  const compressedInmates = (await Promise.all(bulkInmates.map(inmate => fetchInmateDetailsInParallel(db, s3, inmate)))).filter(inmate => inmate !== null);
   return compressedInmates;
 }
 
@@ -386,19 +333,20 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
       SORT_DIRECTIONS.has(sortConfig.direction)
       ? sortConfig
       : null;
+  /*
   console.log(
     `Getting compressed inmate data for alias ${alias}.Sort method: ${JSON.stringify(
       sortMethod
     )
     } `
   );
+  */
 
   const idRes = await db`
     SELECT id
     FROM alias
     where alias = ${alias}
       `;
-
   if (!idRes || idRes.length === 0) {
     return [];
   }
@@ -409,19 +357,18 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
     FROM inmate_alias
     WHERE alias_id = ${aliasId}
       `;
-  // inmateIds = inmateIds.map((inmateId) => inmateId.inmate_id);
 
   async function getInmateData(id, sortMethod) {
     let inmateData = null;
     if (!sortMethod || sortMethod.option === "bond") {
       [inmateData] = await db`
-        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
         FROM inmate
         WHERE id = ${id}
       `;
     } else {
       [inmateData] = await db`
-        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date
+        SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
         FROM inmate
         WHERE id = ${id}
         ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option) + sortMethod.direction
@@ -436,62 +383,8 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
   );
   bulkInmates = await Promise.all(bulkInmates);
 
-  const compressedInmates = [];
-  for (const inmate of bulkInmates) {
-    try {
-      const charges = await db`
-        SELECT description, grade, offense_date
-        FROM charge
-        WHERE inmate_id = ${inmate.id}
-      `;
-      const chargeInformationArray = charges.map((charge) => {
-        return new ChargeInformation(
-          charge.description,
-          charge.grade,
-          charge.offenseDate
-        );
-      });
-
-      const bond = await db`
-        SELECT type, amount_pennies
-        FROM bond
-        WHERE inmate_id = ${inmate.id}
-      `;
-      let bondPennies = bond.reduce(
-        (acc, curr) => acc + curr.amount_pennies,
-        0
-      );
-      bondPennies = bond.some((bond) =>
-        bond.type.toLowerCase().includes("unbondable")
-      )
-        ? Infinity
-        : bondPennies;
-
-      const [img] = await db`
-        SELECT img
-        FROM img
-        WHERE inmate_id = ${inmate.id}
-      `;
-
-      const compressedInmate = new CompressedInmate(
-        inmate.id,
-        inmate.first_name,
-        inmate.middle_name,
-        inmate.last_name,
-        inmate.affix,
-        inmate.booking_date,
-        bondPennies,
-        inmate.dob,
-        img.img,
-        chargeInformationArray
-      );
-      compressedInmates.push(compressedInmate);
-    } catch (err) {
-      console.error(
-        `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
-      );
-    }
-  }
+  let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+  const compressedInmates = (await Promise.all(bulkInmates.map(inmate => fetchInmateDetailsInParallel(db, s3, inmate)))).filter(inmate => inmate !== null);
 
   if (sortMethod?.option === "bond") {
     compressedInmates.sort((a, b) => {

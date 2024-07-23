@@ -6,6 +6,8 @@ import { runtimeDbConfig } from "/tools/config";
 import DateSorting from "/app/date/dateSorting";
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 
+export const dynamic = 'force-dynamic';
+
 const SORT_OPTIONS = new Set(["name", "date", "bond", "age"]);
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 // most recent date first

@@ -6,6 +6,8 @@ import styles from "/styles/AliasScroller.module.css";
 import Record from "/app/ui/compressedRecord";
 import SearchBar from "../ui/search";
 
+export const dynamic = 'force-dynamic';
+
 // TODO: Introduce severity sorting
 const SORT_OPTIONS = new Set(["name", "date", "bond", "age"]);
 const SORT_DIRECTIONS = new Set(["asc", "desc"]);

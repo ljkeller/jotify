@@ -9,6 +9,8 @@ import styles from '/styles/DateScroller.module.css';
 import Record from '/app/ui/compressedRecord';
 import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 
+export const revalidate = 60 * 30;
+
 function getNextDayQuery(date) {
   return "/date?date=" + formatISO(addDays(date, 1), { representation: 'date' });
 }

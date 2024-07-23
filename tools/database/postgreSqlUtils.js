@@ -345,7 +345,7 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
   const idRes = await db`
     SELECT id
     FROM alias
-    where alias = ${alias}
+    where LOWER(alias) = LOWER(${alias})
       `;
   if (!idRes || idRes.length === 0) {
     return [];

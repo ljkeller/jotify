@@ -393,16 +393,17 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
     } `
   );
 
-  const [{ id: aliasId }] = await db`
+  const idRes = await db`
     SELECT id
     FROM alias
     where alias = ${alias}
       `;
 
-  if (!aliasId) {
+  if (!idRes || idRes.length === 0) {
     return [];
   }
 
+  const aliasId = idRes[0].id;
   let inmateIds = await db`
     SELECT inmate_id
     FROM inmate_alias

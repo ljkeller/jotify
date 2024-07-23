@@ -8,6 +8,8 @@ import { runtimeDbConfig } from "/tools/config";
 
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 
+export const revalidate = 60 * 30;
+
 const TIMEZONE = "America/Chicago";
 
 async function getLast7DaysInmateTraffic(sqlController) {

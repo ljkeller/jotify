@@ -359,6 +359,7 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
     WHERE alias_id = ${aliasId}
       `;
 
+  //TODO: Find and compress similar funcs
   async function getInmateData(id, sortMethod) {
     let inmateData = null;
     if (!sortMethod || sortMethod.option === "bond") {
@@ -368,21 +369,19 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
         WHERE id = ${id}
       `;
     } else {
-      [inmateData] = await db`
+      [inmateData] = await db.unsafe(`
         SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
         FROM inmate
         WHERE id = ${id}
-        ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option) + sortMethod.direction
-        }
-      `;
+        ORDER BY ${INMATE_SORT_OPTIONS.get(sortMethod.option)} ${sortMethod.direction}
+      `);
     }
     return inmateData;
   }
 
-  let bulkInmates = inmateIds.map(async (inmateId) =>
+  let bulkInmates = await Promise.all(inmateIds.map(async (inmateId) =>
     getInmateData(inmateId.inmate_id, sortMethod)
-  );
-  bulkInmates = await Promise.all(bulkInmates);
+  ));
 
   let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
   const compressedInmates = (await Promise.all(bulkInmates.map(inmate => fetchInmateDetailsInParallel(db, s3, inmate)))).filter(inmate => inmate !== null);

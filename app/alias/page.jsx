@@ -13,8 +13,8 @@ const SORT_DIRECTIONS = new Set(["asc", "desc"]);
 // most recent date first
 const defaultSort = { option: "date", direction: "desc" };
 
-export default async function AliasScroller({ params, searchParams }) {
-  console.log(`searchParams: ${JSON.stringify(searchParams)}`);
+export default async function AliasScroller({ searchParams }) {
+  //console.log(`searchParams: ${JSON.stringify(searchParams)}`);
   if (!searchParams?.query) {
     return <div>Invalid alias</div>;
   }
@@ -28,7 +28,7 @@ export default async function AliasScroller({ params, searchParams }) {
       sortConfig = { option: sortOption, direction: sortDirection };
     }
   } catch (err) {
-    console.log("Error parsing sort options: " + err);
+    console.error("Error parsing sort options: " + err);
   }
 
   const factory = new SqlControllerFactory();

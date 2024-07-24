@@ -30,7 +30,6 @@ export default async function DateScroller({ searchParams }) {
 
   let date = null;
   let dateStrIso8601 = null;
-  console.log(`searchParams: ${JSON.stringify(searchParams)}`);
   try {
     date = parse(searchParams?.date, 'yyyy-MM-dd', new Date());
   } catch (err) {

@@ -537,30 +537,39 @@ async function getInmateAggregateData(db, id = null) {
 
 
 async function getRecommendedRelatedInmates(db, id) {
+  const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+
   let recommended = [];
   try {
     recommended = await db`
-      SELECT inmate.id, first_name, middle_name, last_name, affix, img
+      SELECT inmate.id, first_name, middle_name, last_name, affix, img_url
       FROM inmate
-      LEFT JOIN img ON inmate.id = img.inmate_id
       WHERE inmate.id != ${id}
       ORDER BY embedding <-> (SELECT embedding FROM inmate WHERE id = ${id})
       LIMIT 10
     `;
 
-    recommended = recommended.map((inmate) => {
+    recommended = await Promise.all(recommended.map(async (inmate) => {
       const fullname = (inmate.first_name +
         (inmate.middle_name ? ` ${inmate.middle_name} ` : " ") +
         inmate.last_name +
         (inmate.affix ? ` ${inmate.affix} ` : "")
       );
 
+      const img_promise = inmate.img_url ? s3.getObject({
+        Bucket: process.env.AWS_BUCKET_NAME || 'scjailio-dev',
+        Key: inmate.img_url,
+      }).promise().then(response => response.Body).catch(err => {
+        console.error(`Error getting s3 image for inmate id ${inmate.id}.Error: ${err} `);
+        return null;
+      }) : Promise.resolve(null);
+
       return {
         id: inmate.id,
         full_name: fullname,
-        img_data: inmate.img
+        img_data: await img_promise,
       };
-    });
+    }));
 
   } catch (err) {
     console.error(`Error getting recommended related inmates for inmate id ${id}.Error: ${err} `);

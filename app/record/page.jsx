@@ -11,19 +11,8 @@ import { config, runtimeDbConfig } from "/tools/config";
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 import { formatISO, format } from "date-fns";
 
-//TODO: Put this in the sqlite controller (dont plan to support embeddings in sqlite)
-function getRecommended() {
-  return [
-    {
-      firstLast: "DERRICK GULLEY",
-      imgPath: "/in2.jpg",
-    },
-    {
-      firstLast: "GUADALUPE PADAVICH",
-      imgPath: "/in3.jpg",
-    },
-  ];
-}
+// Don't need to revalidate often (only affects embeddings. Unless we implement streaming)
+export const revalidate = 60 * 60 * 24;
 
 const bufferToBase64 = (buffer) =>
   buffer ? `data:image/jpeg;base64,${buffer.toString("base64")}` : "/anon.png";

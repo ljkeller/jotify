@@ -179,6 +179,7 @@ async function getCompressedInmateDataForDate(
         SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
         FROM inmate
         WHERE date(booking_date) = date(${iso8601DateStr})
+        ORDER BY booking_date DESC
       `;
     } else {
       const order_by_clause = INMATE_SORT_OPTIONS.get(sortMethod.option) + " " + sortMethod.direction;

@@ -1,4 +1,4 @@
-.record {
+.recordOuter {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -258,7 +258,7 @@
 }
 
 @media (max-width: 768px) {
-  .record{
+  .recordOuter {
     display: flex;
     flex-direction: column;
     justify-content: center;

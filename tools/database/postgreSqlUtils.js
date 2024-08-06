@@ -471,6 +471,8 @@ async function getInmateAggregateData(db, id = null) {
       inmate.scil_sysid
     );
 
+    // TODO: async this
+
     const charges = await db`
         SELECT description, grade, offense_date
         FROM charge
@@ -526,6 +528,8 @@ async function getInmateAggregateData(db, id = null) {
       ),
       inmateId: inmate.id,
     };
+
+    // TODO: return inmate aggregate, id
   } catch (err) {
     console.error(
       `Error getting inmate data for inmate id ${id}.Error: ${err} `

@@ -24,6 +24,7 @@ const SORT_DIRECTIONS = new Set(['asc', 'desc']);
 // most recent date first
 const defaultSort = { option: 'date', direction: 'desc' };
 
+// TODO: Stream this
 export default async function DateScroller({ searchParams }) {
   const db = new SqlControllerFactory();
   const sqlController = db.getSqlConnection(runtimeDbConfig);

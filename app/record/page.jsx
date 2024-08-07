@@ -11,8 +11,7 @@ import { config, runtimeDbConfig } from "/tools/config";
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 import { formatISO, format } from "date-fns";
 
-// Don't need to revalidate often (only affects embeddings. Unless we implement streaming)
-export const revalidate = 60 * 60 * 24;
+export const dynamic = "force-dynamic";
 
 const bufferToBase64 = (buffer) =>
   buffer ? `data:image/jpeg;base64,${buffer.toString("base64")}` : "/anon.png";

@@ -2,6 +2,8 @@ import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 
 import { runtimeDbConfig } from '/tools/config';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const searchParams = request.nextUrl.searchParams;

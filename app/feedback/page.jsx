@@ -18,12 +18,12 @@ export default function Feedback() {
           <li className={styles.feedbackText}>remove spaces</li>
         </ul>
         <div className={styles.inbox}>
-          <p className={styles.reverseMe}>cs</p>
+          <p className={styles.reverseMe}>drallip</p>
           <p className={styles.filterColor}>scott county</p>
-          <p>jail</p>
+          <p>.lucas</p>
           <p className={`${styles.replaceMe} ${styles.padMe}`}>at</p>
-          <p className={styles.filterColor}>yahoo</p>
-          <p className={`${styles.reverseMe}`}>liamg</p>
+          <p className={styles.filterColor}>gmail</p>
+          <p className={`${styles.reverseMe}`}>oohay</p>
           <p className={`${styles.replaceMe} ${styles.padMe}`}>dot</p>
           <p>com</p>
         </div>

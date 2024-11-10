@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node tools/build_db.js",
     "crawl": "node tools/recordCrawler.js",
-    "dev": "next dev",
+    "dev": "DB=sqlite next dev",
     "imgRepairService": "node tools/inmateImgUpdateService"
   },
   "keywords": [],

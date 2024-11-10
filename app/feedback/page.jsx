@@ -16,6 +16,7 @@ export default function Feedback() {
           <li className={styles.feedbackText}>ignore the text in <span className={styles.filterColor}>this color</span></li>
           <li className={styles.feedbackText}>update the text in <span className={styles.replaceMe}>this color</span></li>
           <li className={styles.feedbackText}>remove spaces</li>
+          <li className={styles.feedbackText}>include 'scjail.io' in email subject</li>
         </ul>
         <div className={styles.inbox}>
           <p className={styles.reverseMe}>drallip</p>

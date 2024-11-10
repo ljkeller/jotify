@@ -182,7 +182,6 @@ async function getCompressedInmateDataForDate(
         ORDER BY booking_date DESC
       `;
     } else {
-      const order_by_clause = INMATE_SORT_OPTIONS.get(sortMethod.option) + " " + sortMethod.direction;
       // Postgres driver really strugging to interpolate the dynamic order by clause
       // WARN: be VERY careful to modify this unsafe query.
       inData = await db.unsafe(`

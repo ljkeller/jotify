@@ -7,6 +7,7 @@
     "test": "node tools/build_db.js",
     "crawl": "node tools/recordCrawler.js",
     "dev": "DB=sqlite next dev",
+    "postgresdev": "DB=postgres next dev",
     "imgRepairService": "node tools/inmateImgUpdateService"
   },
   "keywords": [],

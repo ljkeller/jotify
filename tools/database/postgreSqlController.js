@@ -6,6 +6,7 @@ const {
   getCompressedInmateDataForAlias,
   getRecommendedRelatedInmates,
   getRelatedNames,
+  getRelatedNamesFuzzy,
   getRelatedAliases,
 } = require("./postgreSqlUtils");
 
@@ -60,8 +61,12 @@ class PostgreSqlController {
     return await getRecommendedRelatedInmates(this.#db, id);
   }
 
-  async getRelatedNames(id) {
-    return await getRelatedNames(this.#db, id);
+  async getRelatedNamesFuzzy(name) {
+    return await getRelatedNamesFuzzy(this.#db, name)
+  }
+
+  async getRelatedNames(name) {
+    return await getRelatedNames(this.#db, name);
   }
 
   async getRelatedAliases(id) {

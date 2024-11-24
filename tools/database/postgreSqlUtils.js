@@ -579,6 +579,48 @@ async function getRecommendedRelatedInmates(db, id) {
   return recommended;
 }
 
+async function getRelatedNamesFuzzy(db, name) {
+  if (!name || name.length < 3) {
+    return [];
+  }
+
+  try {
+    // pg_trgm is case insensitive by default
+    // This is moderately expensive, may be worth caching or adding index
+    let inmates = await db.unsafe(
+    `
+      SELECT DISTINCT
+          full_name,
+          similarity('${name}', full_name) AS siml
+      FROM (
+          SELECT
+              first_name,
+              middle_name,
+              last_name,
+              affix,
+              TRIM(
+                    COALESCE(first_name, '') || ' ' ||
+                    COALESCE(middle_name, '') || ' ' ||
+                    COALESCE(last_name, '') || ' ' ||
+                    COALESCE(affix, '')
+              ) AS full_name
+          FROM inmate
+      ) AS subquery
+      WHERE similarity('${name}', full_name) > 0.1
+      ORDER BY siml DESC
+      LIMIT 12;
+    `);
+    console.log(inmates);
+    inmates = inmates.map((inmate) => inmate.full_name);
+    return inmates;
+  } catch (err) {
+    console.error(
+      `Error getting fuzzy related names for name ${name}. Error: ${err}`
+    );
+    return [];
+  }
+}
+
 async function getRelatedNames(db, name) {
   if (!name || name.length < 3) {
     return [];
@@ -649,5 +691,6 @@ module.exports = {
   getInmateAggregateData,
   getRecommendedRelatedInmates,
   getRelatedNames,
+  getRelatedNamesFuzzy,
   getRelatedAliases,
 };

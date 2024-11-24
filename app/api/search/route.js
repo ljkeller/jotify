@@ -19,7 +19,7 @@ export async function GET(request) {
     //TODO: Verify sqlite logic (low prio)
     const db = new SqlControllerFactory().getSqlConnection(runtimeDbConfig);
     const relatedNames = searchType === 'name' ?
-      await db.getRelatedNames(searchQuery) :
+      await db.getRelatedNamesFuzzy(searchQuery) :
       await db.getRelatedAliases(searchQuery);
 
     return new Response(JSON.stringify(relatedNames),

@@ -4,6 +4,8 @@ const {
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
   getCompressedInmateDataForAlias,
+  getRelatedNames,
+  getRelatedAliases,
   setupDbCloseConditions,
   createTables,
   serializeInmateAggregate,
@@ -48,10 +50,22 @@ class SqliteController {
     return getInmateAggregateData(this.#db, id);
   }
 
+  async getRelatedNamesFuzzy(name) {
+    // no plans to include fuzzy search in sqlite
+    return await getRelatedNames(this.#db, name)
+  }
+
+  async getRelatedNames(name) {
+    return await getRelatedNames(this.#db, name);
+  }
+
+  async getRelatedAliases(id) {
+    return await getRelatedAliases(this.#db, id);
+  }
   // Don't plan to support embeddings on sqlite
   async getRecommendedRelatedInmates(_id) {
     return [];
   }
 }
-// TODO: Finish adding methods
+
 module.exports = SqliteController;

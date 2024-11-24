@@ -57,6 +57,7 @@ const DBConfig = {
 // When using postgres, the config config / db url is set in the environment
 const runtimeDbConfig = process.env.DB === "sqlite" ? DBConfig.sqliteReadOnly
                       : process.env.DB === "memory" ? DBConfig.sqliteMemory
+                      : process.env.DB === "postgresdev" ? DBConfig.postgresDev
                       : DBConfig.postgresProd;
 
 

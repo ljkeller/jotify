@@ -16,7 +16,6 @@ export async function GET(request) {
           status: 400
         });
     }
-    //TODO: Verify sqlite logic (low prio)
     const db = new SqlControllerFactory().getSqlConnection(runtimeDbConfig);
     const relatedNames = searchType === 'name' ?
       await db.getRelatedNamesFuzzy(searchQuery) :

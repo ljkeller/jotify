@@ -587,6 +587,7 @@ async function getRelatedNamesFuzzy(db, name) {
   try {
     // pg_trgm is case insensitive by default
     // This is moderately expensive, may be worth caching or adding index
+    // TODO: bias towards first name
     let inmates = await db.unsafe(
     `
       SELECT DISTINCT
@@ -663,12 +664,13 @@ async function getRelatedAliases(db, alias) {
   try {
     let aliases = await db
       `
-        SELECT alias
+        SELECT TRIM(alias) as trimmed_alias, SIMILARITY(alias, ${alias}) AS siml
         FROM alias
-        WHERE LOWER(alias) LIKE LOWER('%' || ${alias} || '%')
-        LIMIT 20
+        WHERE SIMILARITY(alias, ${alias}) > 0.1
+        ORDER BY siml DESC
+        LIMIT 12
       `;
-    return aliases.map((alias) => alias.alias.trim());
+    return aliases.map((alias) => alias.trimmed_alias);
   } catch (err) {
     console.error(
       `Error getting related aliases for name ${alias}. Error: ${err}`

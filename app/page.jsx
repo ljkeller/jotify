@@ -38,6 +38,7 @@ export default async function Home() {
   const db = new SqlControllerFactory();
   const sqlController = db.getSqlConnection(runtimeDbConfig);
 
+  // TODO: instead of getting inmates for todays date, just grab last N for home page
   const [trafficLast7Days, compressedRecordInfo] = await Promise.all([
     getLast7DaysInmateTraffic(sqlController),
     sqlController.getCompressedInmateDataForDate(

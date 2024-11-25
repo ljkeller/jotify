@@ -14,8 +14,9 @@ const InmateAggregate = require("../models/inmateAggregate");
 const psql = postgres(
   process.env.DATABASE_URL
   , {
-    idle_timeout: 20,
-    max_lifetime: 60 * 10,
+    idle_timeout: 15,
+    max_lifetime: 30 * 10,
+    connection_timeout: 5,
   }
 );
 

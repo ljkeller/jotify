@@ -213,6 +213,68 @@ async function getCompressedInmateDataForDate(
   }
 }
 
+async function fetchChargesAliasesS3imgBond(db, s3, inmate) {
+  try {
+    const chargesPromise = db`
+        SELECT description, grade, offense_date
+        FROM charge
+        WHERE inmate_id = ${inmate.id}
+      `;
+    const aliasIdsPromise = db`
+        SELECT alias_id
+        FROM inmate_alias
+        WHERE inmate_id = ${inmate.id}
+      `;
+
+    const bondPromise = db`
+        SELECT type, amount_pennies
+        FROM bond
+        WHERE inmate_id = ${inmate.id}
+      `;
+
+    const img_promise = inmate.img_url ? s3.getObject({
+      Bucket: process.env.AWS_BUCKET_NAME || 'scjailio-dev',
+      Key: inmate.img_url,
+    }).promise().then(response => response.Body).catch(err => {
+      console.error(`Error getting s3 image for inmate id ${inmate.id}.Error: ${err} `);
+      return null;
+    }) : Promise.resolve(null);
+
+    const [charges, aliasIds, bond, imgBlob] = await Promise.all([chargesPromise, aliasIdsPromise, bondPromise, img_promise]);
+
+    const bondInformationArray = bond.map(
+      (bond) => new BondInformation(bond.type, bond.amount_pennies)
+    );
+
+    const chargeInformationArray = charges.map((charge) => {
+      return new ChargeInformation(
+        charge.description,
+        charge.grade,
+        charge.offense_date
+      );
+    });
+
+    const aliases = await Promise.all(
+      aliasIds.map(async (aliasId) => {
+        const [alias] = await db`
+          SELECT alias
+          FROM alias
+          WHERE id = ${aliasId.alias_id}
+      `;
+        return alias ? alias.alias : null;
+      })
+    );
+
+    return [chargeInformationArray, bondInformationArray, aliases, imgBlob];
+
+  } catch (err) {
+    console.error(
+      `Error getting (concurrent) inmate record data for inmate id ${inmate.id}.Error: ${err} `
+    );
+    return null;
+  }
+}
+
 async function fetchInmateDetailsInParallel(db, s3, inmate) {
   try {
     const chargesPromise = db`
@@ -407,6 +469,8 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
  */
 async function getInmateAggregateData(db, id = null) {
   try {
+    const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+
     const [inmate] = id
       ? await db`
           SELECT id,
@@ -471,54 +535,9 @@ async function getInmateAggregateData(db, id = null) {
       inmate.scil_sysid
     );
 
-    // TODO: async this
-
-    const charges = await db`
-        SELECT description, grade, offense_date
-        FROM charge
-        WHERE inmate_id = ${inmate.id}
-      `;
-    const chargeInformationArray = charges.map((charge) => {
-      return new ChargeInformation(
-        charge.description,
-        charge.grade,
-        charge.offense_date
-      );
-    });
-
-    const aliasIds = await db`
-        SELECT alias_id
-        FROM inmate_alias
-        WHERE inmate_id = ${inmate.id}
-      `;
-    const aliases = await Promise.all(
-      aliasIds.map(async (aliasId) => {
-        const [alias] = await db`
-          SELECT alias
-          FROM alias
-          WHERE id = ${aliasId.alias_id}
-      `;
-        return alias ? alias.alias : null;
-      })
-    );
-    inmateProfile.aliases = aliases ? aliases : [];
-
-    const bond = await db`
-        SELECT type, amount_pennies
-        FROM bond
-        WHERE inmate_id = ${inmate.id}
-      `;
-    const bondInformationArray = bond.map(
-      (bond) => new BondInformation(bond.type, bond.amount_pennies)
-    );
-
-    //TODO: Replace with s3
-    const [img] = await db`
-        SELECT img
-        FROM img
-        WHERE inmate_id = ${inmate.id}
-      `;
-    inmateProfile.imgBlob = img.img;
+    const [chargeInformationArray, bondInformationArray, aliases, imgBlob] = await fetchChargesAliasesS3imgBond(db, s3, inmate);
+    inmateProfile.aliases = aliases;
+    inmateProfile.imgBlob = imgBlob;
 
     return {
       inmateAggregate: new InmateAggregate(
@@ -529,7 +548,6 @@ async function getInmateAggregateData(db, id = null) {
       inmateId: inmate.id,
     };
 
-    // TODO: return inmate aggregate, id
   } catch (err) {
     console.error(
       `Error getting inmate data for inmate id ${id}.Error: ${err} `

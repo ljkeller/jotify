@@ -1,6 +1,7 @@
 const {
   countInmatesOnDate,
   getInmateAggregateData,
+  getCompressedInmateDataRecent,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
   getCompressedInmateDataForAlias,
@@ -31,6 +32,13 @@ class PostgreSqlController {
 
   async countInmatesOnDate(iso8601DateStr) {
     return await countInmatesOnDate(this.#db, iso8601DateStr);
+  }
+
+  async getCompressedInmateDataRecent(nRecent) {
+    return await getCompressedInmateDataRecent(
+      this.#db,
+      nRecent
+    );
   }
 
   async getCompressedInmateDataForDate(iso8601DateStr, sortConfig = null) {

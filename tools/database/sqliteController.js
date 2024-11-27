@@ -11,6 +11,8 @@ const {
   serializeInmateAggregate,
 } = require("./sqliteUtils");
 
+// TODO: getCompressedInmateDataRecent not implemented. Unsure if plan to support sqlite moving forward
+
 // This class offers a strategy pattern abstraction over the SQL interface
 class SqliteController {
   #db;

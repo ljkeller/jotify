@@ -158,6 +158,40 @@ async function countInmatesOnDate(db, iso8601DateStr) {
   }
 }
 
+/**
+ * Get compressed inmate data for the most recent n inmates
+ * @param {*} db database connection handle
+ * @param {*} nRecent number of most recent inmates to get
+ *
+ * @returns {CompressedInmate[]} compressed inmate data
+ * @throws {Error} if query fails
+ */
+async function getCompressedInmateDataRecent(
+  db,
+  nRecent = 25,
+) {
+  try {
+
+    let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+
+    //console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
+    let inData = await db`
+      SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
+      FROM inmate
+      ORDER BY booking_date DESC
+      LIMIT ${nRecent}
+    `;
+
+    const compressedInmates = (await Promise.all(inData.map(inmate => fetchInmateDetailsInParallel(db, s3, inmate)))).filter(inmate => inmate !== null);
+    return compressedInmates;
+  } catch (error) {
+    console.error(
+      `Error querying for compressed inmate data for date ${iso8601DateStr}: ${error} `
+    );
+    return [];
+  }
+}
+
 async function getCompressedInmateDataForDate(
   db,
   iso8601DateStr,
@@ -706,6 +740,7 @@ module.exports = {
   psql,
   end,
   countInmatesOnDate,
+  getCompressedInmateDataRecent,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,
   getCompressedInmateDataForAlias,

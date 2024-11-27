@@ -41,9 +41,7 @@ export default async function Home() {
   // TODO: instead of getting inmates for todays date, just grab last N for home page
   const [trafficLast7Days, compressedRecordInfo] = await Promise.all([
     getLast7DaysInmateTraffic(sqlController),
-    sqlController.getCompressedInmateDataForDate(
-      formatInTimeZone(new Date(), TIMEZONE, "yyyy-MM-dd")
-    ),
+    sqlController.getCompressedInmateDataRecent(25),
   ]);
 
   const compressedRecords = compressedRecordInfo.map((inmate, idx) => (

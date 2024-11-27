@@ -19,6 +19,32 @@
   text-decoration: none;
 }
 
+.attractor {
+  filter: drop-shadow(0 0 5px var(--complementary-color));
+  animation: glow 1.5s infinite, pulse 1.5s infinite;
+}
+
+@keyframes glow {
+  0% {
+    filter: drop-shadow(0 0 2px var(--complementary-color));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px var(--complementary-color));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px var(--complementary-color));
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
 .complementary {
   color: var(--complementary-color);
 }
@@ -51,3 +77,4 @@
     padding: 0;
   }
 }
+

@@ -26,13 +26,13 @@
 
 @keyframes glow {
   0% {
-    filter: drop-shadow(0 0 2px var(--complementary-color));
+    filter: drop-shadow(0 0 4px var(--complementary-color));
   }
   50% {
-    filter: drop-shadow(0 0 10px var(--complementary-color));
+    filter: drop-shadow(0 0 12px var(--complementary-color));
   }
   100% {
-    filter: drop-shadow(0 0 2px var(--complementary-color));
+    filter: drop-shadow(0 0 4px var(--complementary-color));
   }
 }
 

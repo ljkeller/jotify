@@ -63,7 +63,7 @@ export default function CompressedRecordStreamer() {
         ariaLabel="three-dots-loading"
       />
     }
-    {error && <div>Error: {error.message} </div>}
+    {error && <div>Backend error. The database may be under too much load.</div>}
     </div>
   </div>
   );

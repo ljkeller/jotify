@@ -106,3 +106,38 @@
 .date {
   margin: 0 8px;
 }
+
+@media (max-width: 768px) {
+  .bookingDetails {
+    font-size: 0.8rem;
+  }
+
+  .keyCell {
+    width: 8px;
+    height: 8px;
+  }
+
+  .dayCell {
+    padding: 1.1rem;
+    border: 1px solid var(--background-color-two);
+    border-radius: 3px;
+  }
+
+  .row {
+    border-spacing: 1px;
+  }
+
+  .outerDetails {
+    padding: 10px 8px 5px 8px;
+    font-size: 1rem;
+  }
+
+  .innerDetails {
+    margin-top: 8px;
+    font-size: 0.8rem;
+  }
+
+  .date {
+    margin: 0 5px;
+  }
+}

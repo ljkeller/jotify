@@ -159,6 +159,40 @@ async function countInmatesOnDate(db, iso8601DateStr) {
 }
 
 /**
+ * Get compressed inmate data for the most recent n inmates, serving images as signed s3 urls
+ * @param {*} db database connection handle
+ * @param {*} nRecent number of most recent inmates to get
+ *
+ * @returns {CompressedInmate[]} compressed inmate data
+ * @throws {Error} if query fails
+ */
+async function getCompressedInmateDataSignedImurls(
+  db,
+  nRecent = 25,
+  offset = 0
+) {
+  try {
+    //console.log(`Getting compressed inmate data for date ${iso8601DateStr}`);
+    let inData = await db`
+      SELECT id, first_name, middle_name, last_name, affix, dob, booking_date, img_url
+      FROM inmate
+      ORDER BY booking_date DESC
+      LIMIT ${nRecent}
+      OFFSET ${offset}
+    `;
+    console.log(`Retrieved ${inData.length} inmate records`);
+
+    const compressedInmates = (await Promise.all(inData.map(inmate => fetchInmateDetailsInParallelSignedS3Urls(db, inmate)))).filter(inmate => inmate !== null);
+    return compressedInmates;
+  } catch (error) {
+    console.error(
+      `Error querying for compressed inmate data ${error} `
+    );
+    return [];
+  }
+}
+
+/**
  * Get compressed inmate data for the most recent n inmates
  * @param {*} db database connection handle
  * @param {*} nRecent number of most recent inmates to get
@@ -169,6 +203,7 @@ async function countInmatesOnDate(db, iso8601DateStr) {
 async function getCompressedInmateDataRecent(
   db,
   nRecent = 25,
+  offset = 0
 ) {
   try {
 
@@ -304,6 +339,71 @@ async function fetchChargesAliasesS3imgBond(db, s3, inmate) {
   } catch (err) {
     console.error(
       `Error getting (concurrent) inmate record data for inmate id ${inmate.id}.Error: ${err} `
+    );
+    return null;
+  }
+}
+
+async function fetchInmateDetailsInParallelSignedS3Urls(db, inmate) {
+  try {
+    let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+    const chargesPromise = db`
+          SELECT description, grade, offense_date
+          FROM charge
+          WHERE inmate_id = ${inmate.id}
+        `;
+
+    const bondPromise = db`
+          SELECT type, amount_pennies
+          FROM bond
+          WHERE inmate_id = ${inmate.id}
+        `;
+
+    const signedImgUrl =
+      inmate.img_url ?
+        s3.getSignedUrl("getObject", {
+          Bucket: process.env.AWS_BUCKET_NAME || 'scjailio-dev',
+          Key: inmate.img_url,
+          Expires: 60 * 20, // seconds till expire
+        })
+        :
+        null;
+
+    const [charges, bond] = await Promise.all([chargesPromise, bondPromise]);
+
+    const chargeInformationArray = charges.map((charge) => {
+      return new ChargeInformation(
+        charge.description,
+        charge.grade,
+        charge.offenseDate
+      );
+    });
+
+    let bondPennies = bond.reduce(
+      (acc, curr) => acc + curr.amount_pennies,
+      0
+    );
+    bondPennies = bond.some((bond) =>
+      bond.type.toLowerCase().includes("unbondable")
+    )
+      ? Number.MAX_SAFE_INTEGER
+      : bondPennies;
+
+    return new CompressedInmate(
+      inmate.id,
+      inmate.first_name,
+      inmate.middle_name,
+      inmate.last_name,
+      inmate.affix,
+      inmate.booking_date.toString(), // PostgreSQL automatically converts timestampz to Date(). This will be uniform with SQLite
+      bondPennies,
+      inmate.dob,
+      signedImgUrl,
+      chargeInformationArray
+    );
+  } catch (err) {
+    console.error(
+      `Error getting compressed inmate data for inmate id ${inmate.id}.Error: ${err} `
     );
     return null;
   }
@@ -740,6 +840,7 @@ module.exports = {
   psql,
   end,
   countInmatesOnDate,
+  getCompressedInmateDataSignedImurls,
   getCompressedInmateDataRecent,
   getCompressedInmateDataForDate,
   getCompressedInmateDataForSearchName,

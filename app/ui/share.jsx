@@ -6,7 +6,6 @@ import styles from '/styles/Share.module.css';
 
 const handleShare = async (link) => {
   const shareLink = link ? link : window.location.href;
-  console.log("Sharing link: " + shareLink);
   if (navigator.share) {
     try {
       await navigator.share({

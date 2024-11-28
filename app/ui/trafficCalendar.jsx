@@ -37,7 +37,7 @@ export default function TrafficCalendar({ inmateTraffic7Days }) {
               ))}
             </tr>
           </tbody>
-        </table >
+        </table>
         <div className={styles.key}>
           <span className={`${styles.keyLabel} ${styles.lessLabel}`}>less</span>
           <div className={`${styles.none} ${styles.keyCell}`}></div>
@@ -47,10 +47,7 @@ export default function TrafficCalendar({ inmateTraffic7Days }) {
           <div className={`${styles.veryHigh} ${styles.keyCell}`}></div>
           <span className={`${styles.keyLabel} ${styles.moreLabel}`}>more</span>
         </div>
-      </div >
-
+      </div>
     </>
-
-
   );
 }

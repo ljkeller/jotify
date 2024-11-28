@@ -16,6 +16,7 @@ const bufferToBase64 = (buffer) =>
   buffer ? `data:image/jpeg;base64,${buffer.toString('base64')}` : '/anon.png';
 
 export default function CompressedRecord({ data: compressedInmate, priority }) {
+  console.log(compressedInmate);
   // TODO? lowercase charge data
   const warningIcon = (chargeGrade) => {
     const severity = <PiSealWarningFill title="Felony" />;
@@ -39,11 +40,12 @@ export default function CompressedRecord({ data: compressedInmate, priority }) {
   bond = bond ? bond : 0;
   bond = bond === Number.MAX_SAFE_INTEGER ? 'UNBONDABLE' : centsToDollars(bond).substr(1);
 
-  // TODO: use s3 instead of base64 image
-  // Consider using Image component if performance is an issue
+  // Prefer img_url if available, otherwise fallback
+  let img_src = compressedInmate.img_url ? 
+    compressedInmate.img_url : bufferToBase64(compressedInmate.img);
   const image =
     <img
-      src={bufferToBase64(compressedInmate.img)}
+      src={img_src}
       width={150}
       height={187}
       alt={`${compressedInmate.fullName} mugshot`}

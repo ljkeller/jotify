@@ -14,8 +14,9 @@ class CompressedInmate {
     bookingDate,
     bondPennies,
     dob,
-    img,
-    chargeInformationArray
+    img = null,
+    chargeInformationArray,
+    img_url = null
   ) {
     this.id = id;
     this.fullName = [first, middle, last, affix].join(" ").trim();
@@ -27,6 +28,7 @@ class CompressedInmate {
       this.dob = dob;
     }
     this.img = img;
+    this.img_url = img_url;
     this.chargeGrade = getMaxChargeGrade(chargeInformationArray);
     this.chargeInformationArray = chargeInformationArray;
   }

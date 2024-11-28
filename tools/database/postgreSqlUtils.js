@@ -398,8 +398,9 @@ async function fetchInmateDetailsInParallelSignedS3Urls(db, inmate) {
       inmate.booking_date.toString(), // PostgreSQL automatically converts timestampz to Date(). This will be uniform with SQLite
       bondPennies,
       inmate.dob,
-      signedImgUrl,
-      chargeInformationArray
+      null,
+      chargeInformationArray,
+      signedImgUrl
     );
   } catch (err) {
     console.error(
@@ -530,14 +531,6 @@ async function getCompressedInmateDataForAlias(db, alias, sortConfig = null) {
       SORT_DIRECTIONS.has(sortConfig.direction)
       ? sortConfig
       : null;
-  /*
-  console.log(
-    `Getting compressed inmate data for alias ${alias}.Sort method: ${JSON.stringify(
-      sortMethod
-    )
-    } `
-  );
-  */
 
   const idRes = await db`
     SELECT id
@@ -764,7 +757,6 @@ async function getRelatedNamesFuzzy(db, name) {
       ORDER BY siml DESC
       LIMIT 12;
     `);
-    console.log(inmates);
     inmates = inmates.map((inmate) => inmate.full_name);
     return inmates;
   } catch (err) {

@@ -1,9 +1,8 @@
 import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 import { runtimeDbConfig } from '/tools/config';
+import { RECORD_QUERY_LIMIT } from '/tools/config';
 
 export const revalidate = 900;
-
-const RECORD_QUERY_LIMIT = 25;
 
 export async function GET(request) {
   try {
@@ -22,9 +21,7 @@ export async function GET(request) {
     const db = new SqlControllerFactory().getSqlConnection(runtimeDbConfig);
     const compressedRecords = await db.getCompressedInmateDataSignedImurls(RECORD_QUERY_LIMIT, offset);
 
-    console.log(`retrieved ${compressedRecords.length} records for page ${pageOffset}`);
-    console.log(compressedRecords.slice(0,5));
-    return Response.json({compressedRecords});
+    return Response.json(compressedRecords);
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: error.message }),

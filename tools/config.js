@@ -198,10 +198,15 @@ const scJailIoTableCreate = {
   `,
 };
 
+// This controls the number of records that are queried at a time
+// for / and api
+const RECORD_QUERY_LIMIT = 15;
+
 module.exports = {
   config,
   scJailIoTableCreate,
   postgresSchemas,
   DBConfig,
   runtimeDbConfig,
+  RECORD_QUERY_LIMIT
 };

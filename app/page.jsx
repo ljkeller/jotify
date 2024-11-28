@@ -3,8 +3,9 @@ import { formatInTimeZone } from "date-fns-tz";
 
 import TrafficCalendar from "./ui/trafficCalendar";
 import Search from "/app/ui/search";
-import Record from "/app/ui/compressedRecord";
-import { runtimeDbConfig } from "/tools/config";
+// TODO: stream the records in, and use placeholders
+import CompressedRecordStreamer from "/app/ui/compressedRecordStreamer";
+import { runtimeDbConfig, RECORD_QUERY_LIMIT } from "/tools/config";
 
 import SqlControllerFactory from "/tools/database/sqlControllerFactory";
 
@@ -38,15 +39,10 @@ export default async function Home() {
   const db = new SqlControllerFactory();
   const sqlController = db.getSqlConnection(runtimeDbConfig);
 
-  // TODO: instead of getting inmates for todays date, just grab last N for home page
   const [trafficLast7Days, compressedRecordInfo] = await Promise.all([
     getLast7DaysInmateTraffic(sqlController),
-    sqlController.getCompressedInmateDataRecent(25),
+    sqlController.getCompressedInmateDataRecent(RECORD_QUERY_LIMIT)
   ]);
-
-  const compressedRecords = compressedRecordInfo.map((inmate, idx) => (
-    <Record key={idx} data={inmate} priority={idx < 5} />
-  ));
 
   return (
     <div className={styles.container}>
@@ -61,8 +57,7 @@ export default async function Home() {
         <div className={styles.grid7Days}>
           <TrafficCalendar inmateTraffic7Days={trafficLast7Days} />
         </div>
-
-        <div className={styles.records}>{compressedRecords}</div>
+        <CompressedRecordStreamer />
       </main>
     </div>
   );

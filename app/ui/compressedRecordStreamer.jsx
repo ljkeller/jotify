@@ -2,12 +2,15 @@
 import styles from "../../styles/Home.module.css";
 import React, {useState, useEffect} from 'react';
 import CompressedRecord from '/app/ui/compressedRecord';
+import {ThreeDots} from 'react-loader-spinner';
+
 
 export default function CompressedRecordStreamer() {
   const [records, setRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
+
 
   const fetchRecords = async () => {
     setIsLoading(true);
@@ -45,13 +48,23 @@ export default function CompressedRecordStreamer() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isLoading]);
   
-  // TODO: improve loading animation
   // TODO: add logic to handle large amounts of records
   return (
   <div className={styles.records}>
     {records.map((record, idx) => (<CompressedRecord key={idx} data={record} />))}
-    {isLoading && <div>Loading...</div>}
-    {error && <div>Error: {error.message}</div>}
+    <div className={styles.loadingWrapper}>
+    {
+      <ThreeDots
+        visible={isLoading}
+        height="80"
+        color="#56ff80"
+        width="80"
+        radius="9"
+        ariaLabel="three-dots-loading"
+      />
+    }
+    {error && <div>Error: {error.message} </div>}
+    </div>
   </div>
   );
 

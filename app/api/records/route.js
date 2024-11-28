@@ -2,8 +2,6 @@ import SqlControllerFactory from '/tools/database/sqlControllerFactory';
 import { runtimeDbConfig } from '/tools/config';
 import { RECORD_QUERY_LIMIT } from '/tools/config';
 
-export const revalidate = 900;
-
 export async function GET(request) {
   try {
     const searchParams = request.nextUrl.searchParams;
